@@ -26,6 +26,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/tenant.php'));
 
             Route::middleware('web')->group(base_path('routes/web.php'));
+
+            // Sağlık ucu (uptime izleme). withRouting'e özel bir `using` closure'ı
+            // verildiğinde Laravel `health:` parametresini yok sayar — elle kaydediyoruz.
+            Route::get('/up', fn () => response()->json([
+                'status' => 'ok',
+                'time' => now()->toIso8601String(),
+            ]))->name('health');
         },
     )
     ->withMiddleware(function (Middleware $middleware) {

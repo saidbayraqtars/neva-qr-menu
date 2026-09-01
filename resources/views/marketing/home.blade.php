@@ -26,7 +26,7 @@
                     <a href="{{ route('pricing') }}" class="btn nv-btn-outline px-7 py-3 text-base text-white ring-1 ring-white/25 hover:bg-white/10">Paketleri gör</a>
                 </div>
                 <ul data-reveal style="--reveal-delay:260ms" class="mt-9 flex flex-wrap gap-x-7 gap-y-2.5 text-sm text-ink-300">
-                    @foreach (['30+ premium şablon', 'Canlı önizleme editörü', 'Tek tıkla PDF broşür'] as $f)
+                    @foreach (['40+ premium şablon', 'Canlı önizleme editörü', 'Tek tıkla PDF broşür'] as $f)
                         <li class="flex items-center gap-2">
                             <svg class="h-4 w-4 flex-shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
                             {{ $f }}

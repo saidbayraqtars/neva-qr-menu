@@ -161,21 +161,25 @@ site/
       tek ekran tasarım formu (şablon + marka + renk + logo) ve telefon maketinde **canlı önizleme**.
 - [x] **Adım 3 — QR + PDF:** `endroid/qr-code` ile masa başına QR PNG indirme, `laravel-dompdf` ile lüks menü PDF.
 - [x] **Adım 4 — Onay akışı:** "Onaya Gönder" → `subdomain_requests` kuyruğu → admin onay/red ekranı → anında yayın.
-- [x] **Adım 5 — Şablonlar:** **30 mimari olarak ayrı şablon** — her birinin kendi Blade iskeleti
+- [x] **Adım 5 — Şablonlar:** **40 mimari olarak ayrı şablon** — her birinin kendi Blade iskeleti
       (`resources/views/templates/skeletons/*.blade.php`) ve kendi CSS bloğu var (sadece renk farkı değil).
       1–20: Minimalist Kaffe, Dark Prestige, Neon Street, Botanical Green, Classic Bistro, Modern Grid,
       Sunset Orange, Royal Blue, Compact Fast, Artisan Crafted, Glassmorphism Luxury, Neo Brutalism,
       Minimal Mono, Cyber Dark, Golden Hour, Retro Diner, Alpine Clean, Sunset Vibes, Urban Chic, Velvet Noir.
       21–30 (görsel odaklı): Culinary Bento, Cinematic Dark, Magazine Grid, Stories Style, Polaroid Vibe,
-      Floating Image, Split Card, Glass Hero, Grid Showcase, Gourmet Masonry. Hepsi responsive.
+      Floating Image, Split Card, Glass Hero, Grid Showcase, Gourmet Masonry.
+      31–40: Heritage Press, Coastal Breeze, Carbon Mono, Onyx Lux, Saffron Table, Atelier Soft,
+      Riso Pop, Linen Note, Prime Steakhouse, Kyoto Calm. Hepsi responsive.
+      Galeri sınıflandırması (`template_focus`): 23 görsel odaklı + 17 tipografik = 40.
+      Bir şablon sınıflandırmada eksik veya çift kayıtlıysa `DesignController` 500 fırlatır.
 - [x] **Şablon özellik bayrakları** (`config/neva.php`): `family` (list/rich/grid/classic/compact),
       `cover`, `animation` (none/scale/glow/fade), `layout_type` (list/grid/masonry), `mood`,
       `hide_desc` (minimalist/mono şablonlarda ürün açıklamasını gizler), `locks` (bu şablonun iskeletinde
       karşılığı olmayan "Gelişmiş Dokunuşlar" kontrolleri — panelde tamamen gizlenir).
       `TemplatePresenter` bunları `data-*` olarak yayar; `supports($control)` ile panel dinamik çalışır.
 - [x] **Akıllı görsel fallback:** `TemplatePresenter::productImage()` → ürün fotoğrafı ?? işletme logosu ??
-      null (kart saf tipografik moda geçer). 30 şablonun tamamında güvenli.
-- [x] **Tasarım stüdyosu:** **tekli odaklı galeri** (ortada tek şablon kartı, ◀▶ oklar, 30 nokta,
+      null (kart saf tipografik moda geçer). 40 şablonun tamamında güvenli.
+- [x] **Tasarım stüdyosu:** **tekli odaklı galeri** (ortada tek şablon kartı, ◀▶ oklar, 40 nokta,
       canlı önizleme) → "Bu Şablonu Seç ve Düzenle" / "Bu Şablonu Düzenle". Galeri mini önizlemeleri
       kullanıcının hiçbir rengini/dokunuşunu ALMAZ (`?mini=1` → yalnızca `template`); her şablon kendi
       orijinal paletiyle görünür. Düzenleme ekranı: iframe önizleme + 📱/💻 geçişi. **50 Google Font**

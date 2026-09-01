@@ -17,7 +17,10 @@ Route::get('/', [\App\Http\Controllers\Tenant\MenuController::class, 'show'])->n
 // Masadan okutulan QR bu adrese gelir; masayı işaretleyip menüye yönlendirir.
 Route::get('/m/{token}', [\App\Http\Controllers\Tenant\MenuController::class, 'fromTable'])->name('tenant.menu.table');
 
-Route::get('/kategori/{category:slug}', [\App\Http\Controllers\Tenant\MenuController::class, 'category'])->name('tenant.category');
+// Kategori, ortulu route-model baglama ile DEGIL, dogrudan kiracinin kendi
+// kategorileri icinde aranir: hem alan adi parametresiyle yasanan baglama
+// sorununu ortadan kaldirir hem de kiraci izolasyonunu sorgu seviyesinde garanti eder.
+Route::get('/kategori/{slug}', [\App\Http\Controllers\Tenant\MenuController::class, 'category'])->name('tenant.category');
 
 // SEO — her kiracının kendi sitemap'i ve robots.txt'i
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'tenant'])->name('tenant.sitemap');

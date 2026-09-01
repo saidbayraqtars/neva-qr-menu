@@ -54,6 +54,7 @@ class TemplateRenderTest extends TestCase
         $this->actingAs($user)->get(route('panel.preview'))->assertOk();
     }
 
+    #[\PHPUnit\Framework\Attributes\Group('slow')]
     public function test_menu_pdf_builds_for_every_template(): void
     {
         $user = User::factory()->create();
@@ -66,25 +67,27 @@ class TemplateRenderTest extends TestCase
         foreach (Restaurant::templateKeys() as $key) {
             $restaurant->update(['template' => $key]);
             $pdf = $service->build($restaurant->fresh());
-            $output = $pdf->output();
+            $output = $this->pdfContents($pdf);
             $this->assertStringStartsWith('%PDF-', $output, "PDF üretilmedi: $key");
         }
     }
 
-    public function test_catalog_has_thirty_templates_and_fifty_fonts_with_complete_flags(): void
+    public function test_catalog_has_forty_templates_and_fiftyfour_fonts_with_complete_flags(): void
     {
         $templates = config('neva.templates');
         $fonts = config('neva.fonts');
         $controls = array_keys(config('neva.variations'));
 
-        $this->assertCount(30, $templates, 'Şablon sayısı 30 olmalı');
-        $this->assertCount(50, $fonts, 'Font sayısı 50 olmalı');
+        $this->assertCount(40, $templates, 'Şablon sayısı 40 olmalı');
+        $this->assertCount(54, $fonts, 'Font sayısı 54 olmalı');
 
         foreach ($templates as $key => $t) {
             foreach (['family', 'cover', 'animation', 'layout_type', 'mood', 'palette', 'tokens', 'locks'] as $flag) {
                 $this->assertArrayHasKey($flag, $t, "$key şablonunda '$flag' eksik");
             }
-            $this->assertContains($t['animation'], ['none', 'scale', 'glow', 'fade'], "$key: geçersiz animation");
+            // NOT: 'animation' yalnızca data-anim olarak yayılır, henüz hiçbir CSS/JS tüketmiyor.
+            // Gerçek giriş animasyonu kullanıcı seçimli 'entry_anim' (config/neva.php › variations).
+            $this->assertContains($t['animation'], ['none', 'scale', 'glow', 'fade', 'pop', 'slide'], "$key: geçersiz animation");
             $this->assertContains($t['layout_type'], ['list', 'grid', 'masonry'], "$key: geçersiz layout_type");
             foreach ((array) $t['locks'] as $locked) {
                 $this->assertContains($locked, $controls, "$key: geçersiz lock '$locked'");
@@ -184,7 +187,7 @@ class TemplateRenderTest extends TestCase
         Product::factory()->for($restaurant)->for($cat)->create(['image_path' => 'p/photo.png', 'price' => 100]);
         Product::factory()->for($restaurant)->for($cat)->create(['image_path' => null, 'price' => 90]); // → logo fallback
 
-        $out = app(\App\Services\MenuPdfService::class)->build($restaurant->fresh())->output();
+        $out = $this->pdfContents(app(\App\Services\MenuPdfService::class)->build($restaurant->fresh()));
 
         $this->assertStringStartsWith('%PDF-', $out);
         // dompdf gömülü JPEG akışı üretmeli (görseller GD ile JPEG'e çevriliyor).
@@ -304,5 +307,14 @@ class TemplateRenderTest extends TestCase
         ])->assertRedirect();
 
         $this->assertNull($restaurant->fresh()->cover_path, 'Kapak desteklemeyen şablonda kaydedilmemeli');
+    }
+
+    /**
+     * MenuPdfService::build() headless Chrome ile üretilen dosyayı BinaryFileResponse
+     * olarak döner (eski dompdf nesnesi değil) — içeriği diskten okuruz.
+     */
+    private function pdfContents(\Symfony\Component\HttpFoundation\BinaryFileResponse $response): string
+    {
+        return (string) file_get_contents($response->getFile()->getPathname());
     }
 }

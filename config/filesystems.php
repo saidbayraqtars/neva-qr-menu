@@ -17,7 +17,10 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            // HOST'SUZ (koke gore) URL: ayni dosya hem ana domainden hem de her
+            // kiraci alt domaininden ayni origin uzerinden servis edilir.
+            // Mutlak APP_URL kullanilirsa kiraci sayfasinda gorseller CSP'ye takilir.
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

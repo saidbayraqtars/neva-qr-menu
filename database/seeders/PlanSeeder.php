@@ -24,7 +24,7 @@ class PlanSeeder extends Seeder
                 'setup_table_limit' => null,
                 'extra_table_price' => null,
                 'features' => [
-                    '30+ premium şablon + canlı önizleme editörü',
+                    '40+ premium şablon + canlı önizleme editörü',
                     'Menü tasarımınız hazırlanıp size teslim edilir',
                     'Kendi menü linkiniz için statik QR kod üretimi',
                     'Sınırsız indirme — QR’ı doğrudan masaya bastırın',
@@ -45,7 +45,7 @@ class PlanSeeder extends Seeder
                 'setup_table_limit' => null,
                 'extra_table_price' => null,
                 'features' => [
-                    '30+ profesyonel şablon',
+                    '40+ profesyonel şablon',
                     'Markalı alt domain (isim.neva-qr.com)',
                     'Şablon değişikliği ve her düzenleme ANINDA canlıya geçer',
                     'SSL + güvenli barındırma dahil',

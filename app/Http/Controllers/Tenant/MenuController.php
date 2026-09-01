@@ -28,9 +28,19 @@ class MenuController extends Controller
         return $this->render();
     }
 
-    public function category(Category $category): Response
+    /**
+     * DIKKAT: bu rota grubunun alan adinda `{tenant}` parametresi var ve rota
+     * parametreleri metoda SIRAYLA gecirilir. Bu yuzden `$tenant` ilk argüman
+     * olarak BILEREK bildirilir; aksi halde `$slug` degiskenine alt domain adi düşer.
+     */
+    public function category(string $tenant, string $slug): Response
     {
-        abort_unless($category->restaurant_id === app('tenant')->id, 404);
+        /** @var Restaurant $tenant */
+        $tenant = app('tenant');
+
+        // Kiracinin KENDI kategorileri icinde ara — baska bir restoranin
+        // kategorisi hicbir kosulda buradan acilamaz.
+        $category = $tenant->categories()->active()->where('slug', $slug)->firstOrFail();
 
         return $this->render($category);
     }
@@ -39,7 +49,7 @@ class MenuController extends Controller
      * Eski (masaya özel jetonlu) QR'lar için geriye dönük uyumluluk.
      * Yeni mimari: tek ana QR + `?masa=` parametresi / `#N` hash'i.
      */
-    public function fromTable(string $token): RedirectResponse
+    public function fromTable(string $tenant, string $token): RedirectResponse
     {
         /** @var Restaurant $tenant */
         $tenant = app('tenant');

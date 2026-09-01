@@ -20,19 +20,23 @@ class SecurityHeaders
     {
         $response = $next($request);
 
-        $csp = implode('; ', [
+        // Kiracı menüsü kendi alt domaininde açılır ama bazı varlıklar ana domainden
+        // gelebilir; 'self' bunu kapsamaz. Ana domain origin'i açıkça izinli yapılır.
+        $appOrigin = $this->appOrigin();
+
+        $csp = implode('; ', array_filter([
             "default-src 'self'",
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'self'",
             "object-src 'none'",
-            "img-src 'self' data: blob:",
-            "font-src 'self' https://fonts.gstatic.com data:",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            trim("img-src 'self' data: blob: $appOrigin"),
+            trim("font-src 'self' https://fonts.gstatic.com data: $appOrigin"),
+            trim("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com $appOrigin"),
+            trim("script-src 'self' 'unsafe-inline' 'unsafe-eval' $appOrigin"),
             "connect-src 'self'",
             "frame-src 'self'",
-        ]);
+        ]));
 
         $headers = [
             'Content-Security-Policy' => $csp,
@@ -54,5 +58,24 @@ class SecurityHeaders
         }
 
         return $response;
+    }
+
+    /** APP_URL'in şema+host+port kısmı (ör. https://nevaqr.com). Çözülemezse boş. */
+    private function appOrigin(): string
+    {
+        $url = (string) config('app.url');
+        $parts = parse_url($url);
+
+        if (empty($parts['scheme']) || empty($parts['host'])) {
+            return '';
+        }
+
+        $origin = $parts['scheme'].'://'.$parts['host'];
+
+        if (! empty($parts['port'])) {
+            $origin .= ':'.$parts['port'];
+        }
+
+        return $origin;
     }
 }

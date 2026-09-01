@@ -46,7 +46,7 @@
         <h2 class="text-center font-display text-2xl text-ink-900">Her pakette var</h2>
         <div class="mt-8 grid gap-3 sm:grid-cols-2">
             @foreach ([
-                '30+ premium kafe & restoran şablonu', 'Canlı önizleme editörü', 'Sınırsız kategori ve ürün',
+                '40+ premium kafe & restoran şablonu', 'Canlı önizleme editörü', 'Sınırsız kategori ve ürün',
                 'Görsel & etiket yönetimi', 'Logo, renk ve yazı tipi özelleştirme', 'İndirilebilir QR kod',
                 'Menü tasarımı ekibimizce kurulur', 'Türkçe arayüz ve destek',
             ] as $item)
