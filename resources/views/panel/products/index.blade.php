@@ -21,20 +21,33 @@
         @else
             @foreach ($categories as $category)
                 <section>
-                    <h2 class="mb-3 font-display text-lg text-ink-900">
+                    <h2 class="mb-1 font-display text-lg text-ink-900">
                         {{ $category->name }}
                         <span class="text-sm font-normal text-ink-400">· {{ $category->products->count() }}</span>
                     </h2>
 
+                    @if ($category->products->count() > 1)
+                        <p class="mb-2 text-xs text-ink-400">Ürünleri sürükleyerek ya da ▲▼ ile sıralayın.</p>
+                    @endif
+
                     @if ($category->products->isEmpty())
                         <p class="rounded-2xl border border-dashed border-ink-200 p-4 text-sm text-ink-400">Bu kategoride ürün yok.</p>
                     @else
-                        <ul class="space-y-2">
+                        <ul class="space-y-2" data-sortable
+                            data-sort-url="{{ route('panel.products.reorder') }}"
+                            data-sort-extra='@json(['category_id' => $category->id])'>
                             @foreach ($category->products as $product)
-                                <li class="card flex items-center gap-4 p-3">
+                                <li class="card flex items-center gap-4 p-3" data-id="{{ $product->id }}" draggable="true">
+                                    <span class="flex shrink-0 flex-col items-center gap-0.5">
+                                        <button type="button" data-sort-up aria-label="Yukarı taşı"
+                                                class="rounded px-1 text-ink-400 hover:bg-ink-100 hover:text-ink-700">▲</button>
+                                        <span class="cursor-grab select-none text-ink-300" title="Sürükleyin">⠿</span>
+                                        <button type="button" data-sort-down aria-label="Aşağı taşı"
+                                                class="rounded px-1 text-ink-400 hover:bg-ink-100 hover:text-ink-700">▼</button>
+                                    </span>
                                     <div class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-ink-100">
                                         @if ($product->image_path)
-                                            <img src="{{ \Illuminate\Support\Facades\Storage::disk(config('neva.uploads.disk'))->url($product->image_path) }}" class="h-full w-full object-cover">
+                                            <img src="{{ media_url($product->image_path) }}" class="h-full w-full object-cover">
                                         @else
                                             <span class="text-[10px] text-ink-400">görsel yok</span>
                                         @endif

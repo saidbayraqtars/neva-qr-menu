@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Restaurant extends Model
 {
@@ -37,6 +38,8 @@ class Restaurant extends Model
         'user_id',
         'slug',
         'subdomain',
+        'released_subdomain',
+        'subdomain_released_at',
         'status',
         'menu_version',
         'publish_status',
@@ -62,7 +65,71 @@ class Restaurant extends Model
         'dns_provisioned_at' => 'datetime',
         'verified_at' => 'datetime',
         'last_health_check_at' => 'datetime',
+        'subdomain_released_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        // Kayıt silinince alt domain etiketi HEMEN serbest bırakılır; aksi halde
+        // tekil indeks yüzünden ad başka bir işletmeye bir daha verilemezdi.
+        static::deleted(fn (Restaurant $restaurant) => $restaurant->releaseSubdomain());
+
+        // Geri yüklemede etiket hâlâ boştaysa sahibine iade edilir.
+        static::restored(fn (Restaurant $restaurant) => $restaurant->reclaimSubdomain());
+
+        // Kalıcı silmede yüklenen dosyalar da gider (yumuşak silmede DURUR:
+        // kayıt geri yüklenebilir, dosyalar zaten dışarıya kapalı).
+        static::forceDeleted(fn (Restaurant $restaurant) => $restaurant->deleteUploads());
+    }
+
+    /** Restorana ait tüm yüklemeler (logo/kapak/ürün görselleri/QR) silinir. */
+    public function deleteUploads(): void
+    {
+        Storage::disk(config('neva.uploads.disk'))->deleteDirectory('restaurants/'.$this->getKey());
+    }
+
+    /** Alt domaini serbest bırakır; etiket geçmiş için released_subdomain'de saklanır. */
+    public function releaseSubdomain(): void
+    {
+        if (blank($this->subdomain)) {
+            return;
+        }
+
+        $this->forceFill([
+            'released_subdomain' => $this->subdomain,
+            'subdomain_released_at' => now(),
+            'subdomain' => null,
+            'publish_status' => null,
+            'verified_at' => null,
+        ])->saveQuietly();
+    }
+
+    /** Serbest bırakılan etiketi geri alır — bu arada başkası kapmışsa boş kalır. */
+    public function reclaimSubdomain(): bool
+    {
+        $label = $this->released_subdomain;
+
+        if (blank($label) || filled($this->subdomain)) {
+            return false;
+        }
+
+        $taken = static::withTrashed()
+            ->where('subdomain', $label)
+            ->whereKeyNot($this->getKey())
+            ->exists();
+
+        if ($taken) {
+            return false;
+        }
+
+        $this->forceFill([
+            'subdomain' => $label,
+            'released_subdomain' => null,
+            'subdomain_released_at' => null,
+        ])->saveQuietly();
+
+        return true;
+    }
 
     public function getRouteKeyName(): string
     {

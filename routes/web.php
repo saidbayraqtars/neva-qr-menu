@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\MarketingController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Panel;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,11 @@ Route::get('/iletisim', [MarketingController::class, 'contact'])->name('contact'
 Route::post('/iletisim', [MarketingController::class, 'contact'])
     ->middleware('throttle:contact')
     ->name('contact.store');
+
+// Yüklenen görseller — özel diskten yetki kontrolüyle servis edilir.
+Route::get('/gorsel/{path}', MediaController::class)
+    ->where('path', '.*')
+    ->name('media');
 
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -56,6 +62,10 @@ Route::middleware(['auth', 'password.changed', 'restaurant.context'])
         Route::resource('urunler', Panel\ProductController::class)
             ->parameters(['urunler' => 'product'])
             ->names('products');
+        Route::post('/urunler/sirala', [Panel\ProductController::class, 'reorder'])->name('products.reorder');
+
+        // Menü istatistikleri (görüntülenme / masa kırılımı)
+        Route::get('/istatistik', Panel\StatsController::class)->name('stats');
 
         // QR & PDF
         Route::middleware('throttle:render')->group(function () {

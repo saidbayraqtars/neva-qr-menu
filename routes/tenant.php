@@ -22,6 +22,17 @@ Route::get('/m/{token}', [\App\Http\Controllers\Tenant\MenuController::class, 'f
 // sorununu ortadan kaldirir hem de kiraci izolasyonunu sorgu seviyesinde garanti eder.
 Route::get('/kategori/{slug}', [\App\Http\Controllers\Tenant\MenuController::class, 'category'])->name('tenant.category');
 
+// Menü görselleri — ana domaindekiyle AYNI uç; kiracı sayfasındaki host'suz
+// yollar (/gorsel/...) alt domainde de çözülsün diye burada da kayıtlı.
+Route::get('/gorsel/{path}', \App\Http\Controllers\MediaController::class)
+    ->where('path', '.*')
+    ->name('tenant.media');
+
+// Görüntülenme sayacı — sayfa önbellekten geldiği için ölçüm istemciden atılır.
+Route::get('/olcum', \App\Http\Controllers\Tenant\TrackController::class)
+    ->middleware('throttle:track')
+    ->name('tenant.track');
+
 // SEO — her kiracının kendi sitemap'i ve robots.txt'i
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'tenant'])->name('tenant.sitemap');
 

@@ -61,7 +61,7 @@
             <div>
                 <x-input-label :value="'Ürün görseli'" />
                 @if ($product->image_path)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk(config('neva.uploads.disk'))->url($product->image_path) }}" class="mb-2 h-28 w-full rounded-xl object-cover">
+                    <img src="{{ media_url($product->image_path) }}" class="mb-2 h-28 w-full rounded-xl object-cover">
                 @endif
                 <input type="file" name="image" accept="image/*"
                        class="block w-full text-sm text-ink-500 file:mr-3 file:rounded-lg file:border-0 file:bg-ink-900 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white">

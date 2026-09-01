@@ -45,7 +45,7 @@ class TemplatePresenter
         }
 
         if (! empty($product->image_path)) {
-            return $this->disk()->url($product->image_path);
+            return media_url($product->image_path);
         }
 
         return $this->logoUrl();
@@ -174,9 +174,7 @@ class TemplatePresenter
             return $this->overrides['logo_data']; // panelden yeni seçilen (data URI)
         }
 
-        return $this->restaurant->logo_path
-            ? Storage::disk(config('neva.uploads.disk'))->url($this->restaurant->logo_path)
-            : null;
+        return media_url($this->restaurant->logo_path);
     }
 
     public function supportsCover(): bool
@@ -290,9 +288,7 @@ class TemplatePresenter
             return $this->overrides['cover_data'];
         }
 
-        return $this->restaurant->cover_path
-            ? Storage::disk(config('neva.uploads.disk'))->url($this->restaurant->cover_path)
-            : null;
+        return media_url($this->restaurant->cover_path);
     }
 
     public function logoScale(): float

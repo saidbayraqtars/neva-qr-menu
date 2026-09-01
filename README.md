@@ -140,6 +140,8 @@ site/
 | `2026_08_30_000400_create_subscriptions_table` | `plans`, `subscriptions` | Abonelik (Cashier'a geçişe hazır: `provider` + `external_id`) |
 | `2026_08_30_000500_create_subdomain_requests_table` | `subdomain_requests` | Admin onay kuyruğu |
 | `2026_08_30_000600_create_restaurant_tables_table` | `restaurant_tables` | Masalar + tekil `qr_token` |
+| `2026_09_02_000100_create_menu_visits_table` | `menu_visits` | Gün + masa bazlı görüntülenme sayacı |
+| `2026_09_02_000200_add_released_subdomain_to_restaurants` | `restaurants` | Silinen kaydın alt domainini serbest bırakır |
 
 ---
 
@@ -207,7 +209,18 @@ site/
       tamamen değişir; **minimalist** (minimalist-kaffe/minimal-mono/alpine-clean) rozet yok, tipografik
       kontrast; **hızlı filtre** (sunset-orange üstte "Öne Çıkanlar/Fırsatlar" sekmesi, royal-blue sol
       nav'da sabit bölümler).
-- [ ] **Faz-2:** Stripe/iyzico ödeme (Cashier), tarama analitiği, çoklu dil, sürükle-bırak sıralama, e-posta bildirimleri.
+- [x] **Tarama analitiği:** menü HTML'i önbellekten geldiği için sayaç istemciden atılan
+      `/olcum` isteğiyle toplanır; `menu_visits` tablosunda **gün + masa etiketi** bazında
+      birikir (IP/cihaz kimliği saklanmaz). Panelde **İstatistik** ekranı: bugün / 7 gün /
+      30 gün / toplam, 30 günlük grafik ve masa kırılımı.
+- [x] **Sürükle-bırak sıralama:** kategoriler ve ürünler (kategori içinde). Kütüphanesiz;
+      dokunmatik cihazlar için her satırda ▲▼ düğmeleri var.
+- [x] **Dosya izolasyonu:** yüklemeler özel diskte (`storage/app/uploads`), `/gorsel/...`
+      ucundan yetki kontrolüyle servis edilir — yayına girmemiş işletmenin görselleri
+      dışarıya kapalı. Kalıcı silmede restoranın klasörü de silinir.
+- [x] **Alt domain iadesi:** restoran silinince etiket serbest kalır (`released_subdomain`),
+      geri yüklemede hâlâ boşsa sahibine iade edilir.
+- [ ] **Faz-2:** Stripe/iyzico ödeme (Cashier), çoklu dil, KVKK metinleri, kapsamlı SEO.
 
 ### Ekranlar
 
@@ -215,6 +228,6 @@ site/
 |------|-----|
 | Pazarlama | `/` · `/hakkimizda` · `/fiyatlandirma` · `/iletisim` |
 | Kimlik | `/login` · `/register` · `/forgot-password` |
-| Sahip paneli | `/panel` · `/panel/tasarim` · `/panel/kategoriler` · `/panel/urunler` · `/panel/qr` |
+| Sahip paneli | `/panel` · `/panel/tasarim` · `/panel/kategoriler` · `/panel/urunler` · `/panel/istatistik` · `/panel/qr` |
 | Admin | `/admin` · `/admin/talepler` |
-| Canlı menü | `http://{subdomain}.neva-qr.test` · masa QR: `/m/{token}` |
+| Canlı menü | `http://{subdomain}.neva-qr.test` · masa QR: `/m/{token}` · ölçüm: `/olcum` |

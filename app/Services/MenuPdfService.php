@@ -77,8 +77,9 @@ class MenuPdfService
     private function inlineImages(string $html): string
     {
         $disk = Storage::disk(config('neva.uploads.disk'));
-        $base = rtrim($disk->url('/'), '/');            // ör. http://127.0.0.1:8000/storage
-        $pattern = '#'.preg_quote($base, '#').'/([A-Za-z0-9._/\-]+\.(?:png|jpe?g|webp|gif|svg))#i';
+        // Görseller özel diskte; sayfada `/gorsel/<yol>` adresiyle geçiyorlar
+        // (bkz. media_url). Yol doğrudan diskteki yola karşılık gelir.
+        $pattern = '#/gorsel/([A-Za-z0-9._/\-]+\.(?:png|jpe?g|webp|gif|svg))#i';
 
         $cache = [];
 

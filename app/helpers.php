@@ -17,6 +17,27 @@ if (! function_exists('tenant_domain')) {
     }
 }
 
+if (! function_exists('media_url')) {
+    /**
+     * Yüklenen bir görselin adresi.
+     *
+     * Dosyalar ÖZEL diskte durur; erişim `/gorsel/...` rotasından geçer
+     * (yayında olmayan restoranın görseli sahibi dışında kimseye açılmaz).
+     *
+     * URL bilerek HOST'SUZDUR: aynı yol hem ana domainden hem de her kiracı
+     * alt domaininden aynı origin üzerinden çözülür — mutlak adres kullanılsa
+     * kiracı sayfasında CSP img-src'e takılırdı.
+     */
+    function media_url(?string $path): ?string
+    {
+        if (blank($path)) {
+            return null;
+        }
+
+        return '/gorsel/'.implode('/', array_map('rawurlencode', explode('/', ltrim($path, '/'))));
+    }
+}
+
 if (! function_exists('discount_pct')) {
     /** İndirim yüzdesi (tam sayı) — indirim yoksa 0. */
     function discount_pct(object $product): int

@@ -167,7 +167,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'uploads' => [
-        'disk' => env('NEVA_UPLOAD_DISK', 'public'),
+        'disk' => env('NEVA_UPLOAD_DISK', 'uploads'),
         'logo_max_kb' => 2048,
         'image_max_kb' => 6144,
     ],

@@ -13,4 +13,6 @@ Kod okunarak anlaşılabilen şeyler burada TEKRARLANMAZ; yalnızca "neden böyl
 - [Kiracı rota parametresi tuzağı](kiraci-rota-parametresi.md) — {tenant} ilk argümandır, bildirilmeli
 - [CSP ve varlık URL'leri](csp-ve-varlik-urlleri.md) — görsel yolları host'suz olmalı
 - [Geliştirme ortamı notları](gelistirme-ortami.md) — PHP 8.4 + Composer kurulumu ve php.ini ayarı
+- [Görüntülenme ölçümü (analitik)](analitik-olcum.md) — sayaç istemciden atılır, gün + masa bazlı toplanır
+- [Görsel izolasyonu](gorsel-izolasyonu.md) — yüklemeler özel diskte, /gorsel ucundan yetkiyle servis
 - [Kalan işler ve sıradaki adımlar](kalan-isler.md) — kapsamlı SEO en sona bırakıldı

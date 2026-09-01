@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Services\PlanGate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -72,7 +73,8 @@ class CategoryController extends Controller
         return back()->with('success', 'Kategori silindi.');
     }
 
-    public function reorder(Request $request): RedirectResponse
+    /** Sürükle-bırak sıralama; istek panelden fetch ile (JSON) gelir. */
+    public function reorder(Request $request): Response|RedirectResponse
     {
         $request->validate(['order' => ['required', 'array'], 'order.*' => ['integer']]);
 
@@ -83,7 +85,7 @@ class CategoryController extends Controller
         // Query builder update model olayı fırlatmaz — önbellek sürümünü elle artır.
         app('restaurant')->bumpMenuVersion();
 
-        return back();
+        return $request->expectsJson() ? response()->noContent() : back();
     }
 
     private function uniqueSlug(int $restaurantId, string $name): string

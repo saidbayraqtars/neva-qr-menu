@@ -12,11 +12,17 @@
                 <a href="{{ route('panel.categories.create') }}" class="btn-gold mt-5 px-6">İlk kategoriyi ekle</a>
             </div>
         @else
-            <ul class="space-y-3">
+            <p class="mb-3 text-xs text-ink-400">Sıralamak için kartları sürükleyin ya da ▲▼ düğmelerini kullanın; menüde bu sırayla görünür.</p>
+
+            <ul class="space-y-3" data-sortable data-sort-url="{{ route('panel.categories.reorder') }}">
                 @foreach ($categories as $category)
-                    <li class="card flex items-center gap-4 p-4">
-                        <span class="grid h-10 w-10 place-items-center rounded-xl bg-ink-100 font-display text-sm text-ink-500">
-                            {{ $loop->iteration }}
+                    <li class="card flex items-center gap-4 p-4" data-id="{{ $category->id }}" draggable="true">
+                        <span class="flex flex-col items-center gap-0.5">
+                            <button type="button" data-sort-up aria-label="Yukarı taşı"
+                                    class="rounded px-1 text-ink-400 hover:bg-ink-100 hover:text-ink-700">▲</button>
+                            <span class="cursor-grab select-none text-ink-300" title="Sürükleyin">⠿</span>
+                            <button type="button" data-sort-down aria-label="Aşağı taşı"
+                                    class="rounded px-1 text-ink-400 hover:bg-ink-100 hover:text-ink-700">▼</button>
                         </span>
                         <div class="min-w-0 flex-1">
                             <p class="truncate font-semibold text-ink-900">

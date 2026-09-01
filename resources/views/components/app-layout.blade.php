@@ -19,6 +19,7 @@
             ['route' => 'panel.categories.index', 'label' => 'Kategoriler', 'icon' => 'M4 6h16M4 10h16M4 14h10M4 18h10'],
             ['route' => 'panel.products.index', 'label' => 'Ürünler', 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
             ['route' => 'panel.qr.index', 'label' => 'QR & PDF', 'icon' => 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z'],
+            ['route' => 'panel.stats', 'label' => 'İstatistik', 'icon' => 'M4 19h16M7 16V9m5 7V5m5 11v-4'],
             ['route' => 'panel.messages.index', 'label' => 'Mesajlar', 'icon' => 'M8 10h8M8 14h5m8-2a9 9 0 11-3.6-7.2L21 4l-1.4 4.8A8.96 8.96 0 0121 12z', 'badge' => true],
         ];
     $unread = (int) ($unreadMessages ?? 0);

@@ -10,7 +10,7 @@
         <form method="POST" action="{{ route('panel.business.update') }}" enctype="multipart/form-data"
               class="space-y-6"
               x-data="{
-                  logoPreview: @js($restaurant->logo_path ? \Illuminate\Support\Facades\Storage::disk(config('neva.uploads.disk'))->url($restaurant->logo_path) : null),
+                  logoPreview: @js(media_url($restaurant->logo_path)),
                   logoRemoved: false,
                   pickLogo(e) {
                       const f = e.target.files?.[0];

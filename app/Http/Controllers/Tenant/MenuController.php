@@ -56,12 +56,9 @@ class MenuController extends Controller
 
         $table = $tenant->tables()->where('qr_token', $token)->where('is_active', true)->first();
 
+        // Sayaç burada ARTIRILMAZ: yönlendirmenin ardından açılan menü sayfası
+        // ölçüm isteğini (`/olcum?masa=`) zaten atıyor; iki kez sayılmasın.
         if ($table) {
-            $table->forceFill([
-                'scan_count' => $table->scan_count + 1,
-                'last_scanned_at' => now(),
-            ])->saveQuietly();
-
             return redirect('/?masa='.rawurlencode($table->label));
         }
 
@@ -105,6 +102,7 @@ class MenuController extends Controller
             'view' => 'phone',
             'embedded' => true,
             'tableLabel' => null, // masa rozeti istemcide doldurulur (önbellek bölünmesin)
+            'track' => true,      // görüntülenme ölçümü yalnızca GERÇEK kiracı sayfasında
         ])->render();
     }
 }

@@ -66,6 +66,9 @@ class AppServiceProvider extends ServiceProvider
         // Tasarım önizlemesi iframe'i: dakikada 120
         RateLimiter::for('preview', fn (Request $r) => Limit::perMinute(120)->by($r->user()?->id ?: $r->ip()));
 
+        // Menü görüntülenme ölçümü: IP başına dakikada 60 (bir cihaz sayfa başına 1 atar)
+        RateLimiter::for('track', fn (Request $r) => Limit::perMinute(60)->by($r->ip()));
+
         // Mesaj gönderimi: dakikada 20
         RateLimiter::for('messages', fn (Request $r) => Limit::perMinute(20)->by($r->user()?->id ?: $r->ip()));
     }

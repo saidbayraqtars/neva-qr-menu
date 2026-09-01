@@ -26,6 +26,17 @@ return [
             'report' => false,
         ],
 
+        // Kullanıcı yüklemeleri (logo / kapak / ürün görseli / QR). ÖZEL disk:
+        // dosyalar doğrudan web'den servis EDİLMEZ, /gorsel/... rotasından geçer.
+        // Böylece taslak (yayına girmemiş) bir restoranın görselleri herkese açık olmaz.
+        'uploads' => [
+            'driver' => 'local',
+            'root' => storage_path('app/uploads'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

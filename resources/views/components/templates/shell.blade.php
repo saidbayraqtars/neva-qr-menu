@@ -1,4 +1,4 @@
-@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null, 'categories' => null])
+@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null, 'categories' => null, 'track' => false])
 <!DOCTYPE html>
 <html lang="{{ $restaurant->locale ?? 'tr' }}">
 <head>
@@ -61,19 +61,26 @@
         // URL'den masa bilgisini yakala: ?masa=1  ·  #1  ·  #masa=1  ·  #table=1
         (function () {
             var badge = document.getElementById('table-badge');
-            if (!badge) return;
 
-            function detect() {
+            function read() {
                 var val = new URLSearchParams(location.search).get('masa');
                 if (!val && location.hash) {
                     var h = decodeURIComponent(location.hash.slice(1));
                     var m = h.match(/^(?:masa|table)?[\s=/_-]*([\p{L}\p{N}][\p{L}\p{N}\s.\-]{0,23})$/iu);
                     if (m) val = m[1];
                 }
-                if (!val) return;
+                if (!val) return '';
 
-                val = String(val).replace(/[^\p{L}\p{N}\s.\-]/gu, '').trim().slice(0, 24);
-                if (!val) { badge.hidden = true; return; }
+                return String(val).replace(/[^\p{L}\p{N}\s.\-]/gu, '').trim().slice(0, 24);
+            }
+
+            // Diğer scriptler (ölçüm) de aynı ayrıştırmayı kullansın diye dışarı verilir.
+            window.nevaTableLabel = read;
+
+            function detect() {
+                if (!badge) return;
+                var val = read();
+                if (!val) return;
 
                 badge.textContent = /^\d+$/.test(val) ? ('Masa ' + val) : val;
                 badge.hidden = false;
@@ -84,6 +91,43 @@
         })();
         </script>
     @endunless
+
+    @if ($track)
+        <script>
+        // Görüntülenme ölçümü. Sayfa HTML'i önbellekten geldiği için sayaç
+        // sunucuda artırılamaz; yükleme bittikten sonra tek bir hafif istek atılır.
+        // Kişisel veri gönderilmez: yalnızca masa etiketi + "bugün ilk kez mi" bilgisi.
+        (function () {
+            var key = 'neva-visit-' + new Date().toISOString().slice(0, 10);
+            var fresh = false;
+
+            try {
+                // Dünden kalan işaretleri temizle, sonra bugünkünü koy.
+                for (var i = localStorage.length - 1; i >= 0; i--) {
+                    var k = localStorage.key(i);
+                    if (k && k.indexOf('neva-visit-') === 0 && k !== key) localStorage.removeItem(k);
+                }
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, '1');
+                    fresh = true;
+                }
+            } catch (e) { /* özel sekme / kapalı depolama: sadece görüntülenme sayılır */ }
+
+            function ping() {
+                var label = window.nevaTableLabel ? window.nevaTableLabel() : '';
+                var url = '/olcum?yeni=' + (fresh ? '1' : '0') + (label ? '&masa=' + encodeURIComponent(label) : '');
+
+                try {
+                    fetch(url, { method: 'GET', keepalive: true, credentials: 'omit', cache: 'no-store' })
+                        .catch(function () {});
+                } catch (e) { /* ölçüm hiçbir koşulda menüyü etkilemez */ }
+            }
+
+            if (document.readyState === 'complete') ping();
+            else window.addEventListener('load', ping);
+        })();
+        </script>
+    @endif
 
     @unless ($embedded)
         <script>

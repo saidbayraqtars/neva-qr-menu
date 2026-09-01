@@ -7,6 +7,8 @@ use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Services\PlanGate;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -107,6 +109,37 @@ class ProductController extends Controller
         $product->delete();
 
         return back()->with('success', 'Ürün silindi.');
+    }
+
+    /**
+     * Sürükle-bırak sıralama — sıra KATEGORİ İÇİNDE tutulur.
+     * Gönderilen id'ler hem restorana hem de o kategoriye ait olmak zorunda;
+     * başka bir kategorinin ürünü bu istekle taşınamaz.
+     */
+    public function reorder(Request $request): Response|RedirectResponse
+    {
+        $request->validate([
+            'category_id' => ['required', 'integer'],
+            'order' => ['required', 'array'],
+            'order.*' => ['integer'],
+        ]);
+
+        $categoryId = $request->integer('category_id');
+        $this->assertCategoryOwned($categoryId);
+
+        $restaurant = app('restaurant');
+
+        foreach ($request->input('order') as $position => $id) {
+            $restaurant->products()
+                ->where('category_id', $categoryId)
+                ->whereKey($id)
+                ->update(['sort_order' => $position]);
+        }
+
+        // Query builder update model olayı fırlatmaz — önbellek sürümünü elle artır.
+        $restaurant->bumpMenuVersion();
+
+        return $request->expectsJson() ? response()->noContent() : back();
     }
 
     private function assertCategoryOwned(int $categoryId): void

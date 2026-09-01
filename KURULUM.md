@@ -29,8 +29,8 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Depolama sembolik bağlantısı (logo/görsel yüklemeleri)
-php artisan storage:link
+# 3. (Artık gerekmiyor) storage:link — yüklemeler özel diskte tutulur ve
+#    /gorsel/... ucundan yetki kontrolüyle servis edilir.
 
 # 4. Veritabanı
 #    database/database.sqlite arşivde varsa hazır demo veriyle gelir; yoksa:
@@ -93,6 +93,23 @@ php artisan optimize:clear
 # 3. Testler
 php artisan test
 ```
+
+### Görseller özel diske taşındı (2026-09-02)
+
+Yüklenen logo/kapak/ürün görselleri artık `storage/app/public` altında **değil**,
+`storage/app/uploads` altında duruyor ve `/gorsel/...` ucundan servis ediliyor.
+Böylece yayına girmemiş (taslak) bir işletmenin görselleri herkese açık olmuyor.
+
+```bash
+# Mevcut kurulumu güncelliyorsanız dosyaları bir kez taşıyın:
+php artisan neva:uploads-tasi --dry-run   # önce raporla
+php artisan neva:uploads-tasi             # taşı
+
+# Menü HTML'i önbelleğinde eski /storage adresleri kalmış olabilir:
+php artisan cache:clear
+```
+
+`.env` içinde: `NEVA_UPLOAD_DISK=uploads`.
 
 ### .env'e eklenmesi gerekenler
 
@@ -159,3 +176,15 @@ Canlı menü HTML'i önbellekten servis edilir. Panelde bir değişiklik yapıld
 yalnızca üst sınırdır.
 
 Sorun yaşarsanız: `php artisan cache:clear`.
+
+---
+
+## İstatistik (görüntülenme ölçümü)
+
+Canlı menü HTML'i önbellekten servis edildiği için sayaç sunucu render'ında
+artırılamaz. Sayfa yüklendikten sonra tarayıcı `/olcum` ucuna tek bir hafif
+istek atar; `menu_visits` tablosunda **gün + masa etiketi** bazında toplanır.
+
+- Kişisel veri saklanmaz: IP, konum, cihaz kimliği yok — yalnızca sayaç.
+- "Farklı cihaz" sayısı tarayıcıdaki günlük işarete (localStorage) dayanır.
+- Panel: **İstatistik** sekmesi (`/panel/istatistik`).
