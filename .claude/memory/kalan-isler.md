@@ -25,10 +25,19 @@ metadata:
   Restaurant/Menu JSON-LD, canonical + Open Graph.
 - Testler: PlanAccess, SubdomainFlow, Messaging, PasswordSetup, MenuCache.
 
+## Aynı gün ayrıca yapılanlar
+
+- Ortam kuruldu ve proje ilk kez çalıştırıldı ([[gelistirme-ortami]]): migration'lar geçti,
+  48/48 test yeşil, Vite derlendi, sunucu ayağa kalktı.
+- Üç kusur bulunup düzeltildi: kiracı rotalarında parametre kayması
+  ([[kiraci-rota-parametresi]]), CSP'nin menü görsellerini engellemesi
+  ([[csp-ve-varlik-urlleri]]) ve kayıtlı olmayan `/up` sağlık ucu.
+- Şablon sayısı her yerde 40'a güncellendi (README, pazarlama metni, PlanSeeder, testler).
+
 ## Sıradaki adımlar (öncelik sırasıyla)
 
-1. **Çalıştırma ve doğrulama** — PHP'li terminalde `composer install`, `php artisan migrate`,
-   `php artisan test`, `npm run build`. Bu makinede yapılamadı ([[gelistirme-ortami]]).
+1. **Panel akışlarının elle gözden geçirilmesi** — otomatik testler geçiyor ama tasarım
+   stüdyosu, QR ekranı ve mesajlaşma arayüzü gözle kontrol edilmedi.
 2. **Üretim ayarları** — `QUEUE_CONNECTION=database` + `queue:work` servisi, gerçek SMTP,
    cron satırı (`schedule:run`), `APP_DEBUG=false`, PostgreSQL.
 3. **KAPSAMLI SEO** (kullanıcı bilerek sona bıraktı): blog/içerik modülü, şehir + mutfak
