@@ -1,11 +1,25 @@
-@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null])
+@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null, 'categories' => null])
 <!DOCTYPE html>
 <html lang="{{ $restaurant->locale ?? 'tr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>{{ $restaurant->name }}</title>
-    <meta name="description" content="{{ $restaurant->tagline ?? $restaurant->name.' — dijital menü' }}">
+    <title>{{ $restaurant->name }}{{ $restaurant->tagline ? ' — '.$restaurant->tagline : ' — Menü' }}</title>
+    <meta name="description" content="{{ \Illuminate\Support\Str::limit($restaurant->tagline ?: $restaurant->name.' dijital menüsü — güncel fiyatlar ve ürünler.', 160) }}">
+@unless ($print)
+    <link rel="canonical" href="{{ tenant_domain($restaurant) }}">
+    <meta name="robots" content="{{ config('neva.seo.index_tenants', true) ? 'index, follow, max-image-preview:large' : 'noindex, nofollow' }}">
+    <meta property="og:type" content="restaurant.menu">
+    <meta property="og:title" content="{{ $restaurant->name }}">
+    <meta property="og:description" content="{{ \Illuminate\Support\Str::limit($restaurant->tagline ?: $restaurant->name.' dijital menüsü', 160) }}">
+    <meta property="og:url" content="{{ tenant_domain($restaurant) }}">
+    <meta property="og:locale" content="tr_TR">
+    @if ($presenter->logoUrl())
+        <meta property="og:image" content="{{ $presenter->logoUrl() }}">
+    @endif
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{!! json_encode(\App\Support\MenuSchema::forRestaurant($restaurant, $categories ?: collect()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endunless
     <link rel="icon" href="{{ $presenter->logoUrl() ?? asset('img/nevalogo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -18,7 +18,9 @@ class DashboardController extends Controller
         return view('panel.dashboard', [
             'restaurant' => $restaurant,
             'pending' => $pending,
-            'selfHosted' => $restaurant->isSelfHosted(),
+            // Paket matrisi (config/neva.php › plan_features) hangi kartın görüneceğini belirler.
+            'canSubdomain' => $restaurant->planAllows('subdomain'),
+            'selfHosted' => $restaurant->planAllows('external_qr'),
         ]);
     }
 }

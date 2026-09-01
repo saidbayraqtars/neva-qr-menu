@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\MembershipService;
@@ -47,7 +48,7 @@ class UserController extends Controller
             'email.unique' => 'Bu e-posta ile zaten bir hesap var.',
         ]);
 
-        [$user, $temp] = $service->createAccount(
+        $user = $service->createAccount(
             $validated['business_name'],
             $validated['name'],
             $validated['email'],
@@ -55,17 +56,25 @@ class UserController extends Controller
             $validated['phone'] ?? null,
         );
 
+        AuditLog::record('user.create', $user, ['plan_id' => $validated['plan_id'] ?? null]);
+
         return redirect()
             ->route('admin.users.index')
-            ->with('success', "“{$validated['business_name']}” hesabı oluşturuldu — {$user->email}. Geçici şifre: {$temp}");
+            ->with('success', "\u{201C}{$validated['business_name']}\u{201D} hesabı oluşturuldu. Şifre belirleme bağlantısı {$user->email} adresine gönderildi.");
     }
 
+    /**
+     * Şifre sıfırlama: admin şifreyi GÖRMEZ — kullanıcıya yeni bir
+     * tek kullanımlık "şifre belirle" bağlantısı gönderilir.
+     */
     public function resetPassword(User $user, MembershipService $service): RedirectResponse
     {
         abort_if($user->isAdmin(), 403, 'Admin şifresi buradan sıfırlanamaz.');
 
-        $temp = $service->resetPassword($user);
+        $service->sendSetupLink($user);
 
-        return back()->with('success', "{$user->name} için yeni geçici şifre: {$temp} — kullanıcı ilk girişte değiştirmek zorunda.");
+        AuditLog::record('user.password_link', $user);
+
+        return back()->with('success', "{$user->name} için şifre belirleme bağlantısı {$user->email} adresine gönderildi (72 saat geçerli).");
     }
 }

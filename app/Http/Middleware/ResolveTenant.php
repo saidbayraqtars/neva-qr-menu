@@ -10,20 +10,24 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Wildcard alt domain çözümleyici.
  *
- * routes/tenant.php içindeki tüm rotalar Route::domain('{tenant}.'.parse_url(config('app.url'))...)
- * grubunda tanımlıdır. Bu middleware {tenant} segmentini alır, canlı bir restorana
- * eşler ve container'a "tenant" olarak bağlar. Eşleşme yoksa 404.
+ * {tenant} segmentini canlı bir restorana eşler ve container'a "tenant" olarak bağlar.
+ *
+ * Menü içeriği (kategoriler/ürünler) burada YÜKLENMEZ: sayfa HTML'i önbellekten
+ * geliyorsa yalnızca bu tek indeksli sorgu çalışır. İlişkiler MenuController'da,
+ * sadece önbellek ıskalandığında yüklenir.
+ *
+ * Restoran kaydı bilerek önbelleğe ALINMAZ — menu_version'ı taze okumak
+ * zorundayız; panelde yapılan değişikliğin anında yansıması buna bağlı.
  */
 class ResolveTenant
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $subdomain = $request->route('tenant');
+        $subdomain = (string) $request->route('tenant');
 
         $restaurant = Restaurant::query()
             ->live()
             ->where('subdomain', $subdomain)
-            ->with(['categories' => fn ($q) => $q->active(), 'categories.products' => fn ($q) => $q->available()])
             ->first();
 
         abort_if($restaurant === null, 404, 'Bu adrese ait yayında bir menü bulunamadı.');

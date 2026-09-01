@@ -30,11 +30,8 @@ class ForcedPasswordController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
-            'must_change_password' => false,
-            'temp_password' => null,
-        ]);
+        // Kalıcı şifre belirlendi; varsa kurulum jetonu da tüketilir.
+        $request->user()->completePasswordSetup($validated['password']);
 
         return redirect()
             ->route($request->user()->isAdmin() ? 'admin.dashboard' : 'panel.dashboard')

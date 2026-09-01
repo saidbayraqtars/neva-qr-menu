@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use App\Services\PlanGate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -30,10 +31,13 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(ProductRequest $request): RedirectResponse
+    public function store(ProductRequest $request, PlanGate $plan): RedirectResponse
     {
         $restaurant = app('restaurant');
         $this->assertCategoryOwned($request->integer('category_id'));
+
+        // Paket sınırı (config/neva.php > plan_features.limits.products)
+        $plan->authorizeLimit($restaurant, 'products', $restaurant->products()->count(), 1, 'name');
 
         $restaurant->products()->create([
             'category_id' => $request->integer('category_id'),

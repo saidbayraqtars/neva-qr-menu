@@ -8,6 +8,8 @@
             ['route' => 'admin.dashboard', 'label' => 'Genel Bakış', 'icon' => 'M4 6h16M4 12h16M4 18h10'],
             ['route' => 'admin.memberships.index', 'label' => 'Üyelik Talepleri', 'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM6 21v-1a6 6 0 0112 0v1M19 8v6m3-3h-6'],
             ['route' => 'admin.requests.index', 'label' => 'Alt Domain Kuyruğu', 'icon' => 'M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+            ['route' => 'admin.messages.index', 'label' => 'Mesajlar', 'icon' => 'M8 10h8M8 14h5m8-2a9 9 0 11-3.6-7.2L21 4l-1.4 4.8A8.96 8.96 0 0121 12z', 'badge' => true],
+            ['route' => 'admin.contact.index', 'label' => 'İletişim Formu', 'icon' => 'M3 8l9 6 9-6M3 8v8a2 2 0 002 2h14a2 2 0 002-2V8M3 8l2-2h14l2 2'],
             ['route' => 'admin.users.index', 'label' => 'Kullanıcılar', 'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z'],
         ]
         : [
@@ -17,7 +19,9 @@
             ['route' => 'panel.categories.index', 'label' => 'Kategoriler', 'icon' => 'M4 6h16M4 10h16M4 14h10M4 18h10'],
             ['route' => 'panel.products.index', 'label' => 'Ürünler', 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
             ['route' => 'panel.qr.index', 'label' => 'QR & PDF', 'icon' => 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z'],
+            ['route' => 'panel.messages.index', 'label' => 'Mesajlar', 'icon' => 'M8 10h8M8 14h5m8-2a9 9 0 11-3.6-7.2L21 4l-1.4 4.8A8.96 8.96 0 0121 12z', 'badge' => true],
         ];
+    $unread = (int) ($unreadMessages ?? 0);
 @endphp
 
 <!DOCTYPE html>
@@ -55,7 +59,10 @@
                         <svg class="h-[18px] w-[18px] {{ $active ? 'text-gold-400' : 'text-ink-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
                         </svg>
-                        {{ $item['label'] }}
+                        <span class="flex-1">{{ $item['label'] }}</span>
+                        @if (! empty($item['badge']) && $unread > 0)
+                            <span class="ml-auto grid h-5 min-w-[20px] place-items-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">{{ $unread > 99 ? '99+' : $unread }}</span>
+                        @endif
                     </a>
                 @endforeach
             </nav>
@@ -162,5 +169,6 @@
         </main>
     </div>
 </div>
+@stack('scripts')
 </body>
 </html>

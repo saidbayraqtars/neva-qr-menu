@@ -3,38 +3,22 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\SubdomainRequest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class OwnerPanelTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_bootstraps_a_draft_restaurant_and_trial(): void
-    {
-        $response = $this->post('/register', [
-            'name' => 'Deniz',
-            'business_name' => 'Lumina Bistro',
-            'email' => 'deniz@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ]);
-
-        $response->assertRedirect(route('panel.dashboard'));
-
-        $user = User::firstWhere('email', 'deniz@example.com');
-        $this->assertNotNull($user);
-        $this->assertSame('Lumina Bistro', $user->restaurants()->value('name'));
-        $this->assertSame('trialing', $user->subscriptions()->value('status'));
-    }
-
     public function test_owner_can_create_a_category(): void
     {
-        $user = User::factory()->create();
-        Restaurant::factory()->for($user)->create();
+        [$user] = $this->ownerWithPlan();
 
         $this->actingAs($user)
             ->post(route('panel.categories.store'), ['name' => 'Tatlılar', 'is_active' => true])
@@ -45,8 +29,8 @@ class OwnerPanelTest extends TestCase
 
     public function test_submission_requires_menu_content(): void
     {
-        $user = User::factory()->create();
-        $restaurant = Restaurant::factory()->for($user)->create();
+        [$user, $restaurant] = $this->ownerWithPlan();
+
         $restaurant->subdomainRequests()->create([
             'user_id' => $user->id,
             'requested_subdomain' => 'lumina',
@@ -61,12 +45,17 @@ class OwnerPanelTest extends TestCase
 
     public function test_admin_approval_publishes_the_subdomain(): void
     {
+        Queue::fake();
+        Notification::fake();
+
         $admin = User::factory()->admin()->create();
-        $owner = User::factory()->create();
-        $restaurant = Restaurant::factory()->for($owner)->create();
-        Category::factory()->for($restaurant)->has(\App\Models\Product::factory()->count(3)->state([
+        [$owner, $restaurant] = $this->ownerWithPlan();
+
+        $category = Category::factory()->for($restaurant)->create();
+        Product::factory()->count(3)->create([
             'restaurant_id' => $restaurant->id,
-        ]))->create();
+            'category_id' => $category->id,
+        ]);
 
         $request = $restaurant->subdomainRequests()->create([
             'user_id' => $owner->id,
@@ -82,5 +71,19 @@ class OwnerPanelTest extends TestCase
         $this->assertSame('lumina', $restaurant->subdomain);
         $this->assertSame(Restaurant::STATUS_APPROVED, $restaurant->status);
         $this->assertTrue($restaurant->isLive());
+    }
+
+    public function test_panel_kullanicisi_baska_restoranin_masasini_silemez(): void
+    {
+        [$user] = $this->ownerWithPlan();
+        [, $otherRestaurant] = $this->ownerWithPlan();
+
+        $table = $otherRestaurant->tables()->create(['label' => 'Masa 1', 'sort_order' => 1]);
+
+        $this->actingAs($user)
+            ->delete(route('panel.qr.destroy', $table))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('restaurant_tables', ['id' => $table->id]);
     }
 }

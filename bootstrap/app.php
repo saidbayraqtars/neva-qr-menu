@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Middleware\EnsurePasswordChanged;
+use App\Http\Middleware\EnsurePlanFeature;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\ResolveTenant;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShareCurrentRestaurant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -27,11 +29,15 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Güvenlik başlıkları tüm web yanıtlarına eklenir (CSP, HSTS, nosniff...).
+        $middleware->appendToGroup('web', SecurityHeaders::class);
+
         $middleware->alias([
             'tenant' => ResolveTenant::class,
             'admin' => EnsureUserIsAdmin::class,
             'restaurant.context' => ShareCurrentRestaurant::class,
             'password.changed' => EnsurePasswordChanged::class,
+            'plan' => EnsurePlanFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

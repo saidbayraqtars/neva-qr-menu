@@ -1,0 +1,14 @@
+# Neva-QR Menü — Proje Hafızası
+
+Bu klasör projeye özel kalıcı notları tutar. Her dosya tek bir konuyu anlatır.
+Kod okunarak anlaşılabilen şeyler burada TEKRARLANMAZ; yalnızca "neden böyle" bilgisi durur.
+
+- [Proje hedefi ve ürün mantığı](proje-hedefi.md) — 40 farklı tasarım, işletmeye özel subdomain (galya.nevaqr.com)
+- [Ödeme: havale/EFT akışı](havale-odeme-akisi.md) — kartlı ödeme YOK, referans kodu + admin onayı
+- [Paket bazlı yetki matrisi](paket-yetki-matrisi.md) — config'ten okunur, sunucu tarafında zorlanır
+- [Şifre güvenliği kuralı](sifre-guvenlik-kurali.md) — düz metin şifre asla saklanmaz, tek kullanımlık link
+- [Alt domain yayına alma akışı](alt-domain-yayin-akisi.md) — talep → onay → DNS → otomatik doğrulama
+- [Canlı menü önbellek mimarisi](menu-onbellek-mimarisi.md) — menu_version + 2 saat TTL
+- [Mesajlaşma (chatbox) mimarisi](mesajlasma-mimarisi.md) — polling şimdilik, Reverb sonra
+- [Geliştirme ortamı notları](gelistirme-ortami.md) — bu makinede PHP yok, git yeni kuruldu
+- [Kalan işler ve sıradaki adımlar](kalan-isler.md) — kapsamlı SEO en sona bırakıldı

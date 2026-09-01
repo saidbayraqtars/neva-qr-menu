@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\MembershipRequest;
 use App\Models\Plan;
 use App\Models\User;
+use App\Notifications\MembershipReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -15,8 +18,9 @@ use Illuminate\View\View;
  * Kayıt Ol — 2 adımlı sihirbaz. HESAP / ŞİFRE YARATILMAZ.
  *  1) İşletme + iletişim bilgileri
  *  2) Paket seçimi
- * → 'pending' bir MembershipRequest oluşur, kullanıcıya "Talebiniz alındı" ekranı gösterilir.
- * Admin ödemeyi onayladığında hesap + geçici şifre üretilir.
+ * → 'pending' bir MembershipRequest oluşur + havale referans kodu üretilir.
+ * Kullanıcıya IBAN + referans kodu gösterilir ve e-posta ile gönderilir.
+ * Havale gelince admin işaretler, onaylar; hesap açılır.
  */
 class RegisteredUserController extends Controller
 {
@@ -55,19 +59,50 @@ class RegisteredUserController extends Controller
             'plan_id' => $plan->id,
             'table_count' => $tableCount,
             'amount' => MembershipRequest::computeAmount($plan, $tableCount),
+            'reference_code' => $this->uniqueReference(),
             'status' => MembershipRequest::STATUS_PENDING,
             'payment_status' => MembershipRequest::PAYMENT_UNPAID,
         ]);
 
-        return redirect()->route('register.received')->with('membership_request_id', $membershipRequest->id);
+        $this->sendInstructions($membershipRequest);
+
+        return redirect()
+            ->route('register.received')
+            ->with('membership_request_id', $membershipRequest->id);
     }
 
     public function received(Request $request): View
     {
-        $membershipRequest = MembershipRequest::find($request->session()->get('membership_request_id'));
+        $membershipRequest = MembershipRequest::with('plan')
+            ->find($request->session()->get('membership_request_id'));
 
         abort_if($membershipRequest === null, 404);
 
-        return view('auth.register-received', ['membershipRequest' => $membershipRequest]);
+        return view('auth.register-received', [
+            'membershipRequest' => $membershipRequest,
+            'bank' => (array) config('neva.payment.bank'),
+        ]);
+    }
+
+    /** NQR-XXXXXX — havale açıklamasına yazılacak tekil kod. */
+    private function uniqueReference(): string
+    {
+        $prefix = (string) config('neva.payment.reference_prefix', 'NQR');
+
+        do {
+            $code = $prefix.'-'.Str::upper(Str::random(6));
+        } while (MembershipRequest::where('reference_code', $code)->exists());
+
+        return $code;
+    }
+
+    private function sendInstructions(MembershipRequest $membershipRequest): void
+    {
+        try {
+            Notification::route('mail', $membershipRequest->email)
+                ->notify(new MembershipReceived($membershipRequest->load('plan')));
+        } catch (\Throwable $e) {
+            report($e); // e-posta gitmese de bilgiler ekranda gösteriliyor
+        }
     }
 }

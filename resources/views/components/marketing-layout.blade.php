@@ -1,4 +1,11 @@
-@props(['title' => null, 'dark' => false])
+@props([
+    'title' => null,
+    'dark' => false,
+    'description' => null,
+    'canonical' => null,
+    'jsonld' => null,
+    'ogType' => 'website',
+])
 
 <!DOCTYPE html>
 <html lang="tr" class="h-full scroll-smooth">
@@ -7,8 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{-- Scroll-reveal yalnız JS varken devreye girer; FOUC olmadan --}}
     <script>document.documentElement.classList.add('js');</script>
-    <title>{{ $title ? $title.' · ' : '' }}{{ config('neva.brand.name') }}</title>
-    <meta name="description" content="Neva-QR Menü — QR ile açılan, markanıza özel lüks dijital menüler. Kafe ve restoran şablonları, canlı önizleme, tek tıkla QR ve PDF.">
+    <x-seo :title="$title" :description="$description" :canonical="$canonical" :type="$ogType" :jsonld="$jsonld" />
     <link rel="icon" href="{{ asset('img/nevalogo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -7,16 +7,28 @@ use App\Models\Category;
 use App\Models\Restaurant;
 use App\Support\TemplatePresenter;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
+/**
+ * Canlı menü (alt domain).
+ *
+ * ÖNBELLEK: sayfa HTML'i restaurants.menu_version ile anahtarlanır.
+ *  - Panelde bir değişiklik olduğunda sürüm artar → anahtar değişir → ANINDA yeni içerik.
+ *  - TTL (varsayılan 2 saat) yalnızca üst sınırdır; kimse dokunmasa bile menü
+ *    en geç 2 saatte bir taze üretilir.
+ *
+ * Masa bilgisi (?masa=1 / #1) sayfada İSTEMCİ tarafında işlenir; bu sayede
+ * masa parametresi önbelleği bölmez.
+ */
 class MenuController extends Controller
 {
-    public function show(): View
+    public function show(): Response
     {
         return $this->render();
     }
 
-    public function category(Category $category): View
+    public function category(Category $category): Response
     {
         abort_unless($category->restaurant_id === app('tenant')->id, 404);
 
@@ -46,19 +58,35 @@ class MenuController extends Controller
         return redirect('/');
     }
 
-    private function render(?Category $activeCategory = null): View
+    private function render(?Category $activeCategory = null): Response
     {
         /** @var Restaurant $tenant */
         $tenant = app('tenant');
 
+        $key = $tenant->menuCacheKey($activeCategory ? 'cat-'.$activeCategory->id : 'index');
+        $ttl = (int) config('neva.cache.menu_ttl', 7200);
+
+        $html = config('neva.cache.enabled', true)
+            ? Cache::remember($key, $ttl, fn () => $this->renderHtml($tenant, $activeCategory))
+            : $this->renderHtml($tenant, $activeCategory);
+
+        return response($html)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age='.(int) config('neva.cache.http_max_age', 7200))
+            ->setEtag(md5($key));
+    }
+
+    private function renderHtml(Restaurant $tenant, ?Category $activeCategory): string
+    {
+        // İlişkiler yalnız önbellek ıskalandığında yüklenir (yayın filtreleriyle).
+        $tenant->load([
+            'categories' => fn ($q) => $q->active(),
+            'categories.products' => fn ($q) => $q->available(),
+        ]);
+
         $categories = $activeCategory
             ? $tenant->categories->where('id', $activeCategory->id)->values()
             : $tenant->categories;
-
-        // Masa bilgisi: `?masa=` parametresi (yeni) → eski session değeri (geriye uyum).
-        // Hash (#1) yalnızca istemcide görülür; shell.blade JS'i onu yakalar.
-        $masa = trim((string) request()->query('masa', ''));
-        $tableLabel = $masa !== '' ? $this->humanizeTable($masa) : session('table');
 
         return view('templates.show', [
             'presenter' => new TemplatePresenter($tenant),
@@ -66,20 +94,7 @@ class MenuController extends Controller
             'categories' => $categories,
             'view' => 'phone',
             'embedded' => true,
-            'tableLabel' => $tableLabel ?: null,
-        ]);
-    }
-
-    /** "5" → "Masa 5" ; "Teras 4" → "Teras 4" (olduğu gibi). Zararlı karakterleri temizler. */
-    private function humanizeTable(string $raw): string
-    {
-        $clean = preg_replace('/[^\p{L}\p{N}\s.\-]/u', '', $raw) ?? '';
-        $clean = trim(mb_substr($clean, 0, 24));
-
-        if ($clean === '') {
-            return '';
-        }
-
-        return preg_match('/^\d+$/', $clean) ? "Masa {$clean}" : $clean;
+            'tableLabel' => null, // masa rozeti istemcide doldurulur (önbellek bölünmesin)
+        ])->render();
     }
 }

@@ -17,12 +17,23 @@ class QrController extends Controller
     public function index(): View
     {
         $restaurant = app('restaurant');
-        $selfHosted = $restaurant->isSelfHosted();
+
+        // Paketinde hiçbir QR yeteneği olmayan kullanıcı bu ekrana giremez.
+        abort_unless(
+            $restaurant->planAllows('main_qr') || $restaurant->planAllows('external_qr'),
+            403,
+            app(\App\Services\PlanGate::class)->denialMessage('main_qr')
+        );
+
+        $selfHosted = ! $restaurant->planAllows('main_qr');
 
         return view('panel.qr.index', [
             'restaurant' => $restaurant,
             'selfHosted' => $selfHosted,
-            'tables' => $selfHosted ? collect() : $restaurant->tables()->orderBy('sort_order')->get(),
+            'canTables' => $restaurant->planAllows('tables'),
+            'tables' => $restaurant->planAllows('tables')
+                ? $restaurant->tables()->orderBy('sort_order')->get()
+                : collect(),
             'mainUrl' => $selfHosted ? null : tenant_domain($restaurant),
             'qrDesigns' => config('neva.qr_designs'),
         ]);
@@ -121,7 +132,7 @@ class QrController extends Controller
 
     /* ---- Opsiyonel: adlandırılmış masa listesi (tarama sayısı takibi için) ---- */
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, \App\Services\PlanGate $plan): RedirectResponse
     {
         $validated = $request->validate([
             'label' => ['required', 'string', 'max:60'],
@@ -130,6 +141,9 @@ class QrController extends Controller
 
         $restaurant = app('restaurant');
         $count = $validated['count'] ?? 1;
+
+        // Paket sınırı — masa sayısı (config/neva.php > plan_features.limits.tables)
+        $plan->authorizeLimit($restaurant, 'tables', $restaurant->tables()->count(), $count, 'label');
         $start = (int) $restaurant->tables()->max('sort_order');
 
         for ($i = 1; $i <= $count; $i++) {

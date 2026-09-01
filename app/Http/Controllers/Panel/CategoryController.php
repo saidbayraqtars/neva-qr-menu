@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Panel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Services\PlanGate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -24,9 +25,12 @@ class CategoryController extends Controller
         return view('panel.categories.form', ['category' => new Category]);
     }
 
-    public function store(CategoryRequest $request): RedirectResponse
+    public function store(CategoryRequest $request, PlanGate $plan): RedirectResponse
     {
         $restaurant = app('restaurant');
+
+        // Paket sınırı (config/neva.php › plan_features.limits.categories)
+        $plan->authorizeLimit($restaurant, 'categories', $restaurant->categories()->count(), 1, 'name');
 
         $category = $restaurant->categories()->create([
             'name' => $request->name,
@@ -75,6 +79,9 @@ class CategoryController extends Controller
         foreach ($request->input('order') as $position => $id) {
             app('restaurant')->categories()->whereKey($id)->update(['sort_order' => $position]);
         }
+
+        // Query builder update model olayı fırlatmaz — önbellek sürümünü elle artır.
+        app('restaurant')->bumpMenuVersion();
 
         return back();
     }

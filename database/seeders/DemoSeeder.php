@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,6 +16,13 @@ use Illuminate\Support\Str;
 class DemoSeeder extends Seeder
 {
     public function run(): void
+    {
+        // Restaurant modelinde yayın kolonları kütle atamaya kapalı (güvenlik).
+        // Demo verisi bunları bilerek doldurduğu için seeder süresince korumayı kaldırıyoruz.
+        Model::unguarded(fn () => $this->seed());
+    }
+
+    private function seed(): void
     {
         // Platform yöneticisi
         User::updateOrCreate(

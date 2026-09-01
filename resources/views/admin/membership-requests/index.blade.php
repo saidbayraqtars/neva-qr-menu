@@ -23,21 +23,34 @@
                             <span class="font-semibold text-ink-700">{{ money($req->amount, 'TRY') }}</span>
                             <span>· {{ $req->created_at->diffForHumans() }}</span>
                         </p>
+                        @if ($req->reference_code)
+                            <p class="mt-2 inline-flex items-center gap-2 rounded-lg bg-gold-50 px-2.5 py-1 text-xs ring-1 ring-gold-200">
+                                <span class="text-ink-500">Havale açıklaması:</span>
+                                <span class="font-mono font-bold text-ink-900">{{ $req->reference_code }}</span>
+                            </p>
+                        @endif
+                        @if ($req->paid_at)
+                            <p class="mt-1 text-[11px] text-emerald-600">Ödeme işaretlendi: {{ $req->paid_at->format('d.m.Y H:i') }}@if ($req->payment_note) · {{ $req->payment_note }}@endif</p>
+                        @endif
                     </div>
 
                     <div class="flex flex-col items-end gap-2">
                         @if ($req->isPending())
                             <div class="flex items-center gap-2">
-                                <form method="POST" action="{{ route('admin.memberships.payment', $req) }}">
+                                <form method="POST" action="{{ route('admin.memberships.payment', $req) }}" class="flex items-center gap-2">
                                     @csrf
+                                    @unless ($req->isPaid())
+                                        <input name="payment_note" class="w-40 rounded-lg border-0 bg-ink-50 px-2.5 py-1.5 text-xs ring-1 ring-inset ring-ink-200 focus:ring-2 focus:ring-gold-500"
+                                               placeholder="Dekont notu (ops.)">
+                                    @endunless
                                     <button class="rounded-lg px-3 py-1.5 text-xs font-semibold transition {{ $req->isPaid() ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-ink-100 text-ink-500 hover:bg-ink-200' }}">
-                                        {{ $req->isPaid() ? '✓ Ödeme alındı' : 'Ödeme bekliyor' }}
+                                        {{ $req->isPaid() ? '✓ Havale geldi' : 'Havale geldi olarak işaretle' }}
                                     </button>
                                 </form>
                             </div>
                             <div class="flex gap-2">
                                 <form method="POST" action="{{ route('admin.memberships.approve', $req) }}"
-                                      onsubmit="return confirm('Hesap oluşturulacak ve geçici şifre üretilecek. Devam edilsin mi?')">
+                                      onsubmit="return confirm('Hesap açılacak ve kullanıcıya şifre belirleme bağlantısı e-posta ile gönderilecek. Devam edilsin mi?')">
                                     @csrf
                                     <button class="btn-gold px-5" @disabled(! $req->isPaid())>Onayla & Hesap Aç</button>
                                 </form>
@@ -60,19 +73,11 @@
                     <button class="btn bg-red-600 px-4 text-white hover:bg-red-500">Gönder</button>
                 </form>
 
-                @if ($req->status === 'approved' && $req->temp_password)
-                    <div class="mt-4 rounded-xl bg-ink-900 px-4 py-3 text-sm text-white" x-data="{ copied: false }">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <p class="text-xs text-ink-300">Geçici şifre ({{ $req->email }})</p>
-                                <p class="mt-0.5 font-mono text-base tracking-wide">{{ $req->temp_password }}</p>
-                            </div>
-                            <button type="button" class="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20"
-                                    @click="navigator.clipboard.writeText('{{ $req->temp_password }}'); copied = true; setTimeout(() => copied = false, 1500)">
-                                <span x-text="copied ? 'Kopyalandı ✓' : 'Kopyala'"></span>
-                            </button>
-                        </div>
-                        <p class="mt-1.5 text-[11px] text-ink-400">Kullanıcı ilk girişte kalıcı şifre belirlemek zorunda.</p>
+                @if ($req->status === 'approved')
+                    <div class="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200">
+                        Hesap açıldı. Şifre belirleme bağlantısı <strong>{{ $req->email }}</strong> adresine gönderildi
+                        (72 saat geçerli). Şifreyi yalnızca kullanıcı belirler — hiç kimse göremez.
+                        <a href="{{ route('admin.users.index', ['q' => $req->email]) }}" class="font-semibold underline">Kullanıcı kaydı →</a>
                     </div>
                 @endif
 

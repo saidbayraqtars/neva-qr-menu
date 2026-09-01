@@ -74,29 +74,24 @@
                                 <a href="{{ tenant_domain($rest) }}" target="_blank" class="text-gold-700 hover:underline">{{ $rest->subdomain }}.{{ config('neva.root_domain') }} ↗</a>
                             @endif
                             @if ($sub?->plan)<span class="rounded-full bg-ink-100 px-2 py-0.5 font-medium text-ink-600">{{ $sub->plan->name }}</span>@endif
-                            @if ($user->must_change_password)<span class="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700">Şifre değişmedi</span>@endif
+                            @if ($user->must_change_password)<span class="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700">Şifre henüz belirlenmedi</span>@endif
                         </p>
                     </div>
 
                     <form method="POST" action="{{ route('admin.users.reset-password', $user) }}"
-                          onsubmit="return confirm('{{ $user->name }} için yeni geçici şifre üretilsin mi? Mevcut şifre geçersiz olur.')">
+                          onsubmit="return confirm('{{ $user->name }} adresine yeni bir şifre belirleme bağlantısı gönderilsin mi? Mevcut şifre geçersiz olur.')">
                         @csrf
-                        <button class="btn-ghost">Şifre sıfırla</button>
+                        <button class="btn-ghost">Şifre bağlantısı gönder</button>
                     </form>
                 </div>
 
-                @if ($user->must_change_password && $user->temp_password)
-                    <div class="mt-4 rounded-xl bg-ink-900 px-4 py-3 text-sm text-white" x-data="{ copied: false }">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <p class="text-xs text-ink-300">Geçici şifre</p>
-                                <p class="mt-0.5 font-mono text-base tracking-wide">{{ $user->temp_password }}</p>
-                            </div>
-                            <button type="button" class="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-white/20"
-                                    @click="navigator.clipboard.writeText('{{ $user->temp_password }}'); copied = true; setTimeout(() => copied = false, 1500)">
-                                <span x-text="copied ? 'Kopyalandı ✓' : 'Kopyala'"></span>
-                            </button>
-                        </div>
+                @if ($user->must_change_password)
+                    <div class="mt-4 rounded-xl bg-ink-50 px-4 py-3 text-xs text-ink-500 ring-1 ring-ink-100">
+                        Kullanıcı henüz şifresini belirlemedi.
+                        @if ($user->password_setup_expires_at)
+                            Gönderilen bağlantı {{ $user->password_setup_expires_at->isFuture() ? $user->password_setup_expires_at->diffForHumans() : 'süresi dolmuş' }}.
+                        @endif
+                        Şifreler hiçbir yerde düz metin saklanmaz — gerekirse yeni bağlantı gönderin.
                     </div>
                 @endif
             </div>

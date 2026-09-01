@@ -51,7 +51,9 @@
         </div>
 
         {{-- ===== Yayın ===== --}}
-        @if ($selfHosted)
+        @if ($canSubdomain)
+            @include('panel.publish-card')
+        @elseif ($selfHosted)
             <div class="{{ $card }}">
                 <h3 class="font-display text-lg text-ink-900">Menü QR kodunuz</h3>
                 <p class="mt-1.5 text-sm leading-relaxed text-ink-500">
@@ -60,42 +62,27 @@
                     indirip masalarınıza bastırın.
                 </p>
                 <a href="{{ route('panel.qr.index') }}" class="btn-gold mt-5">QR kodunu oluştur →</a>
+
+                <div class="mt-5 border-t border-ink-100 pt-5">
+                    <p class="text-sm text-ink-500">
+                        Kendi alan adınızda (<span class="font-mono">isletmeniz.{{ config('neva.root_domain') }}</span>)
+                        yayınlanan, panelden anında güncellenen bir menü ister misiniz?
+                    </p>
+                    <a href="{{ route('panel.messages.index') }}" class="btn-ghost mt-3">Paket yükseltme talebi →</a>
+                </div>
             </div>
         @else
+            {{-- Paketi olmayan / tanımsız kullanıcı --}}
             <div class="{{ $card }}">
-                <h3 class="font-display text-lg text-ink-900">Yayına al</h3>
-                <p class="mt-1.5 text-sm text-ink-500">İstediğiniz alan adını yazın ve onaya gönderin. Gerisini ekibimiz halleder.</p>
-
-                <form method="POST" action="{{ route('panel.subdomain.store') }}" class="mt-5">
-                    @csrf
-                    <x-input-label :value="'Alan adı'" />
-                    <div class="mt-1 flex flex-wrap items-center gap-2">
-                        <div class="flex min-w-[220px] flex-1 items-center rounded-xl bg-white ring-1 ring-inset ring-ink-200 focus-within:ring-2 focus-within:ring-gold-500">
-                            <input name="requested_subdomain" placeholder="isletmeniz"
-                                   value="{{ old('requested_subdomain', $restaurant->subdomain ?? $pending?->requested_subdomain) }}"
-                                   class="w-full border-0 bg-transparent px-3.5 py-2.5 font-mono text-sm text-ink-900 focus:outline-none focus:ring-0">
-                            <span class="whitespace-nowrap pr-3.5 text-sm text-ink-400">.{{ config('neva.root_domain') }}</span>
-                        </div>
-                        <button class="btn-ghost">Kaydet</button>
-                    </div>
-                    <x-input-error :messages="$errors->get('requested_subdomain')" class="mt-2" />
-                </form>
-
-                @if ($pending)
-                    <p class="mt-2 text-xs text-amber-600">“{{ $pending->requested_subdomain }}” talebi hazır — onaya gönderebilirsiniz.</p>
-                @endif
-
-                <form method="POST" action="{{ route('panel.submit') }}" class="mt-5 border-t border-ink-100 pt-5">
-                    @csrf
-                    <button class="btn-gold w-full sm:w-auto sm:px-8" {{ $restaurant->status === 'pending' ? 'disabled' : '' }}>
-                        {{ $restaurant->status === 'pending' ? 'Onayda bekliyor…' : 'Onaya Gönder' }}
-                    </button>
-                    <x-input-error :messages="$errors->get('submit')" class="mt-2" />
-                </form>
-
-                @if ($restaurant->status === 'rejected' && $restaurant->rejection_reason)
-                    <p class="mt-3 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-600 ring-1 ring-red-100">Reddedildi: {{ $restaurant->rejection_reason }}</p>
-                @endif
+                <h3 class="font-display text-lg text-ink-900">Paketiniz henüz tanımlı değil</h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-ink-500">
+                    Menünüzü hazırlamaya şimdiden başlayabilirsiniz. Yayına alma ve QR özellikleri
+                    paketiniz tanımlandığında açılır.
+                </p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                    <a href="{{ route('pricing') }}" class="btn-gold">Paketleri incele</a>
+                    <a href="{{ route('panel.messages.index') }}" class="btn-ghost">Ekibe mesaj yaz</a>
+                </div>
             </div>
         @endif
     </div>

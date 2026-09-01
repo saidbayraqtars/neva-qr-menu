@@ -6,31 +6,51 @@ use App\Models\Restaurant;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Panel tek kiracılıdır: giriş yapan sahibin ilk restoranını
  * container'a ("restaurant") ve tüm panel view'lerine ($restaurant) paylaşır.
+ *
+ * Not: slug/status kolonları Restaurant modelinde kütle atamaya kapalı olduğu
+ * için oluşturma forceCreate ile yapılır.
  */
 class ShareCurrentRestaurant
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $restaurant = $request->user()?->restaurants()->firstOrCreate(
-            [],
-            [
-                'name' => $request->user()->name."'in İşletmesi",
-                'slug' => 'isletme-'.$request->user()->id,
-                'template' => Restaurant::DEFAULT_TEMPLATE,
-                'status' => Restaurant::STATUS_DRAFT,
-            ]
-        );
+        $user = $request->user();
 
-        if ($restaurant) {
-            app()->instance('restaurant', $restaurant);
-            View::share('restaurant', $restaurant);
+        if (! $user) {
+            return $next($request);
         }
 
+        $restaurant = $user->restaurants()->first() ?? $this->createFor($user);
+
+        app()->instance('restaurant', $restaurant);
+        View::share('restaurant', $restaurant);
+
         return $next($request);
+    }
+
+    private function createFor($user): Restaurant
+    {
+        $base = Str::slug($user->name.' isletme') ?: 'isletme';
+        $slug = $base;
+        $i = 2;
+
+        while (Restaurant::withTrashed()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$i;
+            $i++;
+        }
+
+        return $user->restaurants()->forceCreate([
+            'name' => $user->name."'in İşletmesi",
+            'slug' => $slug,
+            'template' => Restaurant::DEFAULT_TEMPLATE,
+            'status' => Restaurant::STATUS_DRAFT,
+            'menu_version' => 1,
+        ]);
     }
 }

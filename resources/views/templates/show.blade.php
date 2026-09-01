@@ -12,6 +12,6 @@
     $tableLabel = $tableLabel ?? null;
 @endphp
 
-<x-templates.shell :presenter="$p" :restaurant="$restaurant" :view="$view" :embedded="$embedded" :print="$print" :tableLabel="$tableLabel">
+<x-templates.shell :presenter="$p" :restaurant="$restaurant" :view="$view" :embedded="$embedded" :print="$print" :tableLabel="$tableLabel" :categories="$categories ?? collect()">
     @include('templates.skeletons.'.$p->key)
 </x-templates.shell>

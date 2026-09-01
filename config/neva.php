@@ -10,7 +10,7 @@ return [
     'brand' => [
         'name' => 'Neva-QR Menü',
         'logo' => 'img/nevalogo.png',
-        'support_email' => 'destek@neva-qr.com',
+        'support_email' => env('NEVA_SUPPORT_EMAIL', 'destek@nevaqr.com'),
     ],
 
     /*
@@ -18,7 +18,7 @@ return [
     | Alt domain (wildcard) ayarları
     |--------------------------------------------------------------------------
     */
-    'root_domain' => env('NEVA_ROOT_DOMAIN', 'neva-qr.test'),
+    'root_domain' => env('NEVA_ROOT_DOMAIN', 'nevaqr.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,6 +51,115 @@ return [
     ],
 
     'subdomain_pattern' => '/^[a-z0-9](?:[a-z0-9-]{1,30}[a-z0-9])$/',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Alt domain yayına alma (otomasyon)
+    |--------------------------------------------------------------------------
+    | Wildcard DNS (*.neva-qr.com) tanımlıysa DNS sağlayıcı çağrısına gerek yok:
+    | 'dns.driver' => 'wildcard'. Kiracı başına kayıt açmak gerekiyorsa
+    | 'cloudflare' seçilir ve token + zone id verilir.
+    */
+    'publish' => [
+        'dns' => [
+            'driver' => env('NEVA_DNS_DRIVER', 'wildcard'), // wildcard | cloudflare | manual
+            'cloudflare' => [
+                'token' => env('CLOUDFLARE_API_TOKEN'),
+                'zone_id' => env('CLOUDFLARE_ZONE_ID'),
+                'target' => env('NEVA_DNS_TARGET'), // CNAME hedefi, ör. neva-qr.com
+                'proxied' => (bool) env('CLOUDFLARE_PROXIED', true),
+            ],
+        ],
+        // Yayın sonrası otomatik doğrulama (HTTP health check)
+        'verify' => [
+            'enabled' => (bool) env('NEVA_PUBLISH_VERIFY', true),
+            'timeout' => 10,
+            'tries' => 3,
+            'backoff' => [30, 120, 300], // saniye
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Canlı menü önbelleği
+    |--------------------------------------------------------------------------
+    | TTL üst sınırdır. Panelde her değişiklikte restaurants.menu_version artar,
+    | cache anahtarı değişir → değişiklik ANINDA canlıya yansır.
+    */
+    'cache' => [
+        'menu_ttl' => (int) env('NEVA_MENU_CACHE_TTL', 7200), // 2 saat
+        'http_max_age' => (int) env('NEVA_MENU_HTTP_MAX_AGE', 7200),
+        'enabled' => (bool) env('NEVA_MENU_CACHE', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Paket bazlı yetki matrisi (sunucu tarafında ZORLANIR)
+    |--------------------------------------------------------------------------
+    | Anahtar = plans.slug. Paketi olmayan / tanınmayan kullanıcı 'default'a düşer.
+    | features: erişilebilen yetenekler. limits: null = sınırsız.
+    */
+    'plan_features' => [
+        'default' => [
+            'features' => ['design', 'menu', 'pdf', 'messages'],
+            'limits' => ['categories' => 5, 'products' => 30, 'tables' => 0],
+        ],
+        'hosting-haric' => [
+            'features' => ['design', 'menu', 'pdf', 'messages', 'external_qr'],
+            'limits' => ['categories' => null, 'products' => null, 'tables' => 0],
+        ],
+        'hosting-dahil' => [
+            'features' => ['design', 'menu', 'pdf', 'messages', 'subdomain', 'tables', 'main_qr'],
+            'limits' => ['categories' => null, 'products' => null, 'tables' => 100],
+        ],
+        'fiziksel-qr' => [
+            'features' => ['design', 'menu', 'pdf', 'messages', 'subdomain', 'tables', 'main_qr', 'physical_setup'],
+            'limits' => ['categories' => null, 'products' => null, 'tables' => null],
+        ],
+    ],
+
+    /** Yetki reddi mesajları — kullanıcıya paketini yükseltmesi söylenir. */
+    'feature_labels' => [
+        'subdomain' => 'markalı alt domain (isim.'.env('NEVA_ROOT_DOMAIN', 'nevaqr.com').')',
+        'tables' => 'masa yönetimi ve masaya özel QR',
+        'main_qr' => 'ana işletme QR kodu',
+        'external_qr' => 'dış menü linki için statik QR',
+        'pdf' => 'menü PDF çıktısı',
+        'physical_setup' => 'fiziksel QR baskı ve kurulum',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ödeme — HAVALE / EFT (online ödeme Faz-2)
+    |--------------------------------------------------------------------------
+    | Kullanıcı kayıt olur → talep 'pending' düşer → havale bilgileri gösterilir →
+    | ödeme geldiğinde admin "Ödeme alındı" işaretler → hesap açılır.
+    */
+    'payment' => [
+        'mode' => env('NEVA_PAYMENT_MODE', 'bank_transfer'), // bank_transfer | online
+        'bank' => [
+            'account_name' => env('NEVA_BANK_ACCOUNT_NAME', 'Neva Yazılım'),
+            'bank_name' => env('NEVA_BANK_NAME', 'Ziraat Bankası'),
+            'iban' => env('NEVA_BANK_IBAN', 'TR00 0000 0000 0000 0000 0000 00'),
+            'currency' => 'TRY',
+        ],
+        // Havale açıklamasına yazılacak referans kodu ön eki
+        'reference_prefix' => env('NEVA_PAYMENT_REF_PREFIX', 'NQR'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SEO varsayılanları
+    |--------------------------------------------------------------------------
+    */
+    'seo' => [
+        'default_title' => 'Neva-QR Menü — Restoranlar için markalı QR menü',
+        'default_description' => 'Restoran ve kafeler için 40+ özel tasarım şablonu, kendi alt domaininizde yayınlanan QR menü. Fiyat ve ürün değişikliği anında canlıya yansır.',
+        'og_image' => 'img/nevalogo.png',
+        'twitter_site' => env('NEVA_TWITTER', null),
+        // Kiracı menüleri arama motorlarına açılsın mı?
+        'index_tenants' => (bool) env('NEVA_INDEX_TENANTS', true),
+    ],
 
     /*
     |--------------------------------------------------------------------------
