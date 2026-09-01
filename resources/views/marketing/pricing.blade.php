@@ -1,4 +1,8 @@
-<x-marketing-layout title="Fiyatlandırma">
+<x-marketing-layout
+    title="Fiyatlandırma"
+    description="Neva-QR Menü paketleri: hosting hariç, hosting dahil ve fiziksel QR basım. Tek seferlik ödeme, gizli ücret yok."
+    :canonical="route('pricing')"
+    :jsonld="\App\Support\MenuSchema::offers($plans)">
     <section class="mx-auto max-w-5xl px-6 pt-20 pb-10 text-center">
         <h1 class="font-display text-4xl text-ink-900 sm:text-5xl">Tek seferlik, şeffaf paketler</h1>
         <p class="mx-auto mt-4 max-w-lg text-ink-500">Aylık abonelik yok. İhtiyacınıza uygun paketi seçin, başvurun; ödeme onayının ardından hesabınız açılır.</p>

@@ -1,4 +1,8 @@
-<x-marketing-layout title="Menünüz artık bir deneyim">
+<x-marketing-layout
+    title="Menünüz artık bir deneyim"
+    description="Restoran ve kafeler için 40+ özel tasarım şablonu. Kendi alt domaininizde yayınlanan QR menü; ürün ve fiyat değişiklikleri anında canlıya yansır."
+    :canonical="route('home')"
+    :jsonld="\App\Support\MenuSchema::organization()">
 
     {{-- ==================== HERO ==================== --}}
     <section class="relative overflow-hidden bg-ink-950 text-white">

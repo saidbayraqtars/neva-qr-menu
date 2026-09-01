@@ -76,3 +76,86 @@ Böylece onaylı bir işletmenin menüsü `http://lumina.localhost:8000` adresin
 | Platform admin | `admin@neva-qr.com` | `password` |
 | İşletme sahibi (Lumina Bistro & Lounge) | `sahip@neva-qr.com` | `password` |
 | İşletme sahibi (Anadolu Ocakbaşı) | `ocakbasi@neva-qr.com` | `password` |
+
+---
+
+## Bu sürümde eklenenler (2026-09-01) — yapılması gerekenler
+
+Aşağıdaki adımlar **yeni kurulumda da, mevcut kurulumu güncellerken de** gereklidir.
+
+```bash
+# 1. Yeni migration'lar (şifre sertleştirme, mesajlaşma, havale, denetim kaydı, önbellek sürümü)
+php artisan migrate
+
+# 2. Ayar/rota önbelleğini temizle (yeni middleware ve rotalar var)
+php artisan optimize:clear
+
+# 3. Testler
+php artisan test
+```
+
+### .env'e eklenmesi gerekenler
+
+`.env.example` içindeki yeni bloklar `.env` dosyanıza kopyalanmalı. En kritikleri:
+
+```dotenv
+NEVA_ROOT_DOMAIN=nevaqr.com          # üretim; yerelde localhost
+
+# Havale bilgileri — kayıt ekranında ve e-postada müşteriye gösterilir
+NEVA_BANK_ACCOUNT_NAME="..."
+NEVA_BANK_NAME="..."
+NEVA_BANK_IBAN="TR.. .... .... ...."
+
+# Kuyruk: alt domain yayına alma ve e-postalar burada çalışır
+QUEUE_CONNECTION=database            # üretimde 'sync' BIRAKMAYIN
+
+# Gerçek SMTP — hesap açılış linki bu kanaldan gider, olmadan kullanıcı giriş yapamaz
+MAIL_MAILER=smtp
+```
+
+> **ÖNEMLİ — düz metin şifre kaldırıldı.** Admin artık kullanıcı şifresini göremiyor.
+> Hesap açıldığında kullanıcıya tek kullanımlık "şifre belirle" bağlantısı e-posta ile
+> gider. Bu yüzden **çalışan bir SMTP zorunludur**; `MAIL_MAILER=log` iken bağlantı
+> yalnızca `storage/logs/laravel.log` içine yazılır.
+
+### Üretimde çalışması gereken servisler
+
+```bash
+# Kuyruk işçisi (alt domain yayına alma + otomatik doğrulama + e-postalar)
+php artisan queue:work --tries=3
+
+# Zamanlanmış işler için tek bir cron satırı yeterli:
+# * * * * * cd /proje/yolu && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Zamanlanmış işler:
+
+| Komut | Sıklık | Ne yapar |
+|-------|--------|----------|
+| `neva:warm-menus` | 2 saatte bir | Canlı menü önbelleğini tazeler (soğuk sayfa olmasın) |
+| `neva:health-check` | Saatte bir | Yayındaki alt domainlerin gerçekten açıldığını doğrular |
+| jeton temizliği | Günlük | Süresi dolmuş şifre belirleme jetonlarını siler |
+
+### Alt domain yayına alma
+
+Varsayılan sürücü `wildcard` — DNS'te `*.nevaqr.com` kaydının tanımlı olması yeterlidir,
+sistem ayrıca bir şey yapmaz. Kiracı başına DNS kaydı gerekiyorsa:
+
+```dotenv
+NEVA_DNS_DRIVER=cloudflare
+CLOUDFLARE_API_TOKEN=...
+CLOUDFLARE_ZONE_ID=...
+NEVA_DNS_TARGET=nevaqr.com
+```
+
+Onaydan sonra sistem adresi otomatik test eder (200 dönüyor mu + sayfada işletme adı
+geçiyor mu). Başarısız olursa admin panelinin ana ekranında kırmızı kutuda listelenir.
+
+### Önbellek davranışı
+
+Canlı menü HTML'i önbellekten servis edilir. Panelde bir değişiklik yapıldığında
+(`ürün, fiyat, kategori, şablon, renk`) `restaurants.menu_version` artar ve sayfa
+**anında** yeniden üretilir. `NEVA_MENU_CACHE_TTL` (varsayılan 7200 sn = 2 saat)
+yalnızca üst sınırdır.
+
+Sorun yaşarsanız: `php artisan cache:clear`.

@@ -1,4 +1,7 @@
-<x-marketing-layout title="Hakkımızda">
+<x-marketing-layout
+    title="Hakkımızda"
+    description="Neva-QR Menü; restoran ve kafelere markasına özel, hızlı ve kolay yönetilen dijital QR menü çözümü sunar."
+    :canonical="route('about')">
 
     {{-- ==================== HERO ==================== --}}
     <section class="relative overflow-hidden bg-ink-950 text-white">
