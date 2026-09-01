@@ -15,4 +15,5 @@ Kod okunarak anlaşılabilen şeyler burada TEKRARLANMAZ; yalnızca "neden böyl
 - [Geliştirme ortamı notları](gelistirme-ortami.md) — PHP 8.4 + Composer kurulumu ve php.ini ayarı
 - [Görüntülenme ölçümü (analitik)](analitik-olcum.md) — sayaç istemciden atılır, gün + masa bazlı toplanır
 - [Görsel izolasyonu](gorsel-izolasyonu.md) — yüklemeler özel diskte, /gorsel ucundan yetkiyle servis
+- [GitHub deposu](github-deposu.md) — private repo saidbayraqtars/neva-qr-menu
 - [Kalan işler ve sıradaki adımlar](kalan-isler.md) — kapsamlı SEO en sona bırakıldı
