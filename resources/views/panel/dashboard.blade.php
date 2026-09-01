@@ -1,0 +1,102 @@
+<x-app-layout title="Genel Bakış">
+    <x-slot name="header">Merhaba, {{ Str::of(auth()->user()->name)->before(' ') }} 👋</x-slot>
+
+    @php
+        $statusBadge = match ($restaurant->status) {
+            'approved' => ['Yayında', 'bg-emerald-100 text-emerald-700'],
+            'pending' => ['Onayda bekliyor', 'bg-amber-100 text-amber-700'],
+            'rejected' => ['Reddedildi', 'bg-red-100 text-red-700'],
+            default => ['Taslak', 'bg-ink-100 text-ink-600'],
+        };
+        $card = 'rounded-3xl bg-white p-7 ring-1 ring-ink-100/80 shadow-[0_1px_2px_rgba(23,23,15,.04),0_26px_50px_-30px_rgba(23,23,15,.22)]';
+    @endphp
+
+    <div class="mx-auto max-w-4xl space-y-6">
+
+        {{-- ===== İşletme özeti ===== --}}
+        <div class="relative overflow-hidden {{ $card }}">
+            <div class="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-gold-500/10 blur-2xl"></div>
+            <div class="relative flex flex-wrap items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $statusBadge[1] }}">{{ $statusBadge[0] }}</span>
+                    <h2 class="mt-2 truncate font-display text-2xl text-ink-900">{{ $restaurant->name }}</h2>
+                    @if ($restaurant->isLive())
+                        <a href="{{ tenant_domain($restaurant) }}" target="_blank" rel="noopener" class="mt-1 inline-block text-sm font-medium text-gold-700 hover:underline">
+                            {{ $restaurant->subdomain }}.{{ config('neva.root_domain') }} ↗
+                        </a>
+                    @elseif ($selfHosted && filled($restaurant->external_menu_url))
+                        <a href="{{ $restaurant->external_menu_url }}" target="_blank" rel="noopener" class="mt-1 inline-block truncate text-sm font-medium text-gold-700 hover:underline">
+                            {{ $restaurant->external_menu_url }} ↗
+                        </a>
+                    @endif
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('panel.design.edit', ['mode' => 'edit']) }}" class="btn-ghost">Tasarımı düzenle</a>
+                    <a href="{{ route('panel.qr.index') }}" class="btn-primary px-4">QR kodu</a>
+                </div>
+            </div>
+
+            <div class="relative mt-7 grid grid-cols-3 gap-3">
+                @foreach ([
+                    ['Kategori', $restaurant->categories_count, route('panel.categories.index')],
+                    ['Ürün', $restaurant->products_count, route('panel.products.index')],
+                    [$selfHosted ? 'Şablon' : 'Masa', $selfHosted ? '1' : $restaurant->tables_count, $selfHosted ? route('panel.design.edit') : route('panel.qr.index')],
+                ] as [$label, $value, $href])
+                    <a href="{{ $href }}" class="group rounded-2xl bg-ink-50 p-4 ring-1 ring-ink-100 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-luxe hover:ring-gold-400/60">
+                        <p class="font-display text-3xl text-ink-900">{{ $value }}</p>
+                        <p class="mt-0.5 text-xs font-medium uppercase tracking-wide text-ink-400 group-hover:text-ink-500">{{ $label }}</p>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- ===== Yayın ===== --}}
+        @if ($selfHosted)
+            <div class="{{ $card }}">
+                <h3 class="font-display text-lg text-ink-900">Menü QR kodunuz</h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-ink-500">
+                    Paketiniz <strong>Hosting Hariç</strong> — menünüzü kendiniz barındırırsınız.
+                    QR bölümünden menünüzün web adresini girin, sisteme özel statik QR kodunuzu
+                    indirip masalarınıza bastırın.
+                </p>
+                <a href="{{ route('panel.qr.index') }}" class="btn-gold mt-5">QR kodunu oluştur →</a>
+            </div>
+        @else
+            <div class="{{ $card }}">
+                <h3 class="font-display text-lg text-ink-900">Yayına al</h3>
+                <p class="mt-1.5 text-sm text-ink-500">İstediğiniz alan adını yazın ve onaya gönderin. Gerisini ekibimiz halleder.</p>
+
+                <form method="POST" action="{{ route('panel.subdomain.store') }}" class="mt-5">
+                    @csrf
+                    <x-input-label :value="'Alan adı'" />
+                    <div class="mt-1 flex flex-wrap items-center gap-2">
+                        <div class="flex min-w-[220px] flex-1 items-center rounded-xl bg-white ring-1 ring-inset ring-ink-200 focus-within:ring-2 focus-within:ring-gold-500">
+                            <input name="requested_subdomain" placeholder="isletmeniz"
+                                   value="{{ old('requested_subdomain', $restaurant->subdomain ?? $pending?->requested_subdomain) }}"
+                                   class="w-full border-0 bg-transparent px-3.5 py-2.5 font-mono text-sm text-ink-900 focus:outline-none focus:ring-0">
+                            <span class="whitespace-nowrap pr-3.5 text-sm text-ink-400">.{{ config('neva.root_domain') }}</span>
+                        </div>
+                        <button class="btn-ghost">Kaydet</button>
+                    </div>
+                    <x-input-error :messages="$errors->get('requested_subdomain')" class="mt-2" />
+                </form>
+
+                @if ($pending)
+                    <p class="mt-2 text-xs text-amber-600">“{{ $pending->requested_subdomain }}” talebi hazır — onaya gönderebilirsiniz.</p>
+                @endif
+
+                <form method="POST" action="{{ route('panel.submit') }}" class="mt-5 border-t border-ink-100 pt-5">
+                    @csrf
+                    <button class="btn-gold w-full sm:w-auto sm:px-8" {{ $restaurant->status === 'pending' ? 'disabled' : '' }}>
+                        {{ $restaurant->status === 'pending' ? 'Onayda bekliyor…' : 'Onaya Gönder' }}
+                    </button>
+                    <x-input-error :messages="$errors->get('submit')" class="mt-2" />
+                </form>
+
+                @if ($restaurant->status === 'rejected' && $restaurant->rejection_reason)
+                    <p class="mt-3 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-600 ring-1 ring-red-100">Reddedildi: {{ $restaurant->rejection_reason }}</p>
+                @endif
+            </div>
+        @endif
+    </div>
+</x-app-layout>
