@@ -25,3 +25,10 @@ yarn-error.log
 
 /.playwright-mcp
 database/*.sqlite.bak-*
+
+# Laravel calisma zamani ciktilari (repoda durmamali)
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/framework/testing/*
+/storage/logs/*
