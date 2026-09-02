@@ -21,6 +21,10 @@ class SitemapController extends Controller
                 ['loc' => route('pricing'), 'priority' => '0.9', 'freq' => 'weekly'],
                 ['loc' => route('about'), 'priority' => '0.7', 'freq' => 'monthly'],
                 ['loc' => route('contact'), 'priority' => '0.7', 'freq' => 'monthly'],
+                ['loc' => route('legal.privacy'), 'priority' => '0.3', 'freq' => 'yearly'],
+                ['loc' => route('legal.kvkk'), 'priority' => '0.3', 'freq' => 'yearly'],
+                ['loc' => route('legal.cookies'), 'priority' => '0.3', 'freq' => 'yearly'],
+                ['loc' => route('legal.terms'), 'priority' => '0.3', 'freq' => 'yearly'],
             ];
 
             if (config('neva.seo.index_tenants', true)) {
@@ -39,6 +43,40 @@ class SitemapController extends Controller
         });
 
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+    }
+
+    /**
+     * Ana domain robots.txt.
+     *
+     * Panel/admin ve kimlik doğrulama uçları taranmamalı: arama sonucunda
+     * görünmelerinin faydası yok, tarama bütçesini de boşa harcarlar.
+     */
+    public function robots(): Response
+    {
+        $lines = [
+            'User-agent: *',
+            'Allow: /',
+            '',
+            // Panel/admin ve kimlik uçları: arama sonucunda görünmelerinin faydası yok.
+            'Disallow: /panel/',
+            'Disallow: /admin/',
+            'Disallow: /login',
+            'Disallow: /register',
+            'Disallow: /forgot-password',
+            'Disallow: /reset-password',
+            'Disallow: /sifre-olustur',
+            'Disallow: /sifre-belirle',
+            'Disallow: /confirm-password',
+            'Disallow: /verify-email',
+            // Yüklenen görseller yetki kontrolünden geçer; tarama bütçesi harcamasın.
+            'Disallow: /gorsel/',
+            '',
+            'Sitemap: '.route('sitemap'),
+            '',
+        ];
+
+        return response(implode("
+", $lines), 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
     /** Kiracı alt domaini için sitemap. */

@@ -163,6 +163,55 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Hukuki metinler / KVKK
+    |--------------------------------------------------------------------------
+    | Aydınlatma metni, gizlilik ve çerez politikası bu bilgilerden üretilir.
+    | VERİ SORUMLUSU KİMLİĞİ ZORUNLUDUR (KVKK m.10) — burayı gerçek şirket
+    | bilgileriyle doldurmadan siteyi yayına almayın; metinler eksik görünür.
+    */
+    'legal' => [
+        'company' => [
+            'title' => env('NEVA_LEGAL_TITLE', 'Neva Yazılım'),          // ticaret unvanı
+            'address' => env('NEVA_LEGAL_ADDRESS', ''),                   // açık adres
+            'tax_office' => env('NEVA_LEGAL_TAX_OFFICE', ''),             // vergi dairesi
+            'tax_no' => env('NEVA_LEGAL_TAX_NO', ''),                     // VKN / TCKN
+            'mersis' => env('NEVA_LEGAL_MERSIS', ''),                     // MERSİS no
+            'kep' => env('NEVA_LEGAL_KEP', ''),                           // KEP adresi
+            'phone' => env('NEVA_LEGAL_PHONE', ''),
+            'email' => env('NEVA_LEGAL_EMAIL', env('NEVA_SUPPORT_EMAIL', 'destek@nevaqr.com')),
+        ],
+
+        // Metinlerin yürürlük tarihi — içerik değişince güncelleyin.
+        'effective_date' => env('NEVA_LEGAL_EFFECTIVE', '2026-09-02'),
+
+        /*
+        | Saklama süreleri (gün). `neva:veri-temizle` günlük çalışır.
+        | Sıfır/null verilirse o tür HİÇ silinmez.
+        */
+        'retention' => [
+            // İletişim formu kaydı: ad, e-posta, telefon, IP → kişisel veri.
+            'contact_messages_days' => (int) env('NEVA_RETENTION_CONTACT', 730),
+            // IP daha erken maskelenir; kayıt kalır, iz sürülemez hale gelir.
+            'contact_ip_anonymize_days' => (int) env('NEVA_RETENTION_CONTACT_IP', 90),
+            // Denetim kaydı (kim neyi onayladı) — güvenlik incelemesi için.
+            'audit_logs_days' => (int) env('NEVA_RETENTION_AUDIT', 730),
+            // Görüntülenme sayaçları: kişisel veri içermez, 13 ay yıllık karşılaştırma için yeter.
+            'menu_visits_days' => (int) env('NEVA_RETENTION_VISITS', 395),
+            // Reddedilmiş üyelik talepleri.
+            'rejected_membership_days' => (int) env('NEVA_RETENTION_MEMBERSHIP', 365),
+        ],
+
+        /*
+        | Çerez bildirimi. Zorunlu çerezler (oturum, CSRF) rıza gerektirmez;
+        | banner yalnızca bilgilendirir ve ölçüm işaretini reddetme hakkı verir.
+        */
+        'cookies' => [
+            'banner' => (bool) env('NEVA_COOKIE_BANNER', true),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Yüklemeler
     |--------------------------------------------------------------------------
     */

@@ -5,6 +5,10 @@ Lüks, çok kiracılı (multi-tenant) SaaS QR menü platformu.
 
 Bu arşiv `vendor/`, `node_modules/` ve derlenmiş varlıkları **içermez** — aşağıdaki adımlarla kurulur.
 
+> **Üretime alacaksanız** bu belge yetmez: wildcard DNS, wildcard TLS sertifikası,
+> nginx vhost, kuyruk işçisi ve cron kurulumu için **[docs/URETIM.md](docs/URETIM.md)**.
+> Her adımdan sonra `php artisan neva:onkontrol` çalıştırıp neyin eksik olduğunu görün.
+
 ---
 
 ## Gereksinimler

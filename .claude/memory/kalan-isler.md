@@ -1,6 +1,6 @@
 ---
 name: kalan-isler
-description: 2026-09-01/02 oturumlarında yapılanlar ve sıradaki adımlar; kapsamlı SEO bilerek sona bırakıldı
+description: 2026-09-01/02 oturumlarında yapılanlar ve sıradaki adımlar; SEO'nun büyük kısmı hâlâ açık, CSS bölme yarım kaldı
 metadata:
   type: project
 ---
@@ -48,18 +48,46 @@ metadata:
 - Testler: AnalyticsTest, MediaAccessTest, OrderingTest, SubdomainReleaseTest
   (toplam 71 test yeşil, PDF grubu dahil).
 
+## 2026-09-02 · ikinci oturum (limit nedeniyle yarıda kesildi)
+
+Kullanıcı paneli elle gözden geçirdi, **hata yok** — o madde kapandı.
+Ardından "kalanları hallet" dendi. Yapılanlar:
+
+- **Alt domain zero-touch** ([[alt-domain-tls-gereksinimi]]): sağlık kontrolü artık
+  arıza sebebini sınıflandırıyor (dns/tls/timeout/refused/wrong_tenant) ve çözümü
+  `publish_error`'a yazıyor. Yeni `neva:onkontrol` komutu wildcard DNS + TLS + kuyruk +
+  üretim ayarlarını denetliyor, hatada çıkış kodu 1.
+- **KVKK** ([[kvkk-ve-saklama-sureleri]]): 4 hukuki sayfa, çerez bildirimi,
+  footer'da "Yasal" sütunu, `neva:veri-temizle` komutu + günlük cron.
+- **Dinamik robots.txt**: `SitemapController@robots`. Statik `public/robots.txt`
+  SİLİNDİ — içinde `https://nevaqr.com` sabit yazılıydı, yerelde/staging'de yanlıştı.
+  Sitemap'e hukuki sayfalar eklendi.
+- **`docs/URETIM.md`**: tek seferlik sunucu kurulumu — wildcard DNS, wildcard TLS
+  (certbot DNS-01), nginx wildcard vhost, systemd kuyruk işçisi, cron, PostgreSQL,
+  dağıtım adımları, yedekleme.
+
+Bu oturumda **test yazılmadı** — yeni komutlar ve hukuki rotalar test kapsamı dışında.
+Mevcut 71 test, sağlık kontrolü değişikliğinden sonra yeşil doğrulandı.
+
 ## Sıradaki adımlar (öncelik sırasıyla)
 
-1. **Panel akışlarının elle gözden geçirilmesi** — tasarım stüdyosu ve mesajlaşma
-   arayüzü hâlâ gözle kontrol edilmedi. (Ürünler, İstatistik ve canlı menü
-   2026-09-02'de tarayıcıda doğrulandı.)
-2. **Üretim ayarları** — `QUEUE_CONNECTION=database` + `queue:work` servisi, gerçek SMTP,
-   cron satırı (`schedule:run`), `APP_DEBUG=false`, PostgreSQL.
-3. **KAPSAMLI SEO** (kullanıcı bilerek sona bıraktı): blog/içerik modülü, şehir + mutfak
-   bazlı landing sayfaları ("Ankara QR menü", "kafe QR menü"), FAQ schema, per-şablon CSS
-   bölme (şu an 40 şablonun CSS'i tek bundle'da → LCP kötü), görsel alt/lazy/width-height,
-   iç link mimarisi, Search Console + sitemap gönderimi.
-4. KVKK: aydınlatma metni, çerez izni, veri saklama politikası.
-5. Online ödeme (iyzico) — hacim büyüyünce ([[havale-odeme-akisi]]).
-6. Görsel servisi ölçeklenirse: `/gorsel/...` için CDN/edge önbelleği ya da
-   yayındaki dosyalar için imzalı URL.
+1. **CSS/JS bölme** — keşif bitti, uygulama yarım kaldı. Tam plan, ölçümler ve
+   satır aralıkları: [[css-bolme-plani]]. Menü sayfası şu an 202 KB CSS + 117 KB JS
+   yüklüyor; LCP'nin asıl sebebi bu.
+2. **Yeni eklenenler için test** — `neva:onkontrol`, `neva:veri-temizle`
+   (saklama sınırının iki yanı), hukuki rotaların 200 dönmesi, çerez bildirimi ucu.
+3. **KAPSAMLI SEO'nun kalanı** (hiç başlanmadı): blog/içerik modülü,
+   şehir + mutfak bazlı landing sayfaları ("Ankara QR menü", "kafe QR menü"),
+   FAQ schema, görsel alt/lazy/width-height, iç link mimarisi,
+   Search Console + sitemap gönderimi.
+4. **Üretim ayarlarının sunucuda uygulanması** — kod ve doküman tarafı bitti
+   (`docs/URETIM.md` + `neva:onkontrol`); geriye gerçek sunucuda SMTP, PostgreSQL,
+   queue:work servisi, cron ve wildcard sertifikanın kurulması kaldı. Bu iş sunucuda
+   yapılır, kodda değil.
+5. **Şirket künyesini doldur** — `NEVA_LEGAL_*` env değişkenleri boşken hukuki
+   sayfalarda kırmızı "tanımlanmadı" rozeti görünür. Yayına almadan önce şart.
+   Metinlerin avukata okutulması önerilir.
+6. Online ödeme (iyzico) — hacim büyüyünce ([[havale-odeme-akisi]]). Kullanıcı bu
+   maddeyi bilerek erteledi, dokunulmadı.
+7. Görsel servisi ölçeklenirse: `/gorsel/...` için CDN/edge önbelleği ya da
+   yayındaki dosyalar için imzalı URL. Koşullu; henüz gerek yok.

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\Panel;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -32,8 +33,16 @@ Route::get('/gorsel/{path}', MediaController::class)
     ->where('path', '.*')
     ->name('media');
 
+// --- Hukuki metinler (KVKK) ---
+Route::get('/gizlilik-politikasi', [LegalController::class, 'privacy'])->name('legal.privacy');
+Route::get('/kvkk-aydinlatma-metni', [LegalController::class, 'kvkk'])->name('legal.kvkk');
+Route::get('/cerez-politikasi', [LegalController::class, 'cookies'])->name('legal.cookies');
+Route::get('/kullanim-kosullari', [LegalController::class, 'terms'])->name('legal.terms');
+Route::post('/cerez-bildirimi', [LegalController::class, 'acceptCookies'])->name('legal.cookies.accept');
+
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 // --- Sahip (restoran) paneli ---
 Route::middleware(['auth', 'password.changed', 'restaurant.context'])

@@ -66,7 +66,7 @@
 
     <footer class="mt-24 border-t border-ink-100 bg-white">
         <div class="mx-auto max-w-6xl px-6 py-14">
-            <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
                 <div class="lg:col-span-2">
                     <img src="{{ asset('img/nevalogo.png') }}" alt="Neva-QR Menü" class="h-8 w-auto">
                     <p class="mt-4 max-w-xs text-sm leading-relaxed text-ink-500">
@@ -86,6 +86,15 @@
                     <ul class="mt-4 space-y-2.5 text-sm text-ink-600">
                         <li><a href="{{ route('contact') }}" class="hover:text-ink-900">Bize yazın</a></li>
                         <li><a href="mailto:{{ config('neva.brand.support_email') }}" class="hover:text-ink-900">{{ config('neva.brand.support_email') }}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Yasal</p>
+                    <ul class="mt-4 space-y-2.5 text-sm text-ink-600">
+                        <li><a href="{{ route('legal.privacy') }}" class="hover:text-ink-900">Gizlilik Politikası</a></li>
+                        <li><a href="{{ route('legal.kvkk') }}" class="hover:text-ink-900">KVKK Aydınlatma Metni</a></li>
+                        <li><a href="{{ route('legal.cookies') }}" class="hover:text-ink-900">Çerez Politikası</a></li>
+                        <li><a href="{{ route('legal.terms') }}" class="hover:text-ink-900">Kullanım Koşulları</a></li>
                     </ul>
                 </div>
             </div>
@@ -127,5 +136,7 @@
             }, 2500);
         })();
     </script>
+
+    <x-cookie-notice />
 </body>
 </html>

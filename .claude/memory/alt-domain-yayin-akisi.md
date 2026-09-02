@@ -31,4 +31,10 @@ o yüzden içerikte işletme adı aranıyor.
 `sync` olursa doğrulama admin'in isteğini bekletir. Cloudflare'a geçilecekse
 `NEVA_DNS_DRIVER=cloudflare` + token/zone id.
 
-İlgili: [[proje-hedefi]], [[menu-onbellek-mimarisi]]
+**2026-09-02 eki:** 5. adımdaki doğrulama artık arıza sebebini sınıflandırıyor
+(`reason_code`: dns / tls / timeout / refused / http / wrong_tenant) ve çözümü
+`publish_error`'a yazıyor. Kurulumun zero-touch olması için gereken tek seferlik
+sunucu katmanları — özellikle **wildcard TLS sertifikası** — [[alt-domain-tls-gereksinimi]].
+Yayına almadan önce `php artisan neva:onkontrol` çalıştırılmalı.
+
+İlgili: [[proje-hedefi]], [[menu-onbellek-mimarisi]], [[alt-domain-tls-gereksinimi]]

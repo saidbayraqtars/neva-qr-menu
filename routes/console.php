@@ -28,6 +28,11 @@ Schedule::command('neva:health-check')
     ->hourly()
     ->withoutOverlapping();
 
+// KVKK: saklama süresi dolan kayıtları sil (iletişim formu, denetim kaydı, sayaçlar).
+Schedule::command('neva:veri-temizle')
+    ->dailyAt('03:20')
+    ->withoutOverlapping();
+
 // Süresi dolmuş şifre belirleme jetonlarını temizle.
 Schedule::call(function () {
     User::whereNotNull('password_setup_token')
