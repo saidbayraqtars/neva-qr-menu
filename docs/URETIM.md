@@ -4,6 +4,72 @@ Bu belge sunucuyu **bir kez** kurmak içindir. Kurulum bittiğinde admin panelin
 "Onayla" dediğin an alt domain kendiliğinden açılır — DNS paneline elle kayıt girmezsin.
 
 Yerel geliştirme kurulumu için [KURULUM.md](../KURULUM.md).
+SEO tarafı için [SEO.md](SEO.md).
+
+---
+
+## 0.0 Sunucu seçimi
+
+Uygulamanın sunucudan istedikleri, seçenekleri baştan eliyor:
+
+| İhtiyaç | Neden zorunlu |
+|---|---|
+| Kalıcı dosya sistemi | Logo/kapak/ürün görselleri `storage/app/uploads` altında durur |
+| Sürekli çalışan işlem | `queue:work` — yayına alma, DNS, doğrulama ve e-postalar kuyrukta |
+| Dakikalık cron | `schedule:run` — önbellek ısıtma, sağlık kontrolü, KVKK temizliği |
+| Wildcard alt domain + TLS | `*.nevaqr.com` tek vhost, tek sertifika |
+| PHP 8.2+ · ext-gd | QR üretimi ve PDF |
+
+**Serverless platformlar (Vercel, Netlify) bu listenin ilk üçünü karşılamaz.**
+Dosya sistemi her istekte sıfırlanır, arka planda sürekli çalışan bir işlem
+kurulamaz. Oraya taşımak; nesne depolama, harici kuyruk, harici oturum/önbellek
+ve yönetilen veritabanı gerektirir — yani mimariyi baştan yazmak.
+
+### Önerilen: küçük VPS + Cloudflare (ücretsiz)
+
+| Kalem | Tutar |
+|---|---|
+| Hetzner CX22 (2 vCPU · 4 GB · 40 GB NVMe) | ~€4,5 / ay |
+| Cloudflare Free (DNS + wildcard SSL + edge cache) | 0 |
+| **Yıllık toplam** | **~€55** |
+
+Bu makine 1-2 müşteri için fazlasıyla yeterli; menü HTML'i önbellekten
+servis edildiği için darboğaz CPU değil, ağdır.
+
+**Cloudflare neden ücretsiz katmanda bile kritik:** proxy açıkken (turuncu bulut)
+Universal SSL `*.nevaqr.com`'u kapsar — certbot ile wildcard sertifika uğraşı
+tamamen kalkar (bkz. §1.2). Sunucuda Cloudflare Origin CA sertifikası kullanılır.
+
+### Daha ucuz: paylaşımlı hosting
+
+PHP 8.2+, SSH/cron ve wildcard alt domain veren bir paylaşımlı pakette
+(yılda ~600-900 ₺) uygulama çalışır, ama:
+
+- `queue:work` servis olarak kurulamaz. Yerine dakikalık cron:
+  `* * * * * cd /path && php artisan queue:work --stop-when-empty --max-time=55`
+- PostgreSQL genelde yoktur; SQLite ile kalınır (1-2 müşteri için sorun değil).
+- Wildcard TLS'i host sağlayamaz — Cloudflare proxy **zorunlu** olur.
+- OPcache/PHP-FPM ayarlarına erişemezsin.
+
+Bütçe çok darsa başlangıç için kabul edilebilir; müşteri sayısı artınca VPS'e geçilir.
+
+### Edge önbelleği — varsayılanı DEĞİŞTİRME
+
+Cloudflare statik varlıkları (CSS/JS/görsel) kendiliğinden edge'de tutar; HTML'i
+tutmaz. **Bu doğru varsayılandır, açmayın.**
+
+Neden: menü adresi (`lumina.nevaqr.com/`) değişiklikte sabit kalır. Tazeleme
+sunucu tarafında `menu_version` ile yapılır. HTML'i edge'de önbelleğe alırsanız
+panelde fiyat güncelleyen müşteri değişikliği **saatlerce göremez** — ürünün
+"anında yansır" sözü bozulur.
+
+Kiracı sayısı büyüyüp origin gerçekten zorlanırsa iki seçenek var:
+
+1. Cache Rule + **kısa** Edge TTL (60 sn) — gecikme kabul edilebilir seviyede kalır
+2. Cache Rule + yayın/düzenleme sonrası Cloudflare **cache purge** çağrısı
+
+Her iki durumda da kural yalnızca `*.nevaqr.com` alt domainlerini kapsamalı;
+ana domain (panel/admin, oturum çerezi taşır) **kesinlikle dahil edilmemeli**.
 
 ---
 
@@ -78,50 +144,29 @@ sudo certbot renew --dry-run     # yenileme çalışıyor mu, bir kez doğrula
 
 ### 1.3 Wildcard vhost
 
-Nginx, `server_name` içinde joker ile tek bir sunucu bloğu — kiracı başına dosya yok:
+Sunucu bloğu repoda hazır: [`deploy/nginx/nevaqr.conf`](../deploy/nginx/nevaqr.conf).
+Elle yazmayın — `deploy/kurulum.sh` onu yerine koyar.
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name nevaqr.com *.nevaqr.com;
+Bilmeniz gereken üç şey:
 
-    ssl_certificate     /etc/letsencrypt/live/nevaqr.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/nevaqr.com/privkey.pem;
+**Tek blok, joker `server_name`.** `nevaqr.com *.nevaqr.com` aynı bloğa düşer;
+hangi kiracı olduğunu Laravel çözer. Kiracı başına dosya yoktur.
 
-    root /var/www/nevaqr/public;
-    index index.php;
+**gzip AÇIK olmalı.** 140 kalemlik bir menünün HTML'i ~125 KB; sıkıştırmayla
+~18 KB'a iniyor. Mobil ilk açılış farkı doğrudan buradan gelir. Conf dosyasında
+açık geliyor, kapatmayın.
 
-    client_max_body_size 12M;   # ürün görseli 6 MB'a kadar
+**`public/` altında yalnız `index.php` çalışır.** Diğer tüm `.php` istekleri
+404 döner; nokta ile başlayan yollar (`.env`, `.git`) tamamen kapalıdır.
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* { deny all; }
-}
-
-# HTTP → HTTPS
-server {
-    listen 80;
-    server_name nevaqr.com *.nevaqr.com;
-    return 301 https://$host$request_uri;
-}
-```
-
-Doğrula:
+Doğrulama:
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 php artisan neva:onkontrol --alt-domain
 ```
 
-`Wildcard TLS sertifikası ✓` gördüğünde alt domain tarafı bitmiştir.
+`Wildcard TLS sertifikası ✓` gördüğünüzde alt domain tarafı bitmiştir.
 
 ---
 
@@ -135,36 +180,20 @@ bitene kadar bekler ve zaman aşımına düşer.
 QUEUE_CONNECTION=database
 ```
 
-```bash
-php artisan migrate      # jobs / failed_jobs tabloları
-```
+Servis tanımını `deploy/kurulum.sh` kurar (`nevaqr-queue.service`). Elle
+kuracaksanız kritik iki ayrıntı:
 
-`/etc/systemd/system/nevaqr-queue.service`:
-
-```ini
-[Unit]
-Description=Neva-QR kuyruk isçisi
-After=network.target
-
-[Service]
-User=www-data
-Group=www-data
-Restart=always
-RestartSec=5
-WorkingDirectory=/var/www/nevaqr
-ExecStart=/usr/bin/php artisan queue:work --tries=3 --max-time=3600 --sleep=3
-
-[Install]
-WantedBy=multi-user.target
-```
+- `MemoryMax=384M` — 2 GB'lık makinede kaçak bir iş sunucuyu yere sermesin
+- `Restart=always` — işçi çöktüğünde yayına alma kuyruğu sessizce durmasın
 
 ```bash
 sudo systemctl enable --now nevaqr-queue
 sudo systemctl status nevaqr-queue
+journalctl -u nevaqr-queue -f          # canlı log
 ```
 
-> Her dağıtımdan sonra `php artisan queue:restart` çalıştır — işçi eski kodu
-> bellekte tutar.
+> Her dağıtımdan sonra `php artisan queue:restart` gerekir — işçi eski kodu
+> bellekte tutar. `deploy/guncelle.sh` bunu zaten yapıyor.
 
 ---
 
@@ -180,7 +209,8 @@ Sunucuda **tek** cron satırı yeterli:
 |-------|--------|----------|
 | `neva:warm-menus` | 2 saatte bir | Canlı menü önbelleğini tazeler |
 | `neva:health-check` | Saatte bir | Yayındaki alt domainleri doğrular |
-| `neva:veri-temizle` | Günlük | Saklama süresi dolan kayıtları siler (KVKK) |
+| `neva:yedek` | Günlük 03:00 | Veritabanı + görseller + `.env` arşivi (14 gün saklar) |
+| `neva:veri-temizle` | Günlük 03:20 | Saklama süresi dolan kayıtları siler (KVKK) |
 | jeton temizliği | Günlük | Süresi geçmiş şifre belirleme jetonları |
 | `queue:prune-failed` | Haftalık | Eski başarısız işler |
 
@@ -255,26 +285,30 @@ LOG_LEVEL=warning
 
 ---
 
-## 6. Dağıtım adımları
+## 6. Dağıtım
 
 ```bash
-cd /var/www/nevaqr
-php artisan down
-
-git pull
-composer install --no-dev --optimize-autoloader
-npm ci && npm run build
-
-php artisan migrate --force
-php artisan optimize          # config + route + view önbelleği
-php artisan queue:restart
-
-php artisan up
-php artisan neva:onkontrol    # son doğrulama
+sudo bash /var/www/nevaqr/deploy/guncelle.sh
 ```
 
-> `php artisan optimize` sonrası `.env` değişikliği **etkisizdir**; değiştirdiysen
-> `php artisan optimize:clear && php artisan optimize` çalıştır.
+Betik sırayla: bakım moduna alır → kodu çeker → `composer install --no-dev` →
+`npm ci && npm run build` → `migrate --force` → önbellekleri tazeler →
+**php-fpm reload** → kuyruk işçisini yeniden başlatır → bakım modundan çıkar →
+`neva:onkontrol` ile doğrular.
+
+İki nokta atlanırsa üretimde sessiz hataya dönüşür, betik ikisini de yapıyor:
+
+- **`php-fpm reload` şart.** `opcache.validate_timestamps=0` ayarlıyoruz (her
+  istekte dosya tarihi kontrolü yapılmasın diye). Reload edilmezse sunucu eski
+  kodu çalıştırmaya devam eder.
+- **`optimize:clear` `optimize`'dan önce.** Derlenmiş eski config, yeni `.env`
+  değerlerini gölgeler.
+
+İlk kurulumda `--ilk` verin (APP_KEY üretir, SQLite dosyasını açar, paketleri seeder):
+
+```bash
+sudo bash /var/www/nevaqr/deploy/guncelle.sh --ilk
+```
 
 ---
 
@@ -293,11 +327,72 @@ Yüklenen görseller `storage/app/uploads` altında **özel** diskte durur ve
 
 ## 8. Yedekleme
 
-Yedeklenmesi gerekenler:
+```bash
+php artisan neva:yedek
+```
 
-- Veritabanı (`pg_dump neva_qr`)
-- `storage/app/uploads` — işletme logoları, kapaklar, ürün görselleri
-- `.env`
+Tek bir zip üretir: veritabanı + yüklenen görseller + `.env`. Günlük olarak
+03:00'te zamanlanmış çalışır (`routes/console.php`) ve 14 günden eski arşivleri
+kendisi siler.
 
-`storage/framework/cache` yedeklenmez; menü önbelleği `menu_version` ile
-kendini yeniden üretir.
+| Seçenek | Ne yapar |
+|---|---|
+| `--dizin=/mnt/yedek` | Başka bir dizine yaz (harici disk / mount) |
+| `--tut=30` | 30 gün sakla (`0` = hiç silme) |
+| `--gorsel-yok` | Yalnız veritabanı + `.env` (hızlı, küçük) |
+
+Neden bu üçü: veritabanı kiracıları ve menüleri, `storage/app/uploads`
+işletme logolarını ve ürün görsellerini tutuyor. `.env` içindeki **APP_KEY**
+kaybolursa şifrelenmiş oturum çerezleri ve imzalı bağlantılar geçersiz olur.
+`storage/framework/cache` bilerek yedeklenmez — menü önbelleği `menu_version`
+ile kendini yeniden üretir.
+
+SQLite kullanıyorsanız dosya düz kopyalanmaz: WAL modunda çalışan bir veritabanını
+yazma sırasında kopyalamak bozuk yedek üretir. Komut `VACUUM INTO` ile tutarlı
+bir anlık görüntü alır.
+
+> **Arşiv `.env` içerir — sunucuda bırakmayın.** Sunucu çökerse yedek de gider.
+> Günlük olarak dışarı taşıyın; `rclone` ile bir nesne deposuna kopyalamak en
+> ucuz yol:
+>
+> ```cron
+> 30 3 * * * rclone copy /var/www/nevaqr/storage/app/backups uzak:nevaqr-yedek
+> ```
+
+---
+
+## 8.5 İlk yönetici hesabı
+
+Taze bir üretim veritabanında **hiç kullanıcı yoktur** ve kayıt akışı bir
+üyelik talebi üretir — talebi onaylayacak bir yönetici gerekir. Kısır döngüyü
+kıran komut:
+
+```bash
+php artisan neva:admin-olustur --email=siz@nevaqr.com --ad="Adınız"
+```
+
+Düz metin şifre üretilmez. Komut tek kullanımlık bir "şifre belirle" bağlantısı
+oluşturur; SMTP kuruluysa e-posta ile gönderir, kurulu değilse **konsola basar**
+(ilk kurulumda e-posta çalışmadan da hesaba girebilesiniz diye).
+
+> `php artisan db:seed` ÇALIŞTIRMAYIN. `DemoSeeder` sabit `password` şifreli
+> hesaplar ve sahte demo restoranlar oluşturur — üretim veritabanına girmemeli.
+> Yalnızca `PlanSeeder` gerekli, onu da `deploy/guncelle.sh --ilk` çalıştırıyor.
+
+---
+
+## 9. İzleme
+
+Projede hazır bir sağlık ucu var: `https://nevaqr.com/up`
+
+Ücretsiz bir dış izleyici (ör. UptimeRobot) bu adresi 5 dakikada bir yoklasın —
+sunucu düştüğünde haber alırsınız. Sunucuda kaynak tüketmez, kontrol paneli
+kurmaya gerek bırakmaz.
+
+Log yerleri:
+
+```bash
+tail -f /var/www/nevaqr/storage/logs/laravel.log   # uygulama
+journalctl -u nevaqr-queue -f                      # kuyruk işçisi
+tail -f /var/log/nginx/nevaqr-error.log            # nginx
+```

@@ -29,8 +29,10 @@
             </a>
 
             <nav class="hidden items-center gap-1 text-sm md:flex">
-                <a href="{{ route('about') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('about') ? 'text-ink-900' : '' }}">Hakkımızda</a>
+                <a href="{{ route('showcase.index') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('showcase.*') ? 'text-ink-900' : '' }}">Şablonlar</a>
                 <a href="{{ route('pricing') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('pricing') ? 'text-ink-900' : '' }}">Fiyatlar</a>
+                <a href="{{ route('faq') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('faq') ? 'text-ink-900' : '' }}">S.S.S.</a>
+                <a href="{{ route('about') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('about') ? 'text-ink-900' : '' }}">Hakkımızda</a>
                 <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2 font-medium text-ink-600 transition hover:text-ink-900 {{ request()->routeIs('contact') ? 'text-ink-900' : '' }}">İletişim</a>
                 <span class="mx-2 h-5 w-px bg-ink-200"></span>
                 @auth
@@ -48,8 +50,10 @@
 
         <div x-show="menu" x-collapse class="border-t border-ink-100 bg-white px-6 py-4 md:hidden" style="display:none">
             <div class="flex flex-col gap-1 text-sm">
-                <a href="{{ route('about') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">Hakkımızda</a>
+                <a href="{{ route('showcase.index') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">Şablonlar</a>
                 <a href="{{ route('pricing') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">Fiyatlar</a>
+                <a href="{{ route('faq') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">Sıkça sorulan sorular</a>
+                <a href="{{ route('about') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">Hakkımızda</a>
                 <a href="{{ route('contact') }}" class="rounded-lg px-3 py-2.5 font-medium text-ink-700 hover:bg-ink-50">İletişim</a>
                 <a href="{{ route('register') }}" class="btn-primary mt-2 px-4">Kayıt Ol</a>
             </div>
@@ -76,7 +80,9 @@
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Ürün</p>
                     <ul class="mt-4 space-y-2.5 text-sm text-ink-600">
+                        <li><a href="{{ route('showcase.index') }}" class="hover:text-ink-900">QR menü şablonları</a></li>
                         <li><a href="{{ route('pricing') }}" class="hover:text-ink-900">Fiyatlandırma</a></li>
+                        <li><a href="{{ route('faq') }}" class="hover:text-ink-900">Sıkça sorulan sorular</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-ink-900">Hakkımızda</a></li>
                         <li><a href="{{ route('register') }}" class="hover:text-ink-900">Kayıt Ol</a></li>
                     </ul>
@@ -98,7 +104,28 @@
                     </ul>
                 </div>
             </div>
-            <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-ink-100 pt-6 text-xs text-ink-400 sm:flex-row">
+            {{-- Öne çıkan şablonlar: vitrin sayfalarını her sayfadan erişilebilir
+                 kılar. İç link derinliği 2'yi geçmesin — derindeki sayfa taranmaz. --}}
+            @php
+                $footerTemplates = collect((array) config('neva.template_order'))
+                    ->filter(fn ($k) => isset(config('neva.templates')[$k]))
+                    ->take(8);
+            @endphp
+            @if ($footerTemplates->isNotEmpty())
+                <div class="mt-12 border-t border-ink-100 pt-6">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Öne çıkan QR menü şablonları</p>
+                    <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-ink-500">
+                        @foreach ($footerTemplates as $key)
+                            <li>
+                                <a href="{{ route('showcase.show', $key) }}" class="hover:text-ink-900">{{ config("neva.templates.$key.label") }}</a>
+                            </li>
+                        @endforeach
+                        <li><a href="{{ route('showcase.index') }}" class="font-semibold text-gold-700 hover:underline">40 şablonun tümü →</a></li>
+                    </ul>
+                </div>
+            @endif
+
+            <div class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-ink-100 pt-6 text-xs text-ink-400 sm:flex-row">
                 <p>&copy; {{ date('Y') }} {{ config('neva.brand.name') }}. Tüm hakları saklıdır.</p>
                 <p>Türkiye'de tasarlandı</p>
             </div>
@@ -138,5 +165,8 @@
     </script>
 
     <x-cookie-notice />
+
+    {{-- Sayfaya özel scriptler (ör. şablon vitrininin tembel önizleme bağlayıcısı). --}}
+    @stack('scripts')
 </body>
 </html>

@@ -21,8 +21,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MediaController extends Controller
 {
-    /** İzin verilen yol biçimi — dizin çıkışı (../) ve rastgele dosya okuma engellenir. */
-    private const PATH_PATTERN = '#^restaurants/(\d+)/(brand|products|qr)/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp|gif|svg)$#i';
+    /**
+     * İzin verilen yol biçimi — dizin çıkışı (../) ve rastgele dosya okuma engellenir.
+     *
+     * SVG BİLEREK YOK: SVG bir belgedir, içine <script> gömülebilir. Bu uçtan
+     * doğrudan açıldığında tarayıcı onu kendi origin'inde çalıştırır — panel
+     * oturumunun bulunduğu ana domainde saklı XSS demektir. Laravel'in `image`
+     * doğrulaması da SVG'yi kabul etmiyor (allow_svg verilmedikçe); bu satır
+     * ikinci savunma hattı: ileride bir yükleme yolu gevşerse dosya yine servis edilmez.
+     */
+    private const PATH_PATTERN = '#^restaurants/(\d+)/(brand|products|qr)/[A-Za-z0-9._-]+\.(?:png|jpe?g|webp|gif)$#i';
 
     public function __invoke(Request $request): Response
     {

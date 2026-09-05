@@ -32,3 +32,4 @@ database/*.sqlite.bak-*
 /storage/framework/views/*
 /storage/framework/testing/*
 /storage/logs/*
+/.deploy-home

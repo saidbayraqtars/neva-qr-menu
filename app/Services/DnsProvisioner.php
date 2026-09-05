@@ -10,7 +10,7 @@ use RuntimeException;
  * Alt domain için DNS kaydını açar.
  *
  * Sürücüler (config/neva.php › publish.dns.driver):
- *  - wildcard   : *.neva-qr.com zaten tanımlı → yapılacak bir şey yok (varsayılan)
+ *  - wildcard   : *.<kök alan adı> zaten tanımlı → yapılacak bir şey yok (varsayılan)
  *  - cloudflare : kiracı başına CNAME kaydı açılır (API token + zone id gerekir)
  *  - manual     : hiçbir şey yapılmaz, kayıt elle açılır (admin uyarılır)
  */

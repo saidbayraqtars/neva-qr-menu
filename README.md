@@ -10,7 +10,7 @@ Her işletme kendi alt domaininde yayınlanır → `lumina.nevaqr.com`
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Alpine.js](https://img.shields.io/badge/Alpine.js-3-8BC0D0?logo=alpinedotjs&logoColor=white)](https://alpinejs.dev)
 ![Şablon](https://img.shields.io/badge/şablon-40-C8A96A)
-![Test](https://img.shields.io/badge/test-71%20passing-2ea44f)
+![Test](https://img.shields.io/badge/test-82%20passing-2ea44f)
 ![Durum](https://img.shields.io/badge/durum-MVP%20Faz--1%20tamam-blue)
 
 <img src="docs/ekran-goruntuleri/pazarlama.png" alt="Neva-QR pazarlama sayfası" width="880">
@@ -95,10 +95,13 @@ Tam kurulum, üretim ayarları ve sürüm yükseltme adımları: **[KURULUM.md](
 | Komut | Ne yapar |
 |-------|----------|
 | `php artisan test --exclude-group=slow` | Hızlı takım (70 test, ~6 sn) |
-| `php artisan test` | 40 şablonun PDF'i dahil tam takım (~4 dk) |
+| `php artisan test` | 40 şablonun PDF'i dahil tam takım (82 test, ~8 dk) |
 | `php artisan neva:warm-menus` | Canlı menü önbelleğini ısıtır (2 saatte bir cron) |
 | `php artisan neva:health-check` | Yayındaki alt domainler gerçekten açılıyor mu (saatlik) |
 | `php artisan neva:uploads-tasi` | Eski `/storage` yüklemelerini özel diske taşır (tek seferlik) |
+| `php artisan neva:onkontrol` | Yayın öncesi tam denetim (alt domain · üretim · SEO) |
+| `php artisan neva:yedek` | Veritabanı + görseller + `.env` tek arşive (günlük cron) |
+| `php artisan neva:admin-olustur` | İlk platform yöneticisini açar (üretimde ZORUNLU ilk adım) |
 | `php artisan cache:clear` | Menü HTML önbelleğini boşaltır |
 
 ---
@@ -107,7 +110,7 @@ Tam kurulum, üretim ayarları ve sürüm yükseltme adımları: **[KURULUM.md](
 
 | Alan | Yol |
 |------|-----|
-| Pazarlama | `/` · `/hakkimizda` · `/fiyatlandirma` · `/iletisim` |
+| Pazarlama | `/` · `/qr-menu-sablonlari` · `/qr-menu-sablonlari/{şablon}` · `/fiyatlandirma` · `/sikca-sorulan-sorular` · `/hakkimizda` · `/iletisim` |
 | Kimlik | `/login` · `/register` · `/forgot-password` |
 | Sahip paneli | `/panel` · `/panel/isletme` · `/panel/tasarim` · `/panel/kategoriler` · `/panel/urunler` · `/panel/istatistik` · `/panel/qr` · `/panel/mesajlar` |
 | Admin | `/admin` · `/admin/talepler` · `/admin/uyelik-talepleri` · `/admin/mesajlar` |
@@ -169,7 +172,7 @@ Bir şablon sınıflandırmada eksik veya çift kayıtlıysa `DesignController` 
 
 ```
 ├── app/
-│   ├── Console/Commands/    # warm-menus · health-check · uploads-tasi
+│   ├── Console/Commands/    # onkontrol · yedek · warm-menus · health-check · veri-temizle
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Panel/       # tasarım, kategori, ürün, QR, PDF, istatistik, mesaj
@@ -181,11 +184,15 @@ Bir şablon sınıflandırmada eksik veya çift kayıtlıysa `DesignController` 
 │   │                        # SubdomainRequest, RestaurantTable, MenuVisit, …
 │   ├── Services/            # QrService, MenuPdfService, SubdomainService,
 │   │                        # VisitTracker, PlanGate, DnsProvisioner, MessagingService
-│   └── Support/             # TemplatePresenter, MenuSchema
+│   └── Support/             # TemplatePresenter, MenuSchema, ShowcaseMenu, ShowcaseCopy
 ├── config/neva.php          # marka, kök alan, şablon kataloğu, paket yetki matrisi
+├── deploy/                  # kurulum.sh · guncelle.sh · nginx/nevaqr.conf
+├── docs/                    # URETIM · SEO · GUVENLIK · PERFORMANS
 ├── resources/views/templates/skeletons/   # 40 şablon iskeleti
+├── resources/views/marketing/showcase/    # 40 şablonun vitrin sayfaları
+├── resources/views/errors/  # markalı 404/403/419/429/500/503
 ├── routes/{web,tenant}.php  # ana domain · alt domain
-└── tests/Feature/           # 71 test
+└── tests/Feature/           # 82 test
 ```
 
 ### Migrationlar
@@ -232,8 +239,16 @@ Bir şablon sınıflandırmada eksik veya çift kayıtlıysa `DesignController` 
 - [x] **Sürükle-bırak sıralama** — kategoriler + ürünler (kütüphanesiz, dokunmatik uyumlu)
 - [x] **Dosya izolasyonu** — özel disk + `/gorsel` yetkili servis + silmede temizlik
 - [x] **Alt domain iadesi** — silinen kaydın etiketi serbest kalır
-- [ ] **Kapsamlı SEO** — blog/içerik modülü, şehir + mutfak bazlı landing sayfaları, FAQ schema,
-      per-şablon CSS bölme (şu an 40 şablonun CSS'i tek bundle'da → LCP)
+- [x] **SEO altyapısı** — 40 şablon vitrin sayfası, FAQ + FAQPage schema, bağlı JSON-LD
+      varlık grafiği (`Organization`/`WebSite`/`SoftwareApplication`), sitemap, `neva:onkontrol --seo`
+- [x] **Markalı hata sayfaları** — 404/403/419/429/500/503, Türkçe ve dış bağımlılıksız
+- [ ] **SEO içerik** — blog/rehber modülü, şehir + mutfak bazlı landing sayfaları
+      (bkz. [docs/SEO.md](docs/SEO.md) §3)
+- [x] **Dağıtım altyapısı** — Ubuntu 24.04 kurulum + dağıtım betikleri, wildcard nginx bloğu
+- [x] **Yedekleme** — `neva:yedek` (DB + görseller + `.env`), günlük, 14 gün saklama
+- [x] **Güvenlik denetimi** — uçtan uca inceleme, [docs/GUVENLIK.md](docs/GUVENLIK.md)
+- [ ] **Per-şablon CSS bölme** — şu an 40 şablonun CSS'i tek bundle'da → LCP
+- [ ] **Müşterinin kendi alan adı** — `custom_domain` + Cloudflare for SaaS
 - [ ] **KVKK** — aydınlatma metni, çerez izni, veri saklama politikası
 - [ ] **Online ödeme** (iyzico) — hacim büyüyünce
 - [ ] **Çoklu dil**

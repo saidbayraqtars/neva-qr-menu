@@ -68,8 +68,10 @@ class QrController extends Controller
         abort_unless(array_key_exists($design, config('neva.qr_designs')), 404);
 
         $restaurant = app('restaurant');
+        // Kök alan adı config'ten gelir — sabit yazılırsa alan adı değiştiğinde
+        // önizleme yanlış adresi gösterir ve kimse fark etmez.
         $sample = $restaurant->isSelfHosted()
-            ? ($restaurant->external_menu_url ?: 'https://'.($restaurant->slug ?: 'menu').'.neva-qr.com')
+            ? ($restaurant->external_menu_url ?: 'https://'.($restaurant->slug ?: 'menu').'.'.config('neva.root_domain'))
             : tenant_domain($restaurant);
 
         return response($qr->preview($sample, $design, $restaurant, 420), 200, [
@@ -81,8 +83,10 @@ class QrController extends Controller
     /** "Hosting Hariç" paketi — kullanıcının dış menü adresini kaydeder. */
     public function externalUpdate(Request $request): RedirectResponse
     {
+        // Şema http/https ile sınırlı: adres panelde tıklanabilir bağlantı olarak
+        // da basılıyor, QR'a gömülen adres de tarayıcıda açılacak.
         $validated = $request->validate([
-            'external_menu_url' => ['required', 'url', 'max:2048'],
+            'external_menu_url' => ['required', 'url:http,https', 'max:2048'],
         ], [
             'external_menu_url.url' => 'Geçerli bir web adresi girin — örn. https://menu.isletmeniz.com',
         ]);

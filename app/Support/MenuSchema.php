@@ -66,8 +66,12 @@ class MenuSchema
             $data['telephone'] = $restaurant->phone;
         }
 
+        // Görseller ÖZEL diskte durur ve /gorsel/... ucundan servis edilir;
+        // `storage/` sembolik bağı bu projede kullanılmıyor. media_url() host'suz
+        // döndüğü için schema.org'un beklediği mutlak adrese kiracı domaini ile
+        // tamamlanır — göreli adres zengin sonuçlarda görseli düşürür.
         if (filled($restaurant->logo_path)) {
-            $data['image'] = asset('storage/'.$restaurant->logo_path);
+            $data['image'] = tenant_domain($restaurant, media_url($restaurant->logo_path));
         }
 
         $sameAs = array_values(array_filter([
@@ -83,41 +87,260 @@ class MenuSchema
             $data['hasMenu'] = [
                 '@type' => 'Menu',
                 'name' => $restaurant->name.' Menü',
+                'url' => tenant_domain($restaurant),
+                'inLanguage' => $restaurant->locale ?: 'tr',
                 'hasMenuSection' => $sections,
             ];
+        }
+
+        // priceRange: Google yerel sonuçlarda "₺₺" gibi bir bant gösterir.
+        // Fiyatlar gizliyse hiç basılmaz — uydurma bant güveni düşürür.
+        if ($restaurant->show_prices && ($range = self::priceRange($categories, $restaurant->currency ?: 'TRY'))) {
+            $data['priceRange'] = $range;
         }
 
         return $data;
     }
 
-    /** Pazarlama sitesi için kurumsal işaretleme. */
+    /** Menüdeki en düşük–en yüksek fiyat, para birimi simgesiyle ("₺180 - ₺780"). */
+    private static function priceRange($categories, string $currency): ?string
+    {
+        $prices = collect($categories)
+            ->flatMap(fn ($category) => $category->products)
+            ->map(fn ($product) => (float) ($product->discount_price ?? $product->price))
+            ->filter(fn ($price) => $price > 0);
+
+        if ($prices->isEmpty()) {
+            return null;
+        }
+
+        $min = $prices->min();
+        $max = $prices->max();
+
+        return $min === $max ? money($min, $currency) : money($min, $currency).' - '.money($max, $currency);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pazarlama sitesi işaretlemeleri
+    |--------------------------------------------------------------------------
+    | Google, aynı sayfadaki düğümleri `@id` ile birbirine bağladığımızda tek bir
+    | varlık grafiği kurar. Bu yüzden Organization ve WebSite sabit `@id`'ler
+    | kullanır ve diğer düğümler onlara referansla bağlanır — her sayfada
+    | kurumsal bilgiyi tekrar tekrar basmak yerine.
+    */
+
+    /** Organization düğümünün sabit kimliği — bütün sayfalarda aynı. */
+    public static function organizationId(): string
+    {
+        return url('/').'#organization';
+    }
+
+    public static function websiteId(): string
+    {
+        return url('/').'#website';
+    }
+
+    /** Pazarlama sitesi için kurumsal işaretleme (şirket künyesinden beslenir). */
     public static function organization(): array
     {
-        return [
-            '@context' => 'https://schema.org',
+        $company = (array) config('neva.legal.company', []);
+
+        $address = array_filter([
+            '@type' => 'PostalAddress',
+            'streetAddress' => $company['address'] ?? null,
+            'addressCountry' => 'TR',
+        ]);
+
+        return array_filter([
             '@type' => 'Organization',
+            '@id' => self::organizationId(),
+            'name' => config('neva.brand.name'),
+            'legalName' => $company['title'] ?? null,
+            'url' => url('/'),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset(config('neva.brand.logo')),
+            ],
+            'email' => config('neva.brand.support_email'),
+            'telephone' => $company['phone'] ?? null,
+            'taxID' => $company['tax_no'] ?? null,
+            // Adres yalnızca açık adres girilmişse basılır: eksik PostalAddress
+            // zengin sonuçlarda uyarı üretir.
+            'address' => count($address) > 2 ? $address : null,
+            'areaServed' => 'TR',
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'contactType' => 'customer support',
+                'email' => config('neva.brand.support_email'),
+                'availableLanguage' => ['Turkish'],
+            ],
+            'sameAs' => array_values(array_filter((array) config('neva.seo.same_as', []))),
+        ], fn ($v) => $v !== null && $v !== []);
+    }
+
+    /** WebSite düğümü — site adı + site içi arama yok, sadece kimlik ve yayıncı. */
+    public static function website(): array
+    {
+        return [
+            '@type' => 'WebSite',
+            '@id' => self::websiteId(),
             'name' => config('neva.brand.name'),
             'url' => url('/'),
-            'logo' => asset(config('neva.brand.logo')),
-            'email' => config('neva.brand.support_email'),
+            'inLanguage' => 'tr-TR',
+            'publisher' => ['@id' => self::organizationId()],
         ];
     }
 
-    /** Fiyatlandırma sayfası için ürün/teklif işaretlemesi. */
+    /**
+     * Ürünün kendisi — SaaS olduğu için Product değil SoftwareApplication.
+     * Paket fiyatları AggregateOffer olarak verilir (Google fiyat aralığını böyle okur).
+     */
+    public static function softwareApplication($plans = null): array
+    {
+        $prices = collect($plans)->pluck('price')->filter()->map(fn ($p) => (float) $p);
+
+        $node = [
+            '@type' => 'SoftwareApplication',
+            '@id' => url('/').'#app',
+            'name' => config('neva.brand.name'),
+            'description' => config('neva.seo.default_description'),
+            'url' => url('/'),
+            'applicationCategory' => 'BusinessApplication',
+            'applicationSubCategory' => 'Restoran dijital menü yazılımı',
+            'operatingSystem' => 'Web',
+            'inLanguage' => 'tr-TR',
+            'publisher' => ['@id' => self::organizationId()],
+            'featureList' => array_values((array) config('neva.seo.feature_list', [])),
+        ];
+
+        if ($prices->isNotEmpty()) {
+            $node['offers'] = array_filter([
+                '@type' => 'AggregateOffer',
+                'priceCurrency' => 'TRY',
+                'lowPrice' => (string) $prices->min(),
+                'highPrice' => (string) $prices->max(),
+                'offerCount' => (string) $prices->count(),
+                'url' => route('pricing'),
+            ]);
+        }
+
+        return $node;
+    }
+
+    /**
+     * Fiyatlandırma sayfası — her paket ayrı Offer.
+     *
+     * `interval` alanı 'year' ise teklif yıllık aboneliktir; Google'ın Offer
+     * şemasında bunun karşılığı `priceSpecification`. 'once' ise tek seferlik
+     * satın alma olarak kalır.
+     */
     public static function offers($plans): array
     {
         return [
             '@context' => 'https://schema.org',
-            '@type' => 'Product',
-            'name' => config('neva.brand.name'),
-            'description' => config('neva.seo.default_description'),
-            'offers' => collect($plans)->map(fn ($plan) => [
-                '@type' => 'Offer',
-                'name' => $plan->name,
-                'price' => (string) $plan->price,
-                'priceCurrency' => 'TRY',
-                'url' => route('pricing'),
+            '@type' => 'ItemList',
+            'name' => config('neva.brand.name').' paketleri',
+            'itemListElement' => collect($plans)->values()->map(function ($plan, $i) {
+                $offer = array_filter([
+                    '@type' => 'Offer',
+                    'name' => $plan->name,
+                    'description' => $plan->tagline ?? null,
+                    'price' => (string) $plan->price,
+                    'priceCurrency' => 'TRY',
+                    'availability' => 'https://schema.org/InStock',
+                    'url' => route('pricing'),
+                    'seller' => ['@id' => self::organizationId()],
+                ]);
+
+                if (($plan->interval ?? null) === 'year') {
+                    $offer['priceSpecification'] = [
+                        '@type' => 'UnitPriceSpecification',
+                        'price' => (string) $plan->price,
+                        'priceCurrency' => 'TRY',
+                        'billingDuration' => 1,
+                        'billingIncrement' => 1,
+                        'unitCode' => 'ANN', // UN/CEFACT: yıl
+                    ];
+                }
+
+                return [
+                    '@type' => 'ListItem',
+                    'position' => $i + 1,
+                    'item' => $offer,
+                ];
+            })->all(),
+        ];
+    }
+
+    /**
+     * Şablon vitrin sayfası — her şablon bir CreativeWork.
+     * Ürünün parçası olduğu `isPartOf` ile uygulamaya bağlanır.
+     */
+    public static function templateShowcase(string $key, array $template, string $url): array
+    {
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'CreativeWork',
+            'name' => $template['label'].' — QR menü şablonu',
+            'description' => $template['description'] ?? null,
+            'url' => $url,
+            'inLanguage' => 'tr-TR',
+            'genre' => 'QR menü tasarımı',
+            'creator' => ['@id' => self::organizationId()],
+            'isPartOf' => ['@id' => url('/').'#app'],
+            'keywords' => implode(', ', array_filter([
+                $template['label'].' qr menü',
+                $template['layout'] ?? null,
+                ($template['mood'] ?? null) === 'dark' ? 'koyu tema dijital menü' : 'açık tema dijital menü',
+            ])),
+        ]);
+    }
+
+    /** Sık sorulan sorular — [soru => cevap] dizisinden FAQPage üretir. */
+    public static function faq(array $items): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => collect($items)->map(fn (array $item) => [
+                '@type' => 'Question',
+                'name' => $item['q'],
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $item['a'],
+                ],
             ])->all(),
+        ];
+    }
+
+    /**
+     * Kırıntı yolu. $trail = [['Ana sayfa', url], ['Şablonlar', url], ['Adı', null]]
+     * Son öğenin adresi null bırakılabilir (mevcut sayfa).
+     */
+    public static function breadcrumb(array $trail): array
+    {
+        return [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => collect($trail)->values()->map(fn (array $step, int $i) => array_filter([
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $step[0],
+                'item' => $step[1] ?? null,
+            ]))->all(),
+        ];
+    }
+
+    /**
+     * Birden çok düğümü tek bir JSON-LD bloğunda birleştirir.
+     * Sayfa başına TEK <script> basmak, düğümlerin `@id` ile birbirine
+     * bağlanabilmesi için gerekli.
+     */
+    public static function graph(array ...$nodes): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => array_values(array_filter($nodes)),
         ];
     }
 }

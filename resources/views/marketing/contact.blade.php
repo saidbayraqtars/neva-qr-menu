@@ -1,6 +1,7 @@
 <x-marketing-layout
-    title="İletişim"
-    description="Neva-QR Menü ekibine ulaşın: demo talebi, paket soruları ve destek. Hafta içi 09:00–18:00 arası bir iş günü içinde dönüş yapıyoruz.">
+    title="İletişim ve Demo Talebi"
+    description="QR menü demo talebi, paket soruları ve destek için Neva-QR ekibine ulaşın. Hafta içi 09:00–18:00 arası, bir iş günü içinde dönüş yapıyoruz."
+    :canonical="route('contact')">
 
     <section class="mx-auto max-w-5xl px-6 py-20">
         <div class="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">

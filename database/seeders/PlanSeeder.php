@@ -46,7 +46,7 @@ class PlanSeeder extends Seeder
                 'extra_table_price' => null,
                 'features' => [
                     '40+ profesyonel şablon',
-                    'Markalı alt domain (isim.neva-qr.com)',
+                    'Markalı alt domain (isim.'.config('neva.root_domain').')',
                     'Şablon değişikliği ve her düzenleme ANINDA canlıya geçer',
                     'SSL + güvenli barındırma dahil',
                     'Öncelikli destek',

@@ -1,8 +1,21 @@
+@php
+    use App\Support\MenuSchema;
+
+    // Ana sayfa varlık grafiğin kökü: Organization + WebSite + ürünün kendisi
+    // aynı blokta, `@id` ile bağlı. Diğer sayfalar bu düğümlere referans verir.
+    $homeJsonLd = MenuSchema::graph(
+        MenuSchema::organization(),
+        MenuSchema::website(),
+        MenuSchema::softwareApplication($plans),
+        MenuSchema::faq(array_slice((array) config('neva.seo.faq', []), 0, 4)),
+    );
+@endphp
+
 <x-marketing-layout
-    title="Menünüz artık bir deneyim"
-    description="Restoran ve kafeler için 40+ özel tasarım şablonu. Kendi alt domaininizde yayınlanan QR menü; ürün ve fiyat değişiklikleri anında canlıya yansır."
+    title="QR Menü — Restoran ve Kafeler İçin Dijital Menü"
+    description="Restoranlar için QR menü: 40 hazır tasarımdan seçin, istediğiniz an değiştirin. İşletmenize özel alt domain, masaya özel QR, anlık fiyat güncelleme."
     :canonical="route('home')"
-    :jsonld="\App\Support\MenuSchema::organization()">
+    :jsonld="$homeJsonLd">
 
     {{-- ==================== HERO ==================== --}}
     <section class="relative overflow-hidden bg-ink-950 text-white">
@@ -134,7 +147,7 @@
                             <i></i><i></i><i></i>
                             <span class="fx-browser__url">
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75M3.75 21.75h16.5a1.5 1.5 0 0 0 1.5-1.5v-8.25a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v8.25a1.5 1.5 0 0 0 1.5 1.5Z"/></svg>
-                                lumina.neva-qr.com
+                                lumina.{{ config('neva.root_domain') }}
                             </span>
                         </div>
                         <div class="fx-browser__page">Lumina</div>
@@ -142,7 +155,7 @@
                 </div>
                 <div class="nv-fcard__body">
                     <h3 class="font-display text-lg text-ink-900">Kendi alt domaininiz</h3>
-                    <p class="mt-1.5 text-sm leading-relaxed text-ink-500">isletmeniz.neva-qr.com gibi markalı bir adres. Ekip onayının ardından anında yayında.</p>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-500">isletmeniz.{{ config('neva.root_domain') }} gibi markalı bir adres. Ekip onayının ardından anında yayında.</p>
                 </div>
             </article>
 

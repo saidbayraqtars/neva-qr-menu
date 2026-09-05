@@ -40,5 +40,13 @@ Schedule::call(function () {
         ->update(['password_setup_token' => null, 'password_setup_expires_at' => null]);
 })->daily()->name('purge-expired-setup-tokens');
 
+// Günlük yedek — veritabanı + yüklenen görseller + .env.
+// Saat 03:00: veri temizliğinden (03:20) ÖNCE çalışır, böylece silinen
+// kayıtların son hali de bir yedekte durur.
+Schedule::command('neva:yedek --tut=14')
+    ->dailyAt('03:00')
+    ->withoutOverlapping()
+    ->onFailure(fn () => logger()->error('Günlük yedek alınamadı.'));
+
 // Başarısız kuyruk işlerini ve eski oturumları temizle.
 Schedule::command('queue:prune-failed --hours=168')->weekly();

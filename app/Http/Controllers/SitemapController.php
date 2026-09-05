@@ -18,7 +18,9 @@ class SitemapController extends Controller
         $xml = Cache::remember('sitemap:root', 3600, function () {
             $urls = [
                 ['loc' => route('home'), 'priority' => '1.0', 'freq' => 'weekly'],
+                ['loc' => route('showcase.index'), 'priority' => '0.9', 'freq' => 'weekly'],
                 ['loc' => route('pricing'), 'priority' => '0.9', 'freq' => 'weekly'],
+                ['loc' => route('faq'), 'priority' => '0.8', 'freq' => 'monthly'],
                 ['loc' => route('about'), 'priority' => '0.7', 'freq' => 'monthly'],
                 ['loc' => route('contact'), 'priority' => '0.7', 'freq' => 'monthly'],
                 ['loc' => route('legal.privacy'), 'priority' => '0.3', 'freq' => 'yearly'],
@@ -26,6 +28,17 @@ class SitemapController extends Controller
                 ['loc' => route('legal.cookies'), 'priority' => '0.3', 'freq' => 'yearly'],
                 ['loc' => route('legal.terms'), 'priority' => '0.3', 'freq' => 'yearly'],
             ];
+
+            // 40 şablon vitrin sayfası. Kiracı adreslerinden ÖNCE gelirler:
+            // sitemap sırası tarama önceliğini doğrudan belirlemese de,
+            // ilk kesilen (50.000 URL) uçta bunların kalması istenir.
+            foreach (array_keys((array) config('neva.templates')) as $key) {
+                $urls[] = [
+                    'loc' => route('showcase.show', $key),
+                    'priority' => '0.7',
+                    'freq' => 'monthly',
+                ];
+            }
 
             if (config('neva.seo.index_tenants', true)) {
                 Restaurant::live()->get(['subdomain', 'slug', 'updated_at'])

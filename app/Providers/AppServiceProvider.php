@@ -63,6 +63,19 @@ class AppServiceProvider extends ServiceProvider
         // QR / PDF üretimi CPU-yoğun: dakikada 20
         RateLimiter::for('render', fn (Request $r) => Limit::perMinute(20)->by($r->user()?->id ?: $r->ip()));
 
+        /*
+        | PDF ayrı ve ÇOK daha sıkı sınırlanır.
+        |
+        | Neden: her PDF isteği headless Chrome süreci başlatır (~250-400 MB, 70 sn
+        | zaman aşımı). 'render' sınırındaki 20/dk ile 2 GB'lık bir sunucu, tek
+        | kullanıcı tarafından bile OOM'a sürüklenebilir. Menü PDF'i saatte birkaç
+        | kez indirilen bir çıktı; 3/dk fazlasıyla yeterli.
+        */
+        RateLimiter::for('pdf', fn (Request $r) => [
+            Limit::perMinute(3)->by($r->user()?->id ?: $r->ip()),
+            Limit::perHour(20)->by($r->user()?->id ?: $r->ip()),
+        ]);
+
         // Tasarım önizlemesi iframe'i: dakikada 120
         RateLimiter::for('preview', fn (Request $r) => Limit::perMinute(120)->by($r->user()?->id ?: $r->ip()));
 

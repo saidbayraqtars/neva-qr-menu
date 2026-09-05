@@ -26,13 +26,13 @@ class DemoSeeder extends Seeder
     {
         // Platform yöneticisi
         User::updateOrCreate(
-            ['email' => 'admin@neva-qr.com'],
+            ['email' => 'admin@nevaqr.com'],
             ['name' => 'Neva Admin', 'password' => 'password', 'role' => User::ROLE_ADMIN]
         );
 
         // ---- Demo 1: Lumina Bistro & Lounge (kahve) ----
         $owner = User::updateOrCreate(
-            ['email' => 'sahip@neva-qr.com'],
+            ['email' => 'sahip@nevaqr.com'],
             ['name' => 'Lumina Sahibi', 'password' => 'password', 'role' => User::ROLE_OWNER]
         );
         $this->subscription($owner);
@@ -78,7 +78,7 @@ class DemoSeeder extends Seeder
 
         // ---- Demo 2: Anadolu Ocakbaşı (kebapçı — 5 kategori × 10 ürün) ----
         $kebapOwner = User::updateOrCreate(
-            ['email' => 'ocakbasi@neva-qr.com'],
+            ['email' => 'ocakbasi@nevaqr.com'],
             ['name' => 'Ocakbaşı Sahibi', 'password' => 'password', 'role' => User::ROLE_OWNER]
         );
         $this->subscription($kebapOwner);

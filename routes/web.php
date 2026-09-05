@@ -5,12 +5,13 @@ use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\Panel;
+use App\Http\Controllers\ShowcaseController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Ana domain rotaları (neva-qr.com)
+| Ana domain rotaları (NEVA_ROOT_DOMAIN)
 |--------------------------------------------------------------------------
 | Pazarlama sitesi, kimlik doğrulama, sahip paneli ve admin paneli.
 | Kiracıya özel (alt domain) rotalar routes/tenant.php içindedir.
@@ -22,6 +23,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [MarketingController::class, 'home'])->name('home');
 Route::get('/fiyatlandirma', [MarketingController::class, 'pricing'])->name('pricing');
 Route::get('/hakkimizda', [MarketingController::class, 'about'])->name('about');
+
+/*
+| Şablon vitrini — 40 tasarımın her biri kendi indekslenebilir adresinde.
+| Adresler Türkçe ve anahtar kelime taşır; değiştirmeyin (bağlantılar kırılır,
+| biriken sıralama sıfırlanır). Zorunlu olursa 301 yönlendirme bırakın.
+*/
+Route::get('/qr-menu-sablonlari', [ShowcaseController::class, 'index'])->name('showcase.index');
+Route::get('/qr-menu-sablonlari/{template}', [ShowcaseController::class, 'show'])
+    ->where('template', '[a-z0-9-]+')
+    ->name('showcase.show');
+
+// iframe'e gömülen ham şablon render'ı (X-Robots-Tag: noindex).
+Route::get('/sablon-onizleme/{template}', [ShowcaseController::class, 'preview'])
+    ->where('template', '[a-z0-9-]+')
+    ->name('showcase.preview');
+
+Route::get('/sikca-sorulan-sorular', [ShowcaseController::class, 'faq'])->name('faq');
 
 Route::get('/iletisim', [MarketingController::class, 'contact'])->name('contact');
 Route::post('/iletisim', [MarketingController::class, 'contact'])
@@ -103,8 +121,10 @@ Route::middleware(['auth', 'password.changed', 'restaurant.context'])
                 Route::get('/qr/masa/{table}/qr.png', [Panel\QrController::class, 'png'])->name('qr.png');
             });
 
+            // PDF headless Chrome başlatır — 'render' sınırının üstüne kendi
+            // sıkı sınırı gelir (bkz. AppServiceProvider › RateLimiter 'pdf').
             Route::get('/menu.pdf', [Panel\MenuPdfController::class, 'download'])
-                ->middleware('plan:pdf')
+                ->middleware(['plan:pdf', 'throttle:pdf'])
                 ->name('menu.pdf');
         });
 

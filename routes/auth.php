@@ -27,12 +27,20 @@ Route::middleware('guest')->group(function () {
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('password.store');
 
     // Hesap açıldıktan sonra kullanıcının şifresini KENDİSİNİN belirlediği akış.
     // (Düz metin geçici şifre gönderiminin yerine geçer.)
+    //
+    // Jeton 48 karakter rastgele olduğu için kaba kuvvet zaten uygulanabilir
+    // değil; throttle ikinci savunma hattı ve aynı zamanda bu ucun bir
+    // e-posta/jeton sayım aracına dönüşmesini engelliyor.
     Route::get('sifre-olustur', [PasswordSetupController::class, 'create'])->name('password.setup');
-    Route::post('sifre-olustur', [PasswordSetupController::class, 'store'])->name('password.setup.store');
+    Route::post('sifre-olustur', [PasswordSetupController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('password.setup.store');
 });
 
 Route::middleware('auth')->group(function () {

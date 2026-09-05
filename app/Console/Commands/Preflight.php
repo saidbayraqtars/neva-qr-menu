@@ -23,7 +23,8 @@ class Preflight extends Command
 {
     protected $signature = 'neva:onkontrol
         {--alt-domain : Yalnızca alt domain yayına alma hazırlığını kontrol et}
-        {--uretim : Yalnızca üretim ayarlarını kontrol et}';
+        {--uretim : Yalnızca üretim ayarlarını kontrol et}
+        {--seo : Yalnızca SEO ayarlarını kontrol et}';
 
     protected $description = 'Alt domain otomasyonu ve üretim ayarları hazır mı diye kontrol eder';
 
@@ -35,7 +36,7 @@ class Preflight extends Command
 
     public function handle(SubdomainHealthChecker $checker): int
     {
-        $only = $this->option('alt-domain') || $this->option('uretim');
+        $only = $this->option('alt-domain') || $this->option('uretim') || $this->option('seo');
 
         if (! $only || $this->option('alt-domain')) {
             $this->components->info('Alt domain yayına alma hazırlığı');
@@ -46,6 +47,12 @@ class Preflight extends Command
         if (! $only || $this->option('uretim')) {
             $this->components->info('Üretim ayarları');
             $this->productionSection();
+            $this->flush();
+        }
+
+        if (! $only || $this->option('seo')) {
+            $this->components->info('SEO');
+            $this->seoSection();
             $this->flush();
         }
 
@@ -241,6 +248,72 @@ class Preflight extends Command
         $writable = is_writable(storage_path('framework')) && is_writable(storage_path('logs'));
         $this->row('storage/ yazılabilir', $writable, $writable ? 'evet' : 'hayır',
             'storage/ ve bootstrap/cache dizinlerine web sunucusu yazabilmeli.');
+    }
+
+    // ------------------------------------------------------------------
+    // SEO
+    // ------------------------------------------------------------------
+
+    /**
+     * SEO tarafında sessizce bozulabilecek şeyler.
+     *
+     * Bunların hiçbiri uygulamayı çökertmez — bu yüzden fark edilmezler.
+     * APP_URL'in http kalması, künyenin boş olması ya da kiracıların dizine
+     * kapalı bırakılması aylar sonra "neden Google'da yokuz" sorusuna dönüşür.
+     */
+    private function seoSection(): void
+    {
+        $url = (string) config('app.url');
+        $host = parse_url($url, PHP_URL_HOST) ?: '';
+        $root = (string) config('neva.root_domain');
+
+        // Kanonik adresler APP_URL'den üretilir: http kalırsa bütün site
+        // kendini http sürümüne kanonikler ve https sürümü elenir.
+        $this->row('Kanonik şema', str_starts_with($url, 'https://'), $url ?: '(boş)',
+            'APP_URL https:// ile başlamalı — kanonik adresler ve sitemap buradan üretilir.');
+
+        // www / çıplak alan adı ikilisi: ikisi de yanıt veriyorsa ve APP_URL
+        // hangisiyse diğeri ona 301'lenmelidir (sunucu tarafı iş).
+        if ($host !== '' && $root !== '' && $host !== $root && $host !== 'www.'.$root) {
+            $this->warn_('APP_URL host', $host,
+                "NEVA_ROOT_DOMAIN '{$root}' ile uyuşmuyor. Kiracı adresleri kökten, kanonikler APP_URL'den üretilir; ikisi ayrılırsa çift içerik oluşur.");
+        } else {
+            $this->row('APP_URL ↔ kök alan adı', true, $host ?: '(boş)', '');
+        }
+
+        $this->row('Kiracı menüleri dizine açık', (bool) config('neva.seo.index_tenants', true),
+            config('neva.seo.index_tenants', true) ? 'açık' : 'kapalı',
+            'NEVA_INDEX_TENANTS=true — kapalıyken kiracı menüleri "noindex" ile yayınlanır ve hiç sıralanmaz.');
+
+        // Şirket künyesi hem KVKK zorunluluğu hem de Organization işaretlemesinin
+        // kaynağı: boşsa arama motoruna kim olduğumuzu söyleyemiyoruz.
+        $company = (array) config('neva.legal.company', []);
+        $identityOk = filled($company['title'] ?? null) && filled($company['address'] ?? null);
+        $this->row('Şirket künyesi', $identityOk, $identityOk ? 'dolu' : 'eksik alan var',
+            'NEVA_LEGAL_ADDRESS / NEVA_LEGAL_TITLE doldurun — Organization işaretlemesi ve hukuki sayfalar buradan beslenir.');
+
+        // Şablon vitrini: sitenin organik trafik yüzeyi. Şablon sayısıyla
+        // yayınlanan sayfa sayısı birebir olmalı.
+        $templates = count((array) config('neva.templates'));
+        $this->row('Şablon vitrin sayfaları', $templates > 0, $templates.' şablon → '.$templates.' sayfa',
+            'config/neva.php › templates boş; /qr-menu-sablonlari altında yayınlanacak sayfa kalmaz.');
+
+        $faq = count((array) config('neva.seo.faq', []));
+        $this->row('Sıkça sorulan sorular', $faq >= 5, $faq.' soru',
+            'En az 5 soru girin (config/neva.php › seo.faq) — FAQPage zengin sonucu az sayıda soruda gösterilmez.');
+
+        $sameAs = array_filter((array) config('neva.seo.same_as', []));
+        if ($sameAs === []) {
+            $this->warn_('Sosyal profiller', 'tanımsız',
+                'NEVA_SEO_INSTAGRAM / NEVA_SEO_LINKEDIN girin — Organization › sameAs kurumsal doğrulamayı güçlendirir.');
+        } else {
+            $this->row('Sosyal profiller', true, count($sameAs).' profil', '');
+        }
+
+        // Paylaşım görseli: OG görseli logoysa sosyal paylaşımlar tek tip görünür.
+        $ogImage = public_path((string) config('neva.seo.og_image'));
+        $this->row('Paylaşım görseli (og:image)', is_file($ogImage), is_file($ogImage) ? config('neva.seo.og_image') : 'dosya yok',
+            'public/'.config('neva.seo.og_image').' bulunamadı — sosyal paylaşımlarda görsel boş çıkar.');
     }
 
     // ------------------------------------------------------------------

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Fiziksel masalar — her masa için tekil bir QR jetonu (qr_token) üretilir.
  * QR PNG çıktısı şu adrese yönlendirir:
- *   https://{subdomain}.neva-qr.com/m/{qr_token}
+ *   https://{subdomain}.nevaqr.com/m/{qr_token}
  */
 return new class extends Migration
 {

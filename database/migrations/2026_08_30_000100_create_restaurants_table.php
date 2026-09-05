@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * "restaurants" tablosu = platformdaki her kiracı (tenant).
  * Alt domain (subdomain) çözümlemesi bu tablo üzerinden yapılır:
- *   {subdomain}.neva-qr.com  ->  restaurants.subdomain
+ *   {subdomain}.nevaqr.com  ->  restaurants.subdomain
  *
  * subdomain alanı NULL olabilir: kullanıcı henüz alt domain talebinde bulunmamış
  * ya da talep admin onayında beklemede olabilir. Yalnızca status = 'approved'

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Kiracı (alt domain) rotaları — {tenant}.neva-qr.com
+| Kiracı (alt domain) rotaları — {tenant}.{NEVA_ROOT_DOMAIN}
 |--------------------------------------------------------------------------
 | Bu grubun tamamı 'tenant' middleware'inden geçer; çözümlenen restoran
 | container'da app('tenant') ve view'lerde $tenant olarak erişilebilir.

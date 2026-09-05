@@ -1,4 +1,10 @@
-@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null, 'categories' => null, 'track' => false])
+{{--
+    $showcase: pazarlama sitesindeki şablon vitrini (iframe içinde) render ediliyor.
+    Bu durumda kanonik adres, kiracı OG etiketleri ve menü JSON-LD'si BASILMAZ:
+    demo menü gerçek bir işletme değil; dizine girerse hem sahte bir Restaurant
+    işaretlemesi yayınlamış oluruz hem de 40 kopya sayfa üretiriz.
+--}}
+@props(['presenter', 'restaurant', 'view' => 'phone', 'embedded' => false, 'print' => false, 'tableLabel' => null, 'categories' => null, 'track' => false, 'showcase' => false])
 <!DOCTYPE html>
 <html lang="{{ $restaurant->locale ?? 'tr' }}">
 <head>
@@ -6,7 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>{{ $restaurant->name }}{{ $restaurant->tagline ? ' — '.$restaurant->tagline : ' — Menü' }}</title>
     <meta name="description" content="{{ \Illuminate\Support\Str::limit($restaurant->tagline ?: $restaurant->name.' dijital menüsü — güncel fiyatlar ve ürünler.', 160) }}">
-@unless ($print)
+@if ($showcase)
+    <meta name="robots" content="noindex, nofollow">
+@elseif (! $print)
     <link rel="canonical" href="{{ tenant_domain($restaurant) }}">
     <meta name="robots" content="{{ config('neva.seo.index_tenants', true) ? 'index, follow, max-image-preview:large' : 'noindex, nofollow' }}">
     <meta property="og:type" content="restaurant.menu">
@@ -19,7 +27,7 @@
     @endif
     <meta name="twitter:card" content="summary_large_image">
     <script type="application/ld+json">{!! json_encode(\App\Support\MenuSchema::forRestaurant($restaurant, $categories ?: collect()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
-@endunless
+@endif
     <link rel="icon" href="{{ $presenter->logoUrl() ?? asset('img/nevalogo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

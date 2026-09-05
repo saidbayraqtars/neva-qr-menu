@@ -1,6 +1,6 @@
 <x-marketing-layout
-    title="Fiyatlandırma"
-    description="Neva-QR Menü paketleri: hosting hariç, hosting dahil ve fiziksel QR basım. Tek seferlik ödeme, gizli ücret yok."
+    title="QR Menü Fiyatları ve Paketler"
+    description="QR menü fiyatları: hosting hariç, hosting dahil ve fiziksel QR basım paketleri. 40 tasarım her pakete dahil, gizli ücret yok."
     :canonical="route('pricing')"
     :jsonld="\App\Support\MenuSchema::offers($plans)">
     <section class="mx-auto max-w-5xl px-6 pt-20 pb-10 text-center">
@@ -65,7 +65,7 @@
             @foreach ([
                 ['Kayıt nasıl işliyor?', 'Kayıt Ol adımında işletme bilgilerinizi girip bir paket seçersiniz. Başvurunuz ekibimize düşer; ödeme onaylandığında hesabınız açılır ve geçici şifreniz iletilir. İlk girişte kalıcı şifrenizi belirlersiniz.'],
                 ['“Hosting Hariç” pakette QR nasıl çalışıyor?', 'Menünüzü kendi sitenizde/barındırmanızda tutarsınız. Panelde menünüzün web adresini girersiniz; sistem o adrese giden bağımsız, sabit bir QR kod üretir. QR’ı indirip doğrudan masalarınıza bastırırsınız. Bu pakette alt domain ve masa bazlı takip yer almaz — bunlar “Hosting Dahil” pakete özeldir.'],
-                ['“Hosting Dahil” pakette ne değişiyor?', 'Menünüz isim.neva-qr.com alt domaininde yayınlanır ve panelde yaptığınız her düzenleme — şablon değişimi dahil — anında canlıya yansır. Tek işletme QR’ı + akıllı masa algılama, barındırma ve SSL bize aittir.'],
+                ['“Hosting Dahil” pakette ne değişiyor?', 'Menünüz isim.'.config('neva.root_domain').' alt domaininde yayınlanır ve panelde yaptığınız her düzenleme — şablon değişimi dahil — anında canlıya yansır. Tek işletme QR’ı + akıllı masa algılama, barındırma ve SSL bize aittir.'],
                 ['Fiziksel QR paketinde masa sayısı nasıl hesaplanıyor?', '15 masaya kadar baskı ve kurulum paket fiyatına dahildir. 15’in üzerindeki her masa için 300 ₺ eklenir; başvuru adımında toplam tutarı anında görürsünüz.'],
                 ['Kendi logomu ve renklerimi kullanabilir miyim?', 'Evet. Logo yükler, vurgu/başlık/zemin renklerini ve yazı tipini seçersiniz; hepsi canlı önizlemede görünür.'],
             ] as $i => [$q, $a])

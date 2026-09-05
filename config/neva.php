@@ -56,7 +56,7 @@ return [
     |--------------------------------------------------------------------------
     | Alt domain yayına alma (otomasyon)
     |--------------------------------------------------------------------------
-    | Wildcard DNS (*.neva-qr.com) tanımlıysa DNS sağlayıcı çağrısına gerek yok:
+    | Wildcard DNS (*.<kök alan adı>) tanımlıysa DNS sağlayıcı çağrısına gerek yok:
     | 'dns.driver' => 'wildcard'. Kiracı başına kayıt açmak gerekiyorsa
     | 'cloudflare' seçilir ve token + zone id verilir.
     */
@@ -66,7 +66,7 @@ return [
             'cloudflare' => [
                 'token' => env('CLOUDFLARE_API_TOKEN'),
                 'zone_id' => env('CLOUDFLARE_ZONE_ID'),
-                'target' => env('NEVA_DNS_TARGET'), // CNAME hedefi, ör. neva-qr.com
+                'target' => env('NEVA_DNS_TARGET'), // CNAME hedefi, ör. nevaqr.com
                 'proxied' => (bool) env('CLOUDFLARE_PROXIED', true),
             ],
         ],
@@ -153,12 +153,92 @@ return [
     |--------------------------------------------------------------------------
     */
     'seo' => [
-        'default_title' => 'Neva-QR Menü — Restoranlar için markalı QR menü',
-        'default_description' => 'Restoran ve kafeler için 40+ özel tasarım şablonu, kendi alt domaininizde yayınlanan QR menü. Fiyat ve ürün değişikliği anında canlıya yansır.',
+        'default_title' => 'QR Menü — Restoran ve Kafeler İçin Dijital Menü | Neva-QR',
+        'default_description' => 'Restoran ve kafeler için QR menü sistemi: 40 hazır tasarım arasından seçin, dilediğiniz zaman değiştirin. Kendi alt domaininizde yayınlanır, fiyat değişikliği anında canlıya yansır.',
         'og_image' => 'img/nevalogo.png',
         'twitter_site' => env('NEVA_TWITTER', null),
         // Kiracı menüleri arama motorlarına açılsın mı?
         'index_tenants' => (bool) env('NEVA_INDEX_TENANTS', true),
+
+        /*
+        | Organization › sameAs — doğrulanmış sosyal profiller. Google kurumsal
+        | bilgi panelini bunlarla eşleştirir. BOŞ bırakmak, var olmayan hesap
+        | yazmaktan iyidir: çözülmeyen sameAs güven sinyalini düşürür.
+        */
+        'same_as' => array_filter([
+            env('NEVA_SEO_INSTAGRAM'),
+            env('NEVA_SEO_LINKEDIN'),
+            env('NEVA_SEO_YOUTUBE'),
+            env('NEVA_SEO_X'),
+        ]),
+
+        /* SoftwareApplication › featureList — ürünün ne yaptığı, makine okunur. */
+        'feature_list' => [
+            '40 hazır QR menü tasarımı',
+            'Tek tıkla şablon değiştirme',
+            'İşletmeye özel alt domain',
+            'Masa başına ayrı QR kod',
+            'Yazdırılabilir menü PDF çıktısı',
+            'Anlık fiyat ve ürün güncelleme',
+            'Tarama ve görüntülenme istatistikleri',
+            'Türkçe destek',
+        ],
+
+        /*
+        |----------------------------------------------------------------------
+        | Sık sorulan sorular
+        |----------------------------------------------------------------------
+        | TEK KAYNAK: /sikca-sorulan-sorular sayfası da, FAQPage JSON-LD'si de
+        | buradan üretilir. Yeni soru eklemek için sadece burayı düzenleyin.
+        |
+        | Cevaplar bilerek 2-4 cümle: Google öne çıkan snippet'lerde bu uzunluğu
+        | alıntılar, tek cümlelik cevaplar çoğu zaman elenir.
+        */
+        'faq' => [
+            [
+                'q' => 'QR menü nedir, nasıl çalışır?',
+                'a' => 'QR menü, masadaki karekodu telefon kamerasıyla okutan misafirin menünüzü doğrudan tarayıcıda görmesini sağlar. Uygulama indirmek gerekmez. Menüyü panelden güncellediğinizde aynı karekod yeni içeriği gösterir; masadaki etiketi değiştirmenize gerek kalmaz.',
+            ],
+            [
+                'q' => 'Tasarımı sonradan değiştirebilir miyim?',
+                'a' => '40 tasarımın tamamı hesabınıza dahildir ve aralarında istediğiniz kadar geçiş yapabilirsiniz. Şablonu değiştirdiğinizde ürünleriniz, fiyatlarınız ve görselleriniz olduğu gibi kalır — yalnızca menünün görünümü değişir. Ek ücret yoktur.',
+            ],
+            [
+                'q' => 'QR menü fiyatları ne kadar?',
+                // NOT: ödeme sıklığı (tek seferlik / yıllık) BİLEREK yazılmadı —
+                // tek doğru kaynak fiyatlandırma sayfasıdır. İki yerde ayrı ayrı
+                // yazılırsa biri güncellenmeden kalır ve yanlış ticari beyan olur.
+                'a' => 'Aylık abonelik yoktur. Hosting hariç paket menü tasarımını ve QR üretimini kapsar, hosting dahil paket işletmenize özel alt domain ve barındırmayı ekler, fiziksel paket ise masa QR baskısı ve yerinde kurulumu içerir. Güncel tutarlar ve ödeme koşulları fiyatlandırma sayfasındadır.',
+            ],
+            [
+                'q' => 'Kendi alan adımda yayınlanabilir mi?',
+                'a' => 'Hosting dahil paketlerde menünüz isletmeadi.'.env('NEVA_ROOT_DOMAIN', 'nevaqr.com').' biçiminde işletmenize özel bir alt domainde yayınlanır. Adı panelden talep edersiniz, onay sonrası adres otomatik olarak açılır ve çalıştığı arka planda doğrulanır.',
+            ],
+            [
+                'q' => 'Menüde yaptığım değişiklik ne kadar sürede görünür?',
+                'a' => 'Hosting dahil pakette değişiklik anında yansır: ürün eklediğinizde veya fiyat güncellediğinizde menünün sürümü artar ve bir sonraki taramada güncel içerik gelir. Önbellek süresi yalnızca üst sınırdır, en geç 2 saatte bir tazelenir.',
+            ],
+            [
+                'q' => 'Her masa için ayrı QR kod alabilir miyim?',
+                'a' => 'Evet. Masa yönetimi olan paketlerde her masaya kendi karekodunu üretirsiniz; misafir menüyü açtığında hangi masada olduğu adreste taşınır. Böylece hangi masanın menüyü ne sıklıkla açtığını istatistiklerde görebilirsiniz.',
+            ],
+            [
+                'q' => 'Misafirlerimin kişisel verisi toplanıyor mu?',
+                'a' => 'Hayır. Menü taramalarında yalnızca gün ve masa bazlı sayaç tutulur; IP adresi, cihaz kimliği veya kişiyi tanımlayacak bir veri saklanmaz. Kişisel veri işleme esaslarımız KVKK aydınlatma metninde ayrıntılı olarak yazılıdır.',
+            ],
+            [
+                'q' => 'Menüyü basılı olarak da kullanabilir miyim?',
+                'a' => 'Panelden seçtiğiniz şablona uygun, görselli bir menü PDF’i indirebilirsiniz. Çıktı ekrandaki tasarımın birebir aynısıdır; A4 olarak bastırıp masa menüsü veya vitrin panosu olarak kullanabilirsiniz.',
+            ],
+            [
+                'q' => 'İnternet bağlantısı olmayan misafir menüyü görebilir mi?',
+                'a' => 'QR menü tarayıcıda açıldığı için misafirin internet bağlantısı gerekir. Çoğu işletme bu nedenle misafir Wi-Fi’si sunar. Bağlantı sorunları için basılı PDF menüyü yedek olarak bulundurmanızı öneririz.',
+            ],
+            [
+                'q' => 'Kurulum ne kadar sürer?',
+                'a' => 'Ödeme onayının ardından hesabınız açılır ve şablonunuzu seçip menünüzü girmeye başlarsınız. Menüsü hazır olan işletmeler genellikle aynı gün içinde yayına geçer; alt domain onayı ve otomatik doğrulama birkaç dakika sürer.',
+            ],
+        ],
     ],
 
     /*
