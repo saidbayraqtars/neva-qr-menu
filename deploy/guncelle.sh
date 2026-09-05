@@ -92,6 +92,27 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+log "Depo iskeleti"
+# ---------------------------------------------------------------------------
+# Git BOŞ DİZİN TAKİP ETMEZ ve bu yollar .gitignore'da. Taze bir klonda
+# storage/framework altındaki dizinler hiç oluşmaz; Laravel de "Please provide
+# a valid cache path" / "View path not found" diyerek 500 döner. Her dağıtımda
+# garanti altına alıyoruz — var olanı bozmaz.
+for d in \
+    storage/app/public \
+    storage/app/uploads \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/testing \
+    storage/logs \
+    bootstrap/cache
+do
+    mkdir -p "$d"
+done
+ok "storage/ ve bootstrap/cache dizinleri yerinde"
+
+# ---------------------------------------------------------------------------
 log "Bağımlılıklar"
 # ---------------------------------------------------------------------------
 as_app composer install --no-dev --optimize-autoloader --no-interaction --quiet
