@@ -184,6 +184,9 @@ Route::middleware(['auth', 'password.changed', 'admin'])
         Route::get('/iletisim', [Admin\ContactMessageController::class, 'index'])->name('contact.index');
         Route::post('/iletisim/{contactMessage}', [Admin\ContactMessageController::class, 'update'])->name('contact.update');
 
+        // Sunucu + uygulama sağlığı (RAM, disk, kuyruk, yedek).
+        Route::get('/sistem', Admin\SystemController::class)->name('system');
+
         // Kullanıcılar + elle hesap oluşturma + şifre belirleme bağlantısı.
         // Hassas ekran: admin şifresini yeniden onaylamadan açılmaz (3 saat geçerli).
         Route::get('/kullanicilar', [Admin\UserController::class, 'index'])
