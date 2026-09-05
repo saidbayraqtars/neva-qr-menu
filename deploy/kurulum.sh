@@ -209,8 +209,20 @@ if [[ ! -f /etc/ssl/nevaqr/origin.pem ]]; then
     echo "      /etc/ssl/nevaqr/origin.key   (private key)"
 fi
 
-nginx -t && systemctl reload nginx
-ok "nginx çalışıyor"
+# `nginx -t && reload` yazımı sessizce yutulabiliyordu: test düşse bile betik
+# devam edip "çalışıyor" diyordu. Artık hata açıkça raporlanıyor.
+if nginx -t 2>/tmp/nginx-test.log; then
+    systemctl reload nginx
+    ok "nginx çalışıyor"
+else
+    echo
+    echo "  ✗ nginx yapılandırması REDDEDİLDİ — site ayakta değil:"
+    sed 's/^/      /' /tmp/nginx-test.log
+    echo
+    echo "    Eski yapılandırma çalışmaya devam ediyor. Düzeltip tekrar deneyin:"
+    echo "      nginx -t && systemctl reload nginx"
+    NGINX_FAILED=1
+fi
 
 # ---------------------------------------------------------------------------
 log "Kuyruk işçisi"
@@ -288,7 +300,11 @@ systemctl enable --now fail2ban >/dev/null 2>&1 || true
 ok "ufw açık (SSH: $(echo $SSH_PORTS | tr '\n' ' ')· 80 · 443) · fail2ban çalışıyor"
 
 # ---------------------------------------------------------------------------
-log "Kurulum bitti"
+if [[ "${NGINX_FAILED:-0}" == "1" ]]; then
+    log "Kurulum bitti — AMA nginx yapılandırması hatalı"
+else
+    log "Kurulum bitti"
+fi
 # ---------------------------------------------------------------------------
 cat <<SONRAKI
 
