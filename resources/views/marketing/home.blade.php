@@ -32,19 +32,20 @@
                      hiçbir şey vaat etmiyordu ve "şablon aileleri" ifadesi
                      40 şablon sistemine geçilmeden önceki kurgudan kalmıştı. --}}
                 <h1 data-reveal class="font-display text-[3.4rem] leading-[1.02] sm:text-6xl">
-                    Bir menü girin,<br><span class="text-gold-400">40 tasarımda</span> deneyin.
+                    Elinizin altında<br><span class="text-gold-400">40 menü tasarımı.</span>
                 </h1>
                 <p data-reveal style="--reveal-delay:100ms" class="mt-6 max-w-lg text-lg leading-relaxed text-ink-300">
-                    Ürünlerinizi bir kez girersiniz; 40 hazır tasarım arasında dilediğiniz zaman
-                    geçiş yaparsınız. Fiyatı değiştirdiğinizde masadaki QR kod aynı kalır,
-                    menü anında güncellenir.
+                    Bugün klasik, yarın modern. Menünüzü <strong class="font-semibold text-white">bir kez</strong>
+                    girin; tasarımı tek tıkla değiştirin. Ürünleriniz, fiyatlarınız ve fotoğraflarınız
+                    yerinde kalır — değişen sadece menünüzün yüzü olur.
+                    Masadaki QR kod ise hiç değişmez.
                 </p>
                 <div data-reveal style="--reveal-delay:180ms" class="mt-9 flex flex-wrap gap-3">
                     <a href="{{ route('register') }}" class="btn-gold px-7 py-3 text-base">Hemen başvur</a>
                     <a href="{{ route('pricing') }}" class="btn nv-btn-outline px-7 py-3 text-base text-white ring-1 ring-white/25 hover:bg-white/10">Paketleri gör</a>
                 </div>
                 <ul data-reveal style="--reveal-delay:260ms" class="mt-9 flex flex-wrap gap-x-7 gap-y-2.5 text-sm text-ink-300">
-                    @foreach (['40 tasarım, hepsi dahil', 'Tasarım değişimi tek tık', 'Fiyat değişikliği anında yansır'] as $f)
+                    @foreach (['40 tasarım — hepsi dahil', 'Tasarım değişimi: tek tık', 'Fiyat değişimi: anında canlıda'] as $f)
                         <li class="flex items-center gap-2">
                             <svg class="h-4 w-4 flex-shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
                             {{ $f }}
@@ -71,11 +72,11 @@
     <section class="bg-white py-24">
         <div class="mx-auto max-w-6xl px-6">
             <div class="mx-auto max-w-2xl text-center" data-reveal>
-                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Kırk tasarım, tek menü</h2>
+                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Menünüzden sıkıldınız mı? Tasarımını değiştirin.</h2>
                 <p class="mt-3 text-ink-500">
-                    Menünüzü bir kez girersiniz. Sonra istediğiniz tasarıma geçersiniz —
-                    ürünleriniz, fiyatlarınız ve fotoğraflarınız olduğu gibi taşınır.
-                    Aşağıda ikisi var; kalan otuz sekizi vitrin sayfasında.
+                    Mevsim değişti, konsept yenilendi, mekân tazelendi — menüyü baştan girmeye
+                    gerek yok. Yeni tasarımı seçersiniz, içeriğiniz olduğu gibi taşınır.
+                    Aşağıda ikisi var; kalan <strong class="font-semibold text-ink-700">otuz sekizi</strong> vitrinde sizi bekliyor.
                 </p>
             </div>
 
@@ -112,8 +113,11 @@
     {{-- ==================== ÖZELLİKLER (görselli bento) ==================== --}}
     <section class="mx-auto max-w-6xl px-6 py-24">
         <div class="mx-auto max-w-2xl text-center" data-reveal>
-            <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Menüden fazlası</h2>
-            <p class="mt-3 text-ink-500">Küçük bir işletme için de büyük bir zincir için de aynı özenle çalışır.</p>
+            <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Bir menüden çok daha fazlası</h2>
+            <p class="mt-3 text-ink-500">
+                Markalı adresiniz, masaya özel QR kodlarınız, baskıya hazır PDF'iniz ve
+                hangi masanın ne sıklıkta menüyü açtığı — hepsi tek panelde.
+            </p>
         </div>
 
         @php
@@ -210,8 +214,8 @@
     <section class="bg-white py-24">
         <div class="mx-auto max-w-6xl px-6">
             <div class="mx-auto max-w-2xl text-center" data-reveal>
-                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Tek seferlik paketler</h2>
-                <p class="mt-3 text-ink-500">Aylık abonelik yok. Bir kez ödeyin, menünüz sizin olsun.</p>
+                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Bir kez ödeyin, hep sizin olsun</h2>
+                <p class="mt-3 text-ink-500">Aylık abonelik yok, sürpriz kesinti yok. 40 tasarımın tamamı her pakete dahil.</p>
             </div>
             <div class="mt-12 grid gap-6 lg:grid-cols-3">
                 @foreach ($plans as $i => $plan)
@@ -243,8 +247,8 @@
         <div class="relative overflow-hidden rounded-3xl bg-ink-950 px-8 py-16 text-center text-white sm:px-16" data-reveal="scale">
             <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-gold-500/20 blur-3xl"></div>
             <div class="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-gold-700/15 blur-3xl"></div>
-            <h2 class="relative font-display text-3xl sm:text-4xl">Menünüzü bugün dönüştürün</h2>
-            <p class="relative mx-auto mt-3 max-w-md text-ink-300">Paketinizi seçin, başvurun; ödeme onayının ardından hemen yayında.</p>
+            <h2 class="relative font-display text-3xl sm:text-4xl">Menünüz bu akşam yayında olabilir</h2>
+            <p class="relative mx-auto mt-3 max-w-md text-ink-300">Paketinizi seçin, başvurun. Ödeme onaylandığı an panel açılır; tasarımı seçip menünüzü girmeniz yeterli.</p>
             <a href="{{ route('register') }}" class="btn-gold relative mt-8 px-8 py-3 text-base">Başvuru yap</a>
         </div>
     </section>
