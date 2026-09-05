@@ -42,17 +42,31 @@ chown -R "${APP_USER}:${APP_USER}" "$HOME"
 # onlara yazamaz — "permission denied" hatasının en sık sebebi budur.
 # NOT: `sudo -u kullanici VAR=deger komut` çalışmaz — sudoers `env_reset`
 # değişkenleri siler. `env` ile açıkça geçiriyoruz.
+# GIT_SSH_COMMAND yalnızca tanımlıysa geçirilir (aşağıda, dağıtım anahtarı
+# varsa ayarlanıyor). Boş bir değişken `env`'e "=" olarak gider ve hata verir.
 as_app() {
     sudo -u "$APP_USER" env \
         HOME="$HOME" \
         npm_config_cache="$npm_config_cache" \
         COMPOSER_HOME="$COMPOSER_HOME" \
+        ${GIT_SSH_COMMAND:+GIT_SSH_COMMAND="$GIT_SSH_COMMAND"} \
         "$@"
 }
 
 # git 2.35+ sahibi farklı olan depoda çalışmayı reddediyor ("dubious ownership").
 # Dizin zaten www-data'ya ait; yine de açıkça güvenli işaretleyelim.
 as_app git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
+
+# Özel depo için dağıtım anahtarı.
+#
+# NEDEN /etc/nevaqr: git komutları uygulama kullanıcısı olarak çalışıyor.
+# Anahtar /root/.ssh altında dursaydı www-data okuyamaz ve fetch
+# "Host key verification failed" ile düşerdi. Anahtar salt-okunur bir
+# GitHub deploy key; yazma yetkisi yok.
+DEPLOY_KEY=/etc/nevaqr/github_deploy
+if [[ -f "$DEPLOY_KEY" ]]; then
+    export GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes -o UserKnownHostsFile=/etc/nevaqr/known_hosts -o StrictHostKeyChecking=yes"
+fi
 
 # Deploy ev dizini depoya karismasin.
 grep -qxF '/.deploy-home' .gitignore 2>/dev/null || echo '/.deploy-home' >> .gitignore
