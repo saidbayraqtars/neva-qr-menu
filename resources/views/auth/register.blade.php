@@ -34,6 +34,25 @@
             <p class="mt-1 text-sm text-ink-500" x-text="step === 1 ? 'Adım 1 / 2 · İşletme ve iletişim bilgileri' : 'Adım 2 / 2 · Paket seçimi'"></p>
         </div>
 
+        {{-- Sahipsiz bir alt domainden gelindiyse (bkz. tenant/claim.blade.php)
+             hangi adresi istediğini hatırlatıyoruz. Adres BURADA ayrılmaz —
+             tahsis, hesap açıldıktan sonra panelden talep edilip admin
+             onaylayınca olur. Söz vermiş gibi görünmemek için dili buna göre. --}}
+        @php
+            $wanted = app(\App\Services\SubdomainService::class)->normalize((string) request()->query('alan'));
+        @endphp
+        @if ($wanted !== '' && preg_match(config('neva.subdomain_pattern'), $wanted))
+            <div class="mb-6 rounded-xl bg-gold-500/10 px-4 py-3 text-sm ring-1 ring-gold-500/25">
+                <p class="font-medium text-ink-900">
+                    <span class="font-mono">{{ $wanted }}.{{ config('neva.root_domain') }}</span> adresini istiyorsunuz.
+                </p>
+                <p class="mt-1 leading-relaxed text-ink-600">
+                    Hesabınız açıldıktan sonra panelden bu adı talep edersiniz; onaylandığında
+                    adresiniz otomatik olarak yayına alınır. Bu ad şu an kimseye ayrılmadı.
+                </p>
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('register') }}" class="space-y-5">
             @csrf
 
