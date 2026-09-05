@@ -184,6 +184,13 @@ Route::middleware(['auth', 'password.changed', 'admin'])
         Route::get('/iletisim', [Admin\ContactMessageController::class, 'index'])->name('contact.index');
         Route::post('/iletisim/{contactMessage}', [Admin\ContactMessageController::class, 'update'])->name('contact.update');
 
+        // Havale/EFT hesapları — para akışını belirleyen ekran.
+        Route::get('/banka-hesaplari', [Admin\PaymentAccountController::class, 'index'])->name('accounts.index');
+        Route::post('/banka-hesaplari', [Admin\PaymentAccountController::class, 'store'])->name('accounts.store');
+        Route::put('/banka-hesaplari/{paymentAccount}', [Admin\PaymentAccountController::class, 'update'])->name('accounts.update');
+        Route::post('/banka-hesaplari/{paymentAccount}/durum', [Admin\PaymentAccountController::class, 'toggle'])->name('accounts.toggle');
+        Route::delete('/banka-hesaplari/{paymentAccount}', [Admin\PaymentAccountController::class, 'destroy'])->name('accounts.destroy');
+
         // Sunucu + uygulama sağlığı (RAM, disk, kuyruk, yedek).
         Route::get('/sistem', Admin\SystemController::class)->name('system');
 

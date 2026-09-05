@@ -11,6 +11,7 @@
             ['route' => 'admin.messages.index', 'label' => 'Mesajlar', 'icon' => 'M8 10h8M8 14h5m8-2a9 9 0 11-3.6-7.2L21 4l-1.4 4.8A8.96 8.96 0 0121 12z', 'badge' => true],
             ['route' => 'admin.contact.index', 'label' => 'İletişim Formu', 'icon' => 'M3 8l9 6 9-6M3 8v8a2 2 0 002 2h14a2 2 0 002-2V8M3 8l2-2h14l2 2'],
             ['route' => 'admin.users.index', 'label' => 'Kullanıcılar', 'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4z'],
+            ['route' => 'admin.accounts.index', 'label' => 'Banka Hesapları', 'icon' => 'M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 8h4'],
             ['route' => 'admin.system', 'label' => 'Sistem', 'icon' => 'M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-3-4h.01M17 16h.01'],
         ]
         : [

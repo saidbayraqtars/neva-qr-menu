@@ -24,20 +24,32 @@ class MembershipReceived extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $bank = (array) config('neva.payment.bank');
         $req = $this->membershipRequest;
+        $accounts = \App\Support\PaymentAccounts::active();
 
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject(config('neva.brand.name').' — başvurunuz alındı')
             ->greeting('Merhaba '.$req->name.',')
             ->line('"'.$req->business_name.'" için başvurunuzu aldık.')
             ->line('**Paket:** '.($req->plan?->name ?? '—'))
             ->line('**Tutar:** '.money($req->amount))
             ->line('**Referans kodu:** '.$req->reference_code)
-            ->line('Ödemenizi aşağıdaki hesaba havale/EFT ile yapabilirsiniz. Açıklama kısmına referans kodunuzu yazmayı unutmayın.')
-            ->line('**Alıcı:** '.($bank['account_name'] ?? '-'))
-            ->line('**Banka:** '.($bank['bank_name'] ?? '-'))
-            ->line('**IBAN:** '.($bank['iban'] ?? '-'))
-            ->line('Ödemeniz hesabımıza geçtiğinde hesabınızı açıp şifre belirleme bağlantısını göndereceğiz.');
+            ->line($accounts->count() > 1
+                ? 'Ödemenizi aşağıdaki hesaplardan **herhangi birine** havale/EFT ile yapabilirsiniz. Açıklama kısmına referans kodunuzu yazmayı unutmayın.'
+                : 'Ödemenizi aşağıdaki hesaba havale/EFT ile yapabilirsiniz. Açıklama kısmına referans kodunuzu yazmayı unutmayın.');
+
+        foreach ($accounts as $account) {
+            $mail->line('---')
+                ->line('**Banka:** '.$account->bank_name.($account->note ? ' ('.$account->note.')' : ''))
+                ->line('**Alıcı:** '.$account->account_name)
+                ->line('**IBAN:** '.$account->formatted_iban);
+        }
+
+        if ($accounts->isEmpty()) {
+            // Hesap tanımlı değilse müşteriyi boş bir talimatla baş başa bırakma.
+            $mail->line('Ödeme bilgileri kısa süre içinde ayrıca iletilecektir.');
+        }
+
+        return $mail->line('Ödemeniz hesabımıza geçtiğinde hesabınızı açıp şifre belirleme bağlantısını göndereceğiz.');
     }
 }

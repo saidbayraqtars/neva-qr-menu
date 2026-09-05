@@ -31,20 +31,38 @@
                 <strong>Açıklama kısmına referans kodunuzu yazmayı unutmayın.</strong>
             </p>
 
-            <dl class="mt-4 space-y-2.5 text-sm">
-                <div class="flex items-start justify-between gap-3">
-                    <dt class="shrink-0 text-ink-500">Alıcı</dt>
-                    <dd class="text-right font-semibold text-ink-900">{{ $bank['account_name'] ?? '—' }}</dd>
-                </div>
-                <div class="flex items-start justify-between gap-3">
-                    <dt class="shrink-0 text-ink-500">Banka</dt>
-                    <dd class="text-right font-semibold text-ink-900">{{ $bank['bank_name'] ?? '—' }}</dd>
-                </div>
-                <div class="flex items-start justify-between gap-3">
-                    <dt class="shrink-0 text-ink-500">IBAN</dt>
-                    <dd class="text-right font-mono text-[13px] font-semibold tracking-tight text-ink-900">{{ $bank['iban'] ?? '—' }}</dd>
-                </div>
-            </dl>
+            @php $accounts = \App\Support\PaymentAccounts::active(); @endphp
+
+            @forelse ($accounts as $account)
+                <dl @class(['mt-4 space-y-2.5 text-sm', 'border-t border-gold-200 pt-4' => ! $loop->first])>
+                    <div class="flex items-start justify-between gap-3">
+                        <dt class="shrink-0 text-ink-500">Banka</dt>
+                        <dd class="text-right font-semibold text-ink-900">
+                            {{ $account->bank_name }}
+                            @if ($account->note)
+                                <span class="block text-xs font-normal text-ink-400">{{ $account->note }}</span>
+                            @endif
+                        </dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-3">
+                        <dt class="shrink-0 text-ink-500">Alıcı</dt>
+                        <dd class="text-right font-semibold text-ink-900">{{ $account->account_name }}</dd>
+                    </div>
+                    <div class="flex items-start justify-between gap-3">
+                        <dt class="shrink-0 text-ink-500">IBAN</dt>
+                        <dd class="text-right font-mono text-[13px] font-semibold tracking-tight text-ink-900">{{ $account->formatted_iban }}</dd>
+                    </div>
+                </dl>
+            @empty
+                {{-- Hesap tanımlı değil: uydurma bir IBAN göstermektense dürüst ol. --}}
+                <p class="mt-4 rounded-xl bg-white px-4 py-3 text-sm text-ink-600 ring-1 ring-gold-200">
+                    Ödeme bilgileri en kısa sürede e-posta ile iletilecektir.
+                </p>
+            @endforelse
+
+            @if ($accounts->count() > 1)
+                <p class="mt-3 text-xs text-ink-500">Hesaplardan herhangi birine ödeme yapabilirsiniz.</p>
+            @endif
 
             <div class="mt-4 rounded-xl bg-white p-4 ring-1 ring-gold-200">
                 <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Havale açıklaması</p>
