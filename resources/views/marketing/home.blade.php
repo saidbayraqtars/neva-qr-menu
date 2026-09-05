@@ -27,26 +27,31 @@
 
         <div class="relative mx-auto grid max-w-6xl gap-16 px-6 py-24 sm:py-28 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
+                {{-- Başlık ürünün ASIL farkını söylüyor: menü bir kez girilir,
+                     tasarım istendiği zaman değişir. Eski metin ("bir deneyim")
+                     hiçbir şey vaat etmiyordu ve "şablon aileleri" ifadesi
+                     40 şablon sistemine geçilmeden önceki kurgudan kalmıştı. --}}
                 <h1 data-reveal class="font-display text-[3.4rem] leading-[1.02] sm:text-6xl">
-                    Menünüz artık<br>bir <span class="text-gold-400">deneyim.</span>
+                    Bir menü girin,<br><span class="text-gold-400">40 tasarımda</span> deneyin.
                 </h1>
                 <p data-reveal style="--reveal-delay:100ms" class="mt-6 max-w-lg text-lg leading-relaxed text-ink-300">
-                    QR ile açılan, markanıza özel tasarlanmış dijital menüler. Kafe ve restoran
-                    şablon aileleri, canlı önizleme editörü ve tek tıkla baskıya hazır bir PDF broşür.
+                    Ürünlerinizi bir kez girersiniz; 40 hazır tasarım arasında dilediğiniz zaman
+                    geçiş yaparsınız. Fiyatı değiştirdiğinizde masadaki QR kod aynı kalır,
+                    menü anında güncellenir.
                 </p>
                 <div data-reveal style="--reveal-delay:180ms" class="mt-9 flex flex-wrap gap-3">
                     <a href="{{ route('register') }}" class="btn-gold px-7 py-3 text-base">Hemen başvur</a>
                     <a href="{{ route('pricing') }}" class="btn nv-btn-outline px-7 py-3 text-base text-white ring-1 ring-white/25 hover:bg-white/10">Paketleri gör</a>
                 </div>
                 <ul data-reveal style="--reveal-delay:260ms" class="mt-9 flex flex-wrap gap-x-7 gap-y-2.5 text-sm text-ink-300">
-                    @foreach (['40+ premium şablon', 'Canlı önizleme editörü', 'Tek tıkla PDF broşür'] as $f)
+                    @foreach (['40 tasarım, hepsi dahil', 'Tasarım değişimi tek tık', 'Fiyat değişikliği anında yansır'] as $f)
                         <li class="flex items-center gap-2">
                             <svg class="h-4 w-4 flex-shrink-0 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
                             {{ $f }}
                         </li>
                     @endforeach
                 </ul>
-                <p data-reveal style="--reveal-delay:320ms" class="mt-7 text-xs text-ink-400">Tek seferlik paket · birkaç dakikada başvuru · aylık abonelik yok</p>
+                <p data-reveal style="--reveal-delay:320ms" class="mt-7 text-xs text-ink-400">Tek seferlik ödeme · aylık abonelik yok · başvuru birkaç dakika</p>
             </div>
 
             {{-- Telefon maketi — içinde elde tasarlanmış menü akıyor --}}
@@ -66,8 +71,12 @@
     <section class="bg-white py-24">
         <div class="mx-auto max-w-6xl px-6">
             <div class="mx-auto max-w-2xl text-center" data-reveal>
-                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">İki kusursuz şablon ailesi</h2>
-                <p class="mt-3 text-ink-500">İşletmenizin karakterine uygun olanı seçin — renk, logo ve tipografiyi kendinize göre ayarlayın, istediğiniz zaman değiştirin.</p>
+                <h2 class="font-display text-3xl text-ink-900 sm:text-4xl">Kırk tasarım, tek menü</h2>
+                <p class="mt-3 text-ink-500">
+                    Menünüzü bir kez girersiniz. Sonra istediğiniz tasarıma geçersiniz —
+                    ürünleriniz, fiyatlarınız ve fotoğraflarınız olduğu gibi taşınır.
+                    Aşağıda ikisi var; kalan otuz sekizi vitrin sayfasında.
+                </p>
             </div>
 
             <div class="mt-16 grid gap-12 md:grid-cols-2 lg:gap-16">
@@ -77,8 +86,8 @@
                     </div>
                     <div class="mt-7 text-center">
                         <span class="inline-flex rounded-full bg-ink-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-ink-500">Saf tipografi</span>
-                        <h3 class="mt-2.5 font-display text-xl text-ink-900">Kafe</h3>
-                        <p class="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-500">Sade tipografi, hızlı taranan dikey liste, kahve ve tatlı odaklı zarif satırlar. Fotoğrafsız, az ama özenli.</p>
+                        <h3 class="mt-2.5 font-display text-xl text-ink-900">Fotoğrafsız menüler için</h3>
+                        <p class="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-500">Ürün fotoğrafı çekmeye vaktiniz yoksa: sade tipografi, hızlı taranan dikey liste. Boş görsel kutuları yerine düzgün bir okuma düzeni.</p>
                     </div>
                 </div>
 
@@ -88,14 +97,14 @@
                     </div>
                     <div class="mt-7 text-center">
                         <span class="inline-flex rounded-full bg-gold-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold-700">Görsel odaklı</span>
-                        <h3 class="mt-2.5 font-display text-xl text-ink-900">Restoran</h3>
-                        <p class="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-500">İştah açan yemek fotoğrafları, öne çıkan tabaklar ve atmosferik koyu zemin. Görsellerle satan menü.</p>
+                        <h3 class="mt-2.5 font-display text-xl text-ink-900">Fotoğraflı menüler için</h3>
+                        <p class="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-500">Tabak fotoğraflarınız varsa: görseller büyük tutulur, öne çıkan ürünler vurgulanır. Akşam servisinde koyu zemin göz yormaz.</p>
                     </div>
                 </div>
             </div>
 
             <p class="mt-14 text-center text-sm" data-reveal>
-                <a href="{{ route('pricing') }}" class="font-medium text-gold-700 hover:underline">Şablon aileleri ve her paketin kapsamı →</a>
+                <a href="{{ route('showcase.index') }}" class="font-medium text-gold-700 hover:underline">40 tasarımın tümünü görün →</a>
             </p>
         </div>
     </section>
