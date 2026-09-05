@@ -14,9 +14,31 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
+
+            /*
+            |------------------------------------------------------------------
+            | SQLite eşzamanlılık ayarları
+            |------------------------------------------------------------------
+            | Bu üçü boş bırakılırsa SQLite varsayılana düşer ve varsayılan bu
+            | uygulama için yanlış:
+            |
+            | journal_mode=WAL — varsayılan "delete" modunda her yazma tüm
+            |   veritabanını kilitler ve OKUYUCULAR BEKLER. Menü her açıldığında
+            |   görüntülenme sayacı yazılıyor (/olcum); yani taramalar
+            |   birbirini kilitliyor. WAL'de okuyucu yazıcıyı, yazıcı okuyucuyu
+            |   engellemez — bu uygulamadaki tek gerçek darboğazı kaldırır.
+            |
+            | synchronous=NORMAL — WAL ile birlikte güvenli: işletim sistemi
+            |   çökmesinde bile veri bozulmaz, yalnızca son saniyelerin
+            |   işlemleri kaybolabilir (kayıp olan şey görüntülenme sayacı).
+            |   FULL modun her commit'teki fsync maliyetini ödemeye değmiyor.
+            |
+            | busy_timeout — kilit bekleyen sorgu hemen hata vermek yerine
+            |   beklesin. WAL ile nadiren devreye girer ama emniyet kemeri.
+            */
+            'busy_timeout' => env('DB_SQLITE_BUSY_TIMEOUT', 5000),
+            'journal_mode' => env('DB_SQLITE_JOURNAL', 'WAL'),
+            'synchronous' => env('DB_SQLITE_SYNCHRONOUS', 'NORMAL'),
         ],
 
         'mysql' => [
