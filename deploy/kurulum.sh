@@ -241,11 +241,35 @@ ok "dakikalık schedule:run kuruldu"
 # ---------------------------------------------------------------------------
 log "Güvenlik duvarı"
 # ---------------------------------------------------------------------------
-ufw allow OpenSSH >/dev/null
+# SSH PORTUNU VARSAYMA — BUL.
+#
+# `ufw allow OpenSSH` yalnızca 22'yi açar. Sağlayıcı sshd'yi başka bir porta
+# almışsa (22667 gibi) güvenlik duvarını açtığın an bağlantın kopar ve sunucuya
+# bir daha giremezsin. Bu yüzden gerçekte DİNLENEN portları buluyoruz.
+SSH_PORTS=$(
+    {
+        ss -tlnp 2>/dev/null | awk '/sshd/ {split($4,a,":"); print a[length(a)]}'
+        sshd -T 2>/dev/null | awk '/^port /{print $2}'
+        awk '/^[[:space:]]*Port[[:space:]]+[0-9]+/{print $2}' /etc/ssh/sshd_config 2>/dev/null
+    } | sort -un
+)
+
+# Hiçbir şey bulunamazsa 22'ye düş — ama sessizce değil, uyararak.
+if [[ -z "$SSH_PORTS" ]]; then
+    SSH_PORTS=22
+    echo "  ! SSH portu tespit edilemedi, 22 varsayıldı."
+    echo "    Farklı bir porttan bağlıysan ufw'yi ETKİNLEŞTİRME, önce portu ekle:"
+    echo "      ufw allow <port>/tcp"
+fi
+
+for port in $SSH_PORTS; do
+    ufw allow "${port}/tcp" >/dev/null
+done
+
 ufw allow 'Nginx Full' >/dev/null
 ufw --force enable >/dev/null
 systemctl enable --now fail2ban >/dev/null 2>&1 || true
-ok "ufw açık (22, 80, 443) · fail2ban çalışıyor"
+ok "ufw açık (SSH: $(echo $SSH_PORTS | tr '\n' ' ')· 80 · 443) · fail2ban çalışıyor"
 
 # ---------------------------------------------------------------------------
 log "Kurulum bitti"
