@@ -43,7 +43,7 @@ Schedule::call(function () {
 // Günlük yedek — veritabanı + yüklenen görseller + .env.
 // Saat 03:00: veri temizliğinden (03:20) ÖNCE çalışır, böylece silinen
 // kayıtların son hali de bir yedekte durur.
-Schedule::command('neva:yedek --tut=14')
+Schedule::command('neva:yedek --adet=7 --tut=30 --azami=8G')
     ->dailyAt('03:00')
     ->withoutOverlapping()
     ->onFailure(fn () => logger()->error('Günlük yedek alınamadı.'));

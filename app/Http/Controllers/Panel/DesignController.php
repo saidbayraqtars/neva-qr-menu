@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Support\ImageProcessor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -100,7 +101,12 @@ class DesignController extends Controller
                 if ($restaurant->cover_path) {
                     Storage::disk($disk)->delete($restaurant->cover_path);
                 }
-                $validated['cover_path'] = $request->file('cover')->store("restaurants/{$restaurant->id}/brand", $disk);
+                $validated['cover_path'] = ImageProcessor::store(
+                    $request->file('cover'),
+                    "restaurants/{$restaurant->id}/brand",
+                    $disk,
+                    config('neva.uploads.max_edge.cover'),
+                );
             }
         }
 

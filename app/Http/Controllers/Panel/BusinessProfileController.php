@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Support\ImageProcessor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -52,7 +53,14 @@ class BusinessProfileController extends Controller
             if ($restaurant->logo_path) {
                 Storage::disk($disk)->delete($restaurant->logo_path);
             }
-            $validated['logo_path'] = $request->file('logo')->store("restaurants/{$restaurant->id}/brand", $disk);
+            // Logo PNG olarak saklanır: şeffaf zemin şablonların çoğunda gerekli.
+            $validated['logo_path'] = ImageProcessor::store(
+                $request->file('logo'),
+                "restaurants/{$restaurant->id}/brand",
+                $disk,
+                config('neva.uploads.max_edge.logo'),
+                transparency: true,
+            );
         }
 
         unset($validated['logo'], $validated['remove_logo']);

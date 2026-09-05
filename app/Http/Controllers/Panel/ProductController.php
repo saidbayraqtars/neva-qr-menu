@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Support\ImageProcessor;
 use App\Models\Product;
 use App\Services\PlanGate;
 use Illuminate\Http\RedirectResponse;
@@ -55,7 +56,12 @@ class ProductController extends Controller
             'allergens' => $request->preparedAllergens(),
             'sort_order' => (int) $restaurant->products()->where('category_id', $request->integer('category_id'))->max('sort_order') + 1,
             'image_path' => $request->hasFile('image')
-                ? $request->file('image')->store("restaurants/{$restaurant->id}/products", config('neva.uploads.disk'))
+                ? ImageProcessor::store(
+                    $request->file('image'),
+                    "restaurants/{$restaurant->id}/products",
+                    config('neva.uploads.disk'),
+                    config('neva.uploads.max_edge.product'),
+                )
                 : null,
         ]);
 
@@ -94,7 +100,12 @@ class ProductController extends Controller
             if ($product->image_path) {
                 Storage::disk(config('neva.uploads.disk'))->delete($product->image_path);
             }
-            $data['image_path'] = $request->file('image')->store("restaurants/{$product->restaurant_id}/products", config('neva.uploads.disk'));
+            $data['image_path'] = ImageProcessor::store(
+                $request->file('image'),
+                "restaurants/{$product->restaurant_id}/products",
+                config('neva.uploads.disk'),
+                config('neva.uploads.max_edge.product'),
+            );
         }
 
         $product->update($data);

@@ -27,7 +27,9 @@ class Backup extends Command
 {
     protected $signature = 'neva:yedek
         {--dizin= : Arşivin yazılacağı dizin (varsayılan: storage/app/backups)}
-        {--tut=14 : Kaç günlük yedek saklansın (0 = hiç silme)}
+        {--adet=7 : En fazla kaç arşiv saklansın (0 = adet sınırı yok)}
+        {--tut=30 : Kaç günden eski arşivler silinsin (0 = yaş sınırı yok)}
+        {--azami=8G : Arşivlerin toplam disk bütçesi (ör. 500M, 8G · 0 = sınırsız)}
         {--gorsel-yok : Yüklenen görselleri arşive ekleme (yalnız veritabanı + .env)}';
 
     protected $description = 'Veritabanı, yüklenen görseller ve .env dosyasını tek arşive yedekler';
@@ -86,6 +88,15 @@ class Backup extends Command
     {
         $driver = (string) config('database.default');
         $db = (array) config("database.connections.$driver");
+
+        // Bellekteki veritabanının yedeği diye bir şey yok. Sessizce atlamak
+        // yerine AÇIKÇA söylüyoruz: "yedek aldım" sanıp veri kaybetmek,
+        // yedeğin hiç alınmamasından kötüdür.
+        if ($driver === 'sqlite' && ($db['database'] ?? null) === ':memory:') {
+            $this->line('  <fg=yellow>!</> veritabanı bellekte (:memory:) — arşive EKLENMEDİ');
+
+            return;
+        }
 
         match ($driver) {
             'sqlite' => $this->addSqlite($zip, $db),
@@ -211,28 +222,96 @@ class Backup extends Command
         $this->line("  <fg=green>✓</> görseller ({$count} dosya, {$this->humanSize($bytes)})");
     }
 
-    /** Saklama süresi dolan arşivleri siler. */
+    /**
+     * Eski arşivleri temizler — üç sınır birlikte uygulanır.
+     *
+     * NEDEN SADECE YAŞ YETMİYOR: her arşiv yüklenen görsellerin TAMAMINI
+     * içeriyor. 100 restoranda bir arşiv ~1,5 GB eder; 14 günlük saklama
+     * 21 GB demek ve diski doldurur. Bu yüzden asıl koruma **adet** ve
+     * **toplam boyut bütçesi**; yaş sınırı sadece üstüne binen bir tavan.
+     *
+     * En yeni arşiv HER ZAMAN korunur — bütçe aşılsa bile. Yedeksiz kalmak,
+     * disk dolmasından kötüdür.
+     */
     private function prune(string $dir): void
     {
-        $days = (int) $this->option('tut');
+        $files = glob($dir.DIRECTORY_SEPARATOR.'nevaqr-*.zip') ?: [];
 
-        if ($days <= 0) {
+        if (count($files) <= 1) {
             return;
         }
 
-        $cutoff = Carbon::now()->subDays($days)->getTimestamp();
-        $removed = 0;
+        // Yeniden eskiye sırala; silme her zaman sondan (en eskiden) yapılır.
+        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
 
-        foreach (glob($dir.DIRECTORY_SEPARATOR.'nevaqr-*.zip') ?: [] as $old) {
-            if (filemtime($old) < $cutoff) {
-                @unlink($old);
-                $removed++;
+        $keepCount = (int) $this->option('adet');
+        $days = (int) $this->option('tut');
+        $budget = $this->parseSize((string) $this->option('azami'));
+
+        $cutoff = $days > 0 ? Carbon::now()->subDays($days)->getTimestamp() : null;
+
+        $removed = 0;
+        $reasons = [];
+        $running = 0;
+
+        foreach ($files as $index => $file) {
+            $size = (int) filesize($file);
+            $running += $size;
+
+            // İlk (en yeni) arşive dokunulmaz.
+            if ($index === 0) {
+                continue;
             }
+
+            $why = match (true) {
+                $keepCount > 0 && ($index + 1) > $keepCount => 'adet',
+                $budget > 0 && $running > $budget => 'bütçe',
+                $cutoff !== null && filemtime($file) < $cutoff => 'yaş',
+                default => null,
+            };
+
+            if ($why === null) {
+                continue;
+            }
+
+            @unlink($file);
+            $removed++;
+            $reasons[$why] = ($reasons[$why] ?? 0) + 1;
+            $running -= $size;
         }
 
         if ($removed > 0) {
-            $this->line("  <fg=gray>{$removed} eski yedek silindi ({$days} günden eski)</>");
+            $detail = implode(', ', array_map(fn ($k, $v) => "{$v} {$k}", array_keys($reasons), $reasons));
+            $this->line("  <fg=gray>{$removed} eski arşiv silindi ({$detail})</>");
         }
+
+        $total = array_sum(array_map(fn ($f) => is_file($f) ? filesize($f) : 0, $files));
+        $kept = count(array_filter($files, 'is_file'));
+        $this->line("  <fg=gray>{$kept} arşiv tutuluyor · toplam {$this->humanSize((int) $total)}</>");
+    }
+
+    /** "500M" / "8G" / "1500000" → bayt. Tanınmayan değer sınırsız sayılır. */
+    private function parseSize(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '' || $value === '0') {
+            return 0;
+        }
+
+        if (! preg_match('/^(\d+(?:[.,]\d+)?)\s*([KMGT]?)B?$/i', $value, $m)) {
+            return 0;
+        }
+
+        $multiplier = match (strtoupper($m[2])) {
+            'K' => 1024,
+            'M' => 1024 ** 2,
+            'G' => 1024 ** 3,
+            'T' => 1024 ** 4,
+            default => 1,
+        };
+
+        return (int) round((float) str_replace(',', '.', $m[1]) * $multiplier);
     }
 
     private function humanSize(int $bytes): string

@@ -297,8 +297,29 @@ return [
     */
     'uploads' => [
         'disk' => env('NEVA_UPLOAD_DISK', 'uploads'),
+
+        // Kabul edilen azami YÜKLEME boyutu. Dosya saklanmadan önce
+        // küçültüldüğü için bunlar cömert olabilir — kullanıcı telefonundan
+        // çektiği fotoğrafı kırpmakla uğraşmasın.
         'logo_max_kb' => 2048,
         'image_max_kb' => 6144,
+
+        /*
+        | SAKLANAN görselin en uzun kenarı (piksel). Yüklenen dosya bundan
+        | büyükse küçültülüp yeniden kodlanır; orijinal saklanmaz.
+        |
+        | Neden gerekli: menüyü açan her misafir bu dosyayı indiriyor. 6 MB'lık
+        | bir telefon fotoğrafı 20 ürünlü menüyü 120 MB yapar — QR menü mobil
+        | veriyle açılıyor, kabul edilemez. Bu değerlerle ~150-250 KB'a iner.
+        |
+        | Ölçüler ekranda kaplanan alana göre (2x DPR payı bırakılmış):
+        |   ürün kartı ~600px  ·  kapak tam genişlik  ·  logo küçük
+        */
+        'max_edge' => [
+            'product' => 1200,
+            'cover' => 1600,
+            'logo' => 512,     // şeffaflık için PNG olarak saklanır
+        ],
     ],
 
     'logo_sizes' => [
