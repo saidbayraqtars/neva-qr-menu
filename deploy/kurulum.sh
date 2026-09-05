@@ -52,11 +52,27 @@ apt-get install -y -qq \
 ok "nginx + PHP ${PHP_VER} kuruldu"
 
 # Menü PDF'i headless Chrome ile üretiliyor.
-if ! command -v chromium-browser >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then
-    apt-get install -y -qq chromium-browser || apt-get install -y -qq chromium || true
+#
+# SNAP KULLANMA. Ubuntu 24.04'te `apt install chromium` snap paketi kurar ve
+# snap kısıtlaması tarayıcıya PRİVATE bir /tmp verir. MenuPdfService HTML'i
+# sistem /tmp'ine yazıp `file:///tmp/...` ile açtığı için snap chromium dosyayı
+# GÖREMEZ — PDF sessizce boş çıkar. Gerçek .deb olan Google Chrome kuruluyor.
+if ! command -v google-chrome-stable >/dev/null 2>&1; then
+    install -d -m 0755 /etc/apt/keyrings
+    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+        | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg 2>/dev/null
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
+        > /etc/apt/sources.list.d/google-chrome.list
+    apt-get update -qq
+    apt-get install -y -qq google-chrome-stable || true
 fi
-command -v chromium >/dev/null 2>&1 && ok "chromium kuruldu (PDF üretimi)" \
-    || echo "  ! chromium kurulamadı — PDF indirme çalışmaz, .env'de CHROME_BINARY verin"
+
+if command -v google-chrome-stable >/dev/null 2>&1; then
+    ok "google-chrome-stable kuruldu ($(google-chrome-stable --version 2>/dev/null))"
+else
+    echo "  ! Chrome kurulamadı — menü PDF'i çalışmaz."
+    echo "    .env'de CHROME_BINARY ile snap OLMAYAN bir tarayıcı yolu verin."
+fi
 
 # Node — sadece varlıkları derlemek için.
 if ! command -v node >/dev/null 2>&1; then
