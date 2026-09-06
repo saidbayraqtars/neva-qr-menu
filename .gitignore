@@ -33,3 +33,6 @@ database/*.sqlite.bak-*
 /storage/framework/testing/*
 /storage/logs/*
 /.deploy-home
+
+# AI devir notlari (sunucu/erisim bilgisi icerir)
+AI-DEVIR-NOTLARI.md
