@@ -72,9 +72,15 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 
 ### Öncelik 2 — desktop kuralı hiç olmayanlar
 
-- [ ] alpine-clean (al)
-- [ ] classic-bistro (cb)
-- [ ] minimal-mono (mm)
+- [x] alpine-clean (al) — 2026-09-06. Sütun 900px'e çıktı ve ORTALANDI; eskiden
+      max-width vardı ama `margin: 0 auto` yoktu, sola yapışık duruyordu.
+      Şablona özel stil paketindeki 680px kuralı da güncellendi (daha özgül
+      seçici olduğu için genel kuralı eziyordu). Tek sütun bilinçli: tasarımın
+      kimliği İskandinav boşluk.
+- [x] classic-bistro (cb) — 2026-09-06. Kâğıt 1060px ortalandı, dolgu 40/44px,
+      başlık 36px; ürün ızgarası iki yerine üç sütun (307px).
+- [x] minimal-mono (mm) — 2026-09-06. Liste iki sütun (`columns: 2`), dolgu
+      72/44px, başlık 32px.
 
 ### Öncelik 3 — tek kuralı olanlar (yalnızca sütun sayısı ayarlı)
 
@@ -129,3 +135,7 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 - Yerel sunucu: `php artisan serve --host=127.0.0.1 --port=8123`, adres
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- Dikkat: `resources/css/app.css` sonundaki "stil paketi" bölümü
+  (`.tpl[data-tpl="..."]` seçicileri) şablon bazında daha özgül olduğu için
+  ana bölümdeki kuralları ezebiliyor. Bir değişiklik uygulanmıyorsa orayı ara.
