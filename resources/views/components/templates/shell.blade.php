@@ -56,6 +56,24 @@
 </head>
 <body @class(['tpl-print' => $print])>
     <div id="tpl-root" class="tpl" {!! $presenter->dataAttrString($view) !!}>
+    @unless ($print)
+        <script>
+        // Geniş ekranda şablonun bilgisayar düzenini aç. Kök öğe zaten ayrıştırıldığı
+        // için bu betik ilk boyamadan ÖNCE çalışır — telefon düzeni görünüp zıplamaz.
+        (function () {
+            var root = document.getElementById('tpl-root');
+            if (!root || root.dataset.autoView !== '1') return;
+
+            var mq = window.matchMedia('(min-width: 1024px)');
+            var apply = function () { root.dataset.view = mq.matches ? 'desktop' : 'phone'; };
+
+            apply();
+            if (mq.addEventListener) mq.addEventListener('change', apply);
+            else mq.addListener(apply); // eski Safari
+        })();
+        </script>
+    @endunless
+
         {{-- Dinamik masa rozeti — sağ üst köşe. `?masa=` / `#1` varsa dolar, yoksa gizli. --}}
         <div id="table-badge" class="table-badge" @unless ($tableLabel ?? null) hidden @endunless>{{ $tableLabel ?? '' }}</div>
 
@@ -96,6 +114,81 @@
 
             detect();
             window.addEventListener('hashchange', detect);
+        })();
+        </script>
+    @endunless
+
+    @unless ($print)
+        <script>
+        // Yatay kategori çubukları mobil için tasarlandı: parmakla kayıyor ama farede
+        // ne scrollbar var ne de yatay tekerlek. Fare tekerleğini ve sürüklemeyi bağla.
+        (function () {
+            var bars = document.querySelectorAll('.rb-nav, .bgn-tabs, [data-hscroll]');
+
+            bars.forEach(function (bar) {
+                var overflows = function () { return bar.scrollWidth - bar.clientWidth > 1; };
+
+                bar.addEventListener('wheel', function (e) {
+                    if (e.ctrlKey || !overflows()) return;
+                    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return; // zaten yatay jest
+
+                    var before = bar.scrollLeft;
+                    bar.scrollLeft += e.deltaY;
+                    if (bar.scrollLeft !== before) e.preventDefault(); // uçta kalırsa sayfa kaysın
+                }, { passive: false });
+
+                var dragging = false, moved = false, startX = 0, startLeft = 0;
+
+                var stop = function (e) {
+                    if (!dragging) return;
+                    dragging = false;
+                    bar.style.cursor = '';
+                    if (e && bar.hasPointerCapture && bar.hasPointerCapture(e.pointerId)) {
+                        bar.releasePointerCapture(e.pointerId);
+                    }
+                };
+
+                bar.addEventListener('pointerdown', function (e) {
+                    if (e.pointerType !== 'mouse' || e.button !== 0 || !overflows()) return;
+                    dragging = true;
+                    moved = false;
+                    startX = e.clientX;
+                    startLeft = bar.scrollLeft;
+                });
+
+                bar.addEventListener('pointermove', function (e) {
+                    if (!dragging) return;
+                    var dx = e.clientX - startX;
+                    if (!moved && Math.abs(dx) < 4) return; // küçük titremeyi tıklama say
+
+                    if (!moved) {
+                        moved = true;
+                        bar.style.cursor = 'grabbing';
+                        try { bar.setPointerCapture(e.pointerId); } catch (err) { /* yakalama zorunlu değil */ }
+                    }
+
+                    bar.scrollLeft = startLeft - dx;
+                });
+
+                bar.addEventListener('pointerup', stop);
+                bar.addEventListener('pointercancel', stop);
+
+                // Sürükleme bittiğinde altındaki kategori düğmesi tetiklenmesin.
+                bar.addEventListener('click', function (e) {
+                    if (!moved) return;
+                    moved = false;
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, true);
+            });
+
+            // Açılışta seçili kategori görünür olsun (uzun listede sağda kalabiliyor).
+            document.addEventListener('alpine:initialized', function () {
+                bars.forEach(function (bar) {
+                    var active = bar.querySelector('.is-active');
+                    if (active) active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                });
+            });
         })();
         </script>
     @endunless

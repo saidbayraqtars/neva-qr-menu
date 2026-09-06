@@ -341,7 +341,9 @@ class TemplatePresenter
             'data-img' => $this->imageStyle(),
             'data-hw' => $this->headingWeight(),
             'data-ts' => $this->textSize(),
+            // 'auto': sunucu telefon düzeniyle basar, istemci geniş ekranda 'desktop'a çevirir.
             'data-view' => $view === 'desktop' ? 'desktop' : 'phone',
+            'data-auto-view' => $view === 'auto' ? '1' : '0',
         ];
     }
 

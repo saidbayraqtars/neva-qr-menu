@@ -99,7 +99,7 @@ class MenuController extends Controller
             'presenter' => new TemplatePresenter($tenant),
             'restaurant' => $tenant,
             'categories' => $categories,
-            'view' => 'phone',
+            'view' => 'auto',   // ekran genişliğine göre telefon/bilgisayar düzeni (istemcide seçilir)
             'embedded' => true,
             'tableLabel' => null, // masa rozeti istemcide doldurulur (önbellek bölünmesin)
             'track' => true,      // görüntülenme ölçümü yalnızca GERÇEK kiracı sayfasında
