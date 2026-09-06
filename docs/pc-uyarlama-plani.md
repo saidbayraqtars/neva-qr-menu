@@ -141,14 +141,22 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 
 ### Öncelik 4 — iki üç kuralı olanlar (en az iş)
 
-- [ ] carbon-mono (cm)
-- [ ] coastal-breeze (cbz)
-- [ ] compact-fast (cf)
-- [ ] heritage-press (hp)
-- [ ] kyoto-calm (ky)
-- [ ] linen-note (ln)
-- [ ] neon-street (ns)
-- [ ] urban-chic (uc)
+- [x] carbon-mono (cm) — 2026-09-06. Satır listesi 2→3 sütun, başlık 32px.
+- [x] coastal-breeze (cbz) — 2026-09-06. Liste 2→3 sütun, dolgu 84/44px,
+      başlık 38px.
+- [x] compact-fast (cf) — 2026-09-06. Büfe listesi 2→3 sütun, kategori bandı
+      ve satır dolguları 30px. NOT: `.cf-price` puntosu stil paketindeki kural
+      tarafından eziliyor (aynı özgüllük, dosyada daha sonra geliyor) — 20px
+      kalıyor, zaten iri.
+- [x] heritage-press (hp) — 2026-09-06. Gazete sütunları 2→3, başlık 44px,
+      dolgu 52/40px.
+- [x] kyoto-calm (ky) — 2026-09-06. Sütun sayısı bilinçli olarak 2'de bırakıldı
+      (tasarımın kimliği boşluk); yalnızca dolgu 92/48px ve başlık 32px.
+- [x] linen-note (ln) — 2026-09-06. Liste 2→3 sütun, dolgu 66/44px, başlık 34px.
+- [x] neon-street (ns) — 2026-09-06. Kart yığını 2→3 sütun (416px), başlık 50px;
+      kaydırılmış kart hizası masaüstünde sıfırlanıyordu, korundu.
+- [x] urban-chic (uc) — 2026-09-06. Satırlar 2→4 sütun (300px), kapaklı başlık
+      340px, başlık 42px.
 
 ## Notlar
 
@@ -163,6 +171,15 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
 - 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 4 (cm, cbz, cf, hp, ky, ln, ns, uc) tamamlandı ve
+  dağıtıldı. **40 şablonun tamamı bitti.**
+- Özgüllük tuzağı: `.tpl[data-view="desktop"] .x` ile stil paketindeki
+  `.tpl[data-tpl="ad"] .x` aynı özgüllükte. Stil paketi dosyada sonra geldiği
+  için o kazanıyor. Bir masaüstü kuralı uygulanmıyorsa çözüm, kuralı stil
+  paketi bölümüne `.tpl[data-tpl="ad"][data-view="desktop"] .x` olarak yazmak.
+- Sırada ne var: şablonların masaüstü hâlleri artık düzgün ölçekleniyor ama
+  hepsi tek tek gözle taranmadı; müşteri bir şablonu canlıya alırken o şablona
+  1900px'te bir bakış atmak iyi olur.
 - 2026-09-06: Öncelik 3 · 4. grup (ac, at, cnd, cbn, gh, nb, rd, rp)
   tamamlandı ve dağıtıldı. Öncelik 3 bitti.
 - 2026-09-06: Öncelik 3 · 3. grup (masonry ve kart düzenleri: sv, mag, sty,

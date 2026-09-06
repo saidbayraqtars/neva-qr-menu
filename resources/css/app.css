@@ -236,6 +236,16 @@
 .tpl[data-view="desktop"] .ns-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .tpl[data-view="desktop"] .ns-card[data-odd="0"], .tpl[data-view="desktop"] .ns-card[data-odd="1"] { margin: 0; }
 .tpl[data-view="desktop"] .ns-card[data-odd="1"] { transform: translateY(22px); }
+.tpl[data-view="desktop"] .ns { padding: 0 34px; }
+.tpl[data-view="desktop"] .ns-title { font-size: 50px; }
+.tpl[data-view="desktop"] .ns-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .ns-cat-wrap { margin-bottom: 46px; }
+.tpl[data-view="desktop"] .ns-cat { font-size: 28px; margin-bottom: 20px; }
+.tpl[data-view="desktop"] .ns-stack { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.tpl[data-view="desktop"] .ns-body { padding: 15px 17px 17px; }
+.tpl[data-view="desktop"] .ns-name { font-size: 16px; }
+.tpl[data-view="desktop"] .ns-price { font-size: 17px; }
+.tpl[data-view="desktop"] .ns-desc { font-size: 12.5px; }
 
 /* ------------------------------------------------------------------ 4 · BOTANICAL GREEN */
 .bgn { }
@@ -429,6 +439,16 @@
 .cf-old { display: block; font-size: 11px; font-weight: 500; color: var(--t-ink-soft); text-decoration: line-through; text-align: right; }
 .tpl[data-view="desktop"] .cf-list { columns: 2; column-gap: 0; }
 .tpl[data-view="desktop"] .cf-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .cf-head { padding: 24px 30px; }
+.tpl[data-view="desktop"] .cf-title { font-size: 24px; }
+.tpl[data-view="desktop"] .cf-tag { font-size: 13px; }
+.tpl[data-view="desktop"] .cf-cat-bar { font-size: 14px; padding: 10px 30px; }
+/* Büfe listesi: satırlar kısa, geniş ekranda üç sütun sığıyor. */
+.tpl[data-view="desktop"] .cf-list { columns: 3; }
+.tpl[data-view="desktop"] .cf-row { padding: 11px 30px; }
+.tpl[data-view="desktop"] .cf-name { font-size: 15px; }
+.tpl[data-view="desktop"] .cf-desc { font-size: 12px; }
+.tpl[data-view="desktop"] .cf-price { font-size: 24px; }
 
 /* ------------------------------------------------------------------ 10 · ARTISAN CRAFTED */
 .ac { padding: 30px 20px 0; }
@@ -741,6 +761,15 @@
 .tpl[data-view="desktop"] .uc-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
 .tpl[data-view="desktop"] .uc-row, .tpl[data-view="desktop"] .uc-row[data-flip="1"] { flex-direction: column; align-items: stretch; }
 .tpl[data-view="desktop"] .uc-media { flex: none; }
+.tpl[data-view="desktop"] .uc-head { padding: 60px 34px 30px; }
+.tpl[data-view="desktop"] .uc-head[data-has-cover="1"] { min-height: 340px; }
+.tpl[data-view="desktop"] .uc-title { font-size: 42px; }
+.tpl[data-view="desktop"] .uc-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .uc-cat { padding: 30px 34px 6px; }
+.tpl[data-view="desktop"] .uc-cat-name { font-size: 20px; margin-bottom: 24px; }
+.tpl[data-view="desktop"] .uc-rows { grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.tpl[data-view="desktop"] .uc-name, .tpl[data-view="desktop"] .uc-price { font-size: 16px; }
+.tpl[data-view="desktop"] .uc-desc { font-size: 12.5px; }
 
 /* ------------------------------------------------------------------ 20 · VELVET NOIR */
 .vn { padding: 0 22px; }
@@ -1148,6 +1177,9 @@
 .hp-row[data-feat] { background: color-mix(in srgb, var(--t-accent) 7%, transparent); box-shadow: inset 3px 0 0 var(--t-accent); padding-left: 10px; padding-right: 10px; margin: 0 -8px; }
 .tpl[data-view="desktop"] .hp-list { column-count: 2; column-gap: 40px; border-top: 0; }
 .tpl[data-view="desktop"] .hp-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .hp { padding: 52px 40px 0; }
+.tpl[data-view="desktop"] .hp-title { font-size: 44px; }
+.tpl[data-view="desktop"] .hp-list { column-count: 3; column-gap: 48px; }
 
 /* ---- Coastal Breeze (cbz) — Ege ferahlığı, tipografik ---- */
 .cbz { padding: 60px 30px 0; }
@@ -1172,6 +1204,9 @@
 .cbz-row[data-feat] .cbz-name::after { content: " ·"; }
 .tpl[data-view="desktop"] .cbz-list { column-count: 2; column-gap: 46px; }
 .tpl[data-view="desktop"] .cbz-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .cbz { padding: 84px 44px 0; }
+.tpl[data-view="desktop"] .cbz-title { font-size: 38px; }
+.tpl[data-view="desktop"] .cbz-list { column-count: 3; column-gap: 52px; }
 
 /* ---- Carbon Mono (cm) — teknik monospace grid, tipografik ---- */
 .cm { padding: 28px 22px 0; font-family: var(--t-font-body); }
@@ -1194,6 +1229,9 @@
 .cm-row[data-feat] .cm-name::before { content: "▸ "; color: var(--t-accent); }
 .tpl[data-view="desktop"] .cm-rows { column-count: 2; column-gap: 36px; border-top: 0; }
 .tpl[data-view="desktop"] .cm-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .cm { padding: 44px 36px 0; }
+.tpl[data-view="desktop"] .cm-title { font-size: 32px; }
+.tpl[data-view="desktop"] .cm-rows { column-count: 3; column-gap: 42px; }
 
 /* ---- Onyx Lux (ox) — sinematik tam-genişlik fotoğraf, görselli ---- */
 .ox { padding: 0 0 0; background: var(--t-bg); }
@@ -1352,6 +1390,9 @@
 .ln-row[data-feat] .ln-name::before { content: "✎ "; color: var(--t-accent); }
 .tpl[data-view="desktop"] .ln-list { column-count: 2; column-gap: 44px; }
 .tpl[data-view="desktop"] .ln-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .ln { padding: 66px 44px 0; }
+.tpl[data-view="desktop"] .ln-title { font-size: 34px; }
+.tpl[data-view="desktop"] .ln-list { column-count: 3; column-gap: 48px; }
 
 /* ---- Prime Steakhouse (ps) — kömür + kırmızı, iri sıkışık display, görselli ---- */
 .ps { padding: 0; }
@@ -1410,6 +1451,8 @@
 .ky-row[data-feat] .ky-name::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background: var(--t-accent); }
 .tpl[data-view="desktop"] .ky-list { column-count: 2; column-gap: 52px; }
 .tpl[data-view="desktop"] .ky-row { break-inside: avoid; }
+.tpl[data-view="desktop"] .ky { padding: 92px 48px 0; }
+.tpl[data-view="desktop"] .ky-title { font-size: 32px; }
 
 /* ============================================================================
    NEVA — ŞABLON İÇİ MİKRO-VARYASYONLAR ("Gelişmiş Dokunuşlar")
