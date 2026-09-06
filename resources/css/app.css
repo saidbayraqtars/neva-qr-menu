@@ -117,8 +117,9 @@
     --t-elev: var(--t-shadow, 0 18px 40px -20px rgba(20,20,30,.2));
     --t-elev-sm: var(--t-shadow-sm, 0 8px 20px -12px rgba(20,20,30,.16)); }
 .tpl [hidden] { display: none !important; }
-.tpl-wrap { max-width: 480px; margin: 0 auto; min-height: 100%; background: var(--t-bg); overflow-x: hidden; }
-.tpl[data-view="desktop"] .tpl-wrap { max-width: 960px; }
+.tpl-wrap { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--t-bg); overflow-x: hidden; }
+/* Geniş ekranda sütun büyüsün ama satır uzunluğu okunur kalsın. */
+.tpl[data-view="desktop"] .tpl-wrap { max-width: min(1360px, 94vw); }
 /* Varsayılan hafif zemin derinliği — bg_pattern seçilirse o ezer. */
 .tpl[data-bg="solid"] .tpl-wrap { background-image: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--t-accent) 6%, transparent), transparent 60%); background-repeat: no-repeat; }
 
@@ -1676,7 +1677,7 @@
    ile kağıda uygun hale gelir. Ayrı bir PDF şablonu YOK.
    ============================================================================ */
 .tpl-print { background: var(--t-bg); }
-.tpl-print .tpl-wrap { max-width: 540px; box-shadow: none; }
+.tpl-print .tpl-wrap { max-width: 540px; box-shadow: none; min-height: 0; }
 /* Sabit/dekoratif katmanlar sayfalı ortamda her sayfada tekrar eder → kaldır. */
 .tpl-print :is(.gl-orbs, .ghr-orbs, .sv-glow) { display: none !important; }
 .tpl-print .sv, .tpl-print .gl, .tpl-print .ghr { background-attachment: scroll !important; }
