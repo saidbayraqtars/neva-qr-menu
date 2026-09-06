@@ -68,8 +68,17 @@
             var apply = function () { root.dataset.view = mq.matches ? 'desktop' : 'phone'; };
 
             apply();
+
             if (mq.addEventListener) mq.addEventListener('change', apply);
-            else mq.addListener(apply); // eski Safari
+            else if (mq.addListener) mq.addListener(apply); // eski Safari
+
+            // Yedek: bazı ortamlarda (gömülü görüntüleyiciler, geliştirici aracı cihaz
+            // emülasyonu) matchMedia 'change' hiç tetiklenmiyor.
+            var frame = 0;
+            window.addEventListener('resize', function () {
+                if (frame) return;
+                frame = requestAnimationFrame(function () { frame = 0; apply(); });
+            });
         })();
         </script>
     @endunless
