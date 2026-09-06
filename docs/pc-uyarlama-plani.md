@@ -84,12 +84,17 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 
 ### Öncelik 3 — tek kuralı olanlar (yalnızca sütun sayısı ayarlı)
 
-- [ ] artisan-crafted (ac)
-- [ ] atelier-soft (at)
+- [x] artisan-crafted (ac) — 2026-09-06. Kategori kutusu dolgusu 30/34px,
+      ürünler 2→3 sütun, başlık 34px.
+- [x] atelier-soft (at) — 2026-09-06. Kart yığını 2→3 sütun, dolgu 60/36px,
+      başlık 36px.
 - [x] botanical-green (bgn) — 2026-09-06. Kart ızgarası tek sütundan üçe;
       sekmeler geniş ekranda ortalanıp sarıyor, başlık 34px, dolgular 32px.
-- [ ] cinematic-dark (cnd)
-- [ ] culinary-bento (cbn)
+- [x] cinematic-dark (cnd) — 2026-09-06. Kart listesi 2→3 sütun, kapaklı başlık
+      380px, başlık 38px. Kart min yüksekliği stil paketinde ezildiği için
+      220px kuralı fotoğrafsız kartlarda etkisiz — sorun değil, boş kart olmuyor.
+- [x] culinary-bento (cbn) — 2026-09-06. Bento ızgarası 3→4 sütun; tüm sütunları
+      kaplayan geniş kartın görseli %45→%32.
 - [x] cyber-dark (cy) — 2026-09-06. Izgara 3→4 sütun, kapak 320px, başlık 38px.
 - [x] dark-prestige (dp) — 2026-09-06. Kapaklı başlık 380px, başlık 40px,
       kart listesi 2→3 sütun (410px).
@@ -99,7 +104,8 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
       dolgu, başlık 34px.
 - [x] glassmorphism-luxury (gl) — 2026-09-06. Izgara 3→4 sütun, cam başlık
       bloğu 44px dolgu, logo 72px, başlık 36px.
-- [ ] golden-hour (gh)
+- [x] golden-hour (gh) — 2026-09-06. Liste 2→3 sütun (429px), güneş süsü 180px,
+      başlık 38px, açıklama genişliği 52ch.
 - [x] gourmet-masonry (gmm) — 2026-09-06. Masonry 4 sütun, boşluklar 18px,
       başlık 34px, kart tipografisi bir kademe büyük.
 - [x] grid-showcase (gsh) — 2026-09-06. Izgara 3→4 sütun, kapaklı başlık
@@ -108,15 +114,18 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
       kartın görseli %46→%34 (tüm sütunları kapladığı için metne yer açıldı).
 - [x] modern-grid (mg) — 2026-09-06. Izgara 3→4 sütun, kapak 200→320px,
       kart yazıları bir kademe büyük.
-- [ ] neo-brutalism (nb)
+- [x] neo-brutalism (nb) — 2026-09-06. Kart ızgarası 2→3 sütun, başlık 46px,
+      kalın çerçeve düzeni korunarak dolgular büyütüldü.
 - [x] onyx-lux (ox) — 2026-09-06. Fotoğraf bantları 2→3 sütun (450px), bant
       yüksekliği 260px, başlık 46px, açıklama genişliği %80 sınırı kaldırıldı.
 - [x] polaroid-vibe (pol) — 2026-09-06. Masonry 4 sütun, kart dolgusu ve
       aralıkları büyütüldü, ürün adı 22px.
 - [x] prime-steakhouse (ps) — 2026-09-06. Liste 2 sütun (639px), medya 132px,
       başlık 52px.
-- [ ] retro-diner (rd)
-- [ ] riso-pop (rp)
+- [x] retro-diner (rd) — 2026-09-06. Liste 2→3 sütun, tabela başlığı 52px,
+      kategori adı 30px.
+- [x] riso-pop (rp) — 2026-09-06. Izgara 3→4 sütun (315px), başlık 38px,
+      kart gölge/çerçeve düzeni korundu.
 - [x] saffron-table (sf) — 2026-09-06. Kart listesi 2→3 sütun (420px), yuvarlak
       thumb 74px, başlık 36px.
 - [x] split-card (spl) — 2026-09-06. İki sütun (640px), kart yüksekliği 160px,
@@ -154,6 +163,8 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
 - 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 3 · 4. grup (ac, at, cnd, cbn, gh, nb, rd, rp)
+  tamamlandı ve dağıtıldı. Öncelik 3 bitti.
 - 2026-09-06: Öncelik 3 · 3. grup (masonry ve kart düzenleri: sv, mag, sty,
   pol, fli, spl, ghr, gmm) tamamlandı ve dağıtıldı. Masonry'de sütun sayısını
   artırırken `column-gap` ve kart `margin-bottom` de artmalı, yoksa kartlar
