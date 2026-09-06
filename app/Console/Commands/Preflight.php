@@ -298,6 +298,30 @@ class Preflight extends Command
         $this->row('Şablon vitrin sayfaları', $templates > 0, $templates.' şablon → '.$templates.' sayfa',
             'config/neva.php › templates boş; /qr-menu-sablonlari altında yayınlanacak sayfa kalmaz.');
 
+        /*
+        | Şehir sayfaları — yerel arama yüzeyi. Buradaki tek gerçek risk
+        | doorway page: aynı metnin şehir adı değiştirilmiş kopyaları.
+        | Google bunu indekslemez, kötü ihtimalle siteye güven kaybettirir.
+        | O yüzden sayfa sayısını değil, metinlerin AYRI olduğunu ölçüyoruz.
+        */
+        $cities = (array) config('neva.cities', []);
+
+        if ($cities === []) {
+            $this->warn_('Şehir sayfaları', 'tanımsız',
+                'config/neva.php › cities boş. "samsun qr menü" gibi yerel sorgular ulusal terimlerden çok daha kolay kazanılır.');
+        } else {
+            $duplicate = collect($cities)->pluck('lead')->filter()->duplicates();
+            $missing = collect($cities)->filter(
+                fn (array $c) => blank($c['lead'] ?? null) || blank($c['scene'] ?? null) || empty($c['faq'] ?? [])
+            )->keys();
+
+            $problem = $duplicate->isNotEmpty() || $missing->isNotEmpty();
+
+            $this->row('Şehir sayfaları', ! $problem,
+                count($cities).' şehir'.($problem ? ' — eksik/tekrarlı: '.$missing->merge($duplicate->keys())->unique()->join(', ') : ''),
+                'Her şehrin lead, scene ve faq metni KENDİNE ait olmalı; kopyalanan metin doorway page sayılır ve indekslenmez.');
+        }
+
         $faq = count((array) config('neva.seo.faq', []));
         $this->row('Sıkça sorulan sorular', $faq >= 5, $faq.' soru',
             'En az 5 soru girin (config/neva.php › seo.faq) — FAQPage zengin sonucu az sayıda soruda gösterilmez.');

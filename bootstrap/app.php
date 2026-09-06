@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsurePlanFeature;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\ForceRootDomain;
 use App\Http\Middleware\ResolveTenant;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShareCurrentRestaurant;
@@ -25,7 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->domain('{tenant}.'.$root)
                 ->group(base_path('routes/tenant.php'));
 
-            Route::middleware('web')->group(base_path('routes/web.php'));
+            // Pazarlama/panel rotaları yalnızca kök alan adında. Alt domainde
+            // eşleşmeyen yollar buraya düşerdi ve her sayfa kiracı sayısı kadar
+            // çoğaltılırdı — ForceRootDomain onları 301 ile köke gönderir.
+            Route::middleware(['web', ForceRootDomain::class])
+                ->group(base_path('routes/web.php'));
 
             // Sağlık ucu (uptime izleme). withRouting'e özel bir `using` closure'ı
             // verildiğinde Laravel `health:` parametresini yok sayar — elle kaydediyoruz.

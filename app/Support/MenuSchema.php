@@ -179,6 +179,101 @@ class MenuSchema
         ], fn ($v) => $v !== null && $v !== []);
     }
 
+    /**
+     * Fiziksel işletme düğümü.
+     *
+     * Organization "bu marka kim"i, LocalBusiness "bu işletme NEREDE"yi anlatır.
+     * İkincisi Google Business Profile kaydıyla eşleşerek yerel sonuçlarda ve
+     * haritada çıkmayı besler — asıl yerel trafik oradan gelir.
+     *
+     * `ProfessionalService`, LocalBusiness'ın alt tipidir: yazılım + yerinde
+     * kurulum satan bir işletme için düz `LocalBusiness`tan daha doğru.
+     *
+     * Yalnızca AÇIK ADRES girilmişse basılır. Adressiz bir LocalBusiness
+     * düğümü Google'ın gözünde eksik bir yerel işletmedir; hiç olmamasından
+     * kötüdür. Bu yüzden yalnızca merkezin bulunduğu sayfalarda kullanın
+     * (ana sayfa, iletişim, merkez şehir) — şubesi olmayan bir şehrin
+     * sayfasına LocalBusiness koymak yanlış beyandır, orada `service()` var.
+     */
+    public static function localBusiness(): ?array
+    {
+        $company = (array) config('neva.legal.company', []);
+
+        if (blank($company['address'] ?? null)) {
+            return null;
+        }
+
+        return array_filter([
+            '@type' => 'ProfessionalService',
+            '@id' => url('/').'#localbusiness',
+            'name' => config('neva.brand.name'),
+            'url' => url('/'),
+            'image' => asset(config('neva.brand.logo')),
+            'telephone' => $company['phone'] ?? null,
+            'email' => config('neva.brand.support_email'),
+            'address' => array_filter([
+                '@type' => 'PostalAddress',
+                'streetAddress' => $company['address'],
+                'addressLocality' => $company['city'] ?? null,
+                'addressRegion' => $company['region'] ?? null,
+                'postalCode' => $company['postal_code'] ?? null,
+                'addressCountry' => 'TR',
+            ]),
+            // Hizmet verilen iller: şehir sayfalarıyla TEK KAYNAK. Yeni şehir
+            // eklendiğinde burası kendiliğinden büyür.
+            'areaServed' => collect((array) config('neva.cities'))
+                ->map(fn (array $c) => ['@type' => 'City', 'name' => $c['name']])
+                ->values()->all(),
+            'priceRange' => '₺₺',
+            'parentOrganization' => ['@id' => self::organizationId()],
+            'sameAs' => array_values(array_filter((array) config('neva.seo.same_as', []))),
+        ], fn ($v) => $v !== null && $v !== []);
+    }
+
+    /**
+     * Şehir sayfası için hizmet düğümü.
+     *
+     * O şehirde ŞUBEMİZ YOK; olan şey oraya verilen bir hizmet. Doğru
+     * işaretleme bu yüzden LocalBusiness değil `Service` + `areaServed`:
+     * sağlayıcı Samsun'daki Organization, hizmet alanı ilgili il.
+     */
+    public static function cityService(string $slug, array $city, $plans = null): array
+    {
+        $prices = collect($plans)->pluck('price')->filter()->map(fn ($p) => (float) $p);
+
+        $node = array_filter([
+            '@type' => 'Service',
+            '@id' => route('city', $slug).'#service',
+            'name' => $city['name'].' QR Menü Kurulumu',
+            'serviceType' => 'Restoran ve kafeler için QR menü kurulumu',
+            'url' => route('city', $slug),
+            'provider' => ['@id' => self::organizationId()],
+            'areaServed' => [
+                '@type' => 'City',
+                'name' => $city['name'],
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => $city['name'],
+                    'addressCountry' => 'TR',
+                ],
+            ],
+            'inLanguage' => 'tr-TR',
+        ], fn ($v) => $v !== null && $v !== []);
+
+        if ($prices->isNotEmpty()) {
+            $node['offers'] = [
+                '@type' => 'AggregateOffer',
+                'priceCurrency' => 'TRY',
+                'lowPrice' => (string) $prices->min(),
+                'highPrice' => (string) $prices->max(),
+                'offerCount' => (string) $prices->count(),
+                'url' => route('pricing'),
+            ];
+        }
+
+        return $node;
+    }
+
     /** WebSite düğümü — site adı + site içi arama yok, sadece kimlik ve yayıncı. */
     public static function website(): array
     {
@@ -335,8 +430,12 @@ class MenuSchema
      * Birden çok düğümü tek bir JSON-LD bloğunda birleştirir.
      * Sayfa başına TEK <script> basmak, düğümlerin `@id` ile birbirine
      * bağlanabilmesi için gerekli.
+     *
+     * `null` düğüm kabul eder ve eler: bazı düğümler koşullu üretilir
+     * (ör. adres girilmemişse `localBusiness()` null döner). Çağrı yerinde
+     * tek tek eleme yapmak yerine burada süzülür.
      */
-    public static function graph(array ...$nodes): array
+    public static function graph(?array ...$nodes): array
     {
         return [
             '@context' => 'https://schema.org',

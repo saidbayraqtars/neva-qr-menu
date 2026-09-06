@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\LegalController;
@@ -40,6 +41,22 @@ Route::get('/sablon-onizleme/{template}', [ShowcaseController::class, 'preview']
     ->name('showcase.preview');
 
 Route::get('/sikca-sorulan-sorular', [ShowcaseController::class, 'faq'])->name('faq');
+
+/*
+| Şehir sayfaları — /samsun-qr-menu, /trabzon-qr-menu ...
+|
+| Adres kalıbı bilerek "{sehir}-qr-menu": Türkiye'de arama "samsun qr menü"
+| biçiminde yazılıyor, adresin de aynı sırayı taşıması eşleşmeyi güçlendirir.
+|
+| `[a-z]+` kısıtı şart: tire serbest bırakılırsa kalıp başka adresleri de
+| yutabilir. İl adları tek kelimeye çevrildiği için (kahramanmaras) bu yeterli.
+| Config'te tanımsız bir şehir 404 döner — uydurma adres indekslenmesin.
+|
+| Statik adreslerden SONRA tanımlı: Laravel sırayla eşleştirir.
+*/
+Route::get('/{city}-qr-menu', [CityController::class, 'show'])
+    ->where('city', '[a-z]+')
+    ->name('city');
 
 Route::get('/iletisim', [MarketingController::class, 'contact'])->name('contact');
 Route::post('/iletisim', [MarketingController::class, 'contact'])

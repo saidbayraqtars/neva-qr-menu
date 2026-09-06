@@ -1,7 +1,24 @@
+@php
+    use App\Support\MenuSchema;
+
+    // İletişim sayfası, adresin gerçekten göründüğü yer: LocalBusiness burada
+    // en yerinde duruyor. Google yerel eşleştirmede NAP (ad-adres-telefon)
+    // tutarlılığına bakar; künye tek kaynaktan (config/neva.legal) beslenir.
+    $contactJsonLd = MenuSchema::graph(
+        MenuSchema::organization(),
+        MenuSchema::localBusiness(),
+        MenuSchema::breadcrumb([
+            ['Ana sayfa', route('home')],
+            ['İletişim', route('contact')],
+        ]),
+    );
+@endphp
+
 <x-marketing-layout
     title="İletişim ve Demo Talebi"
     description="QR menü demo talebi, paket soruları ve destek için Neva-QR ekibine ulaşın. Hafta içi 09:00–18:00 arası, bir iş günü içinde dönüş yapıyoruz."
-    :canonical="route('contact')">
+    :canonical="route('contact')"
+    :jsonld="$contactJsonLd">
 
     <section class="mx-auto max-w-5xl px-6 py-20">
         <div class="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">

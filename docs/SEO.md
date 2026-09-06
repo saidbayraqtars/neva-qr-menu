@@ -22,11 +22,17 @@ php artisan neva:onkontrol --seo
 | `/qr-menu-sablonlari/{şablon}` | Şablon tanıtımı | **40** |
 | `/fiyatlandirma` | Paketler | 1 |
 | `/sikca-sorulan-sorular` | S.S.S. | 1 |
+| `/{şehir}-qr-menu` | Şehir sayfası | **8** |
 | `/hakkimizda`, `/iletisim` | Kurumsal | 2 |
 | Hukuki metinler | KVKK, gizlilik, çerez, koşullar | 4 |
 | `{kiracı}.{kök}` | Her yayındaki müşteri menüsü | müşteri sayısı |
 
-Toplam **50 sabit sayfa** + müşteri başına 1 menü.
+Toplam **58 sabit sayfa** + müşteri başına 1 menü.
+
+Pazarlama sayfaları YALNIZCA kök alan adında yayınlanır. Alt domainde açılan
+bir pazarlama adresi (`lumina.nevaqr.com/fiyatlandirma`) 301 ile köke gönderilir
+— `App\Http\Middleware\ForceRootDomain`. Bu olmadan her sayfa kiracı sayısı
+kadar çoğaltılırdı.
 
 Şablon sayfalarının içeriği `config/neva.php › templates` ve
 `app/Support/ShowcaseCopy.php` üzerinden **şablonun kendi özelliklerinden** üretilir.
@@ -119,6 +125,43 @@ Bunlar kodla halledilemez; hesap açmayı ve alan adı sahipliğini gerektirir.
    domainleri ana `sitemap.xml` içinde listelenir ve her kiracının kendi
    `sitemap.xml`'i vardır.
 
+### 2.3 Cloudflare — Googlebot'u engellemeyin
+
+Yaşandı, sitenin tamamı haftalarca dizin dışı kaldı. Belirti: Search Console
+"Site haritası okunamadı · HTTP 403", hiçbir sayfa indekste yok, ama site
+tarayıcıda sorunsuz açılıyor.
+
+Sebep **Cloudflare › AI Crawl Control › Security** ekranıydı. Oradaki liste
+yalnızca yapay zekâ tarayıcılarını değil, `Search Engine Crawler` kategorisini
+de içeriyor ve **Googlebot ile BingBot'un "Block Crawler" anahtarı açıktı**.
+Cloudflare kenarda 403 döndüğü için sunucuda hiçbir iz kalmıyor.
+
+Kontrol listesi:
+
+- **AI Crawl Control › Security** — `Search Engine Crawler` kategorisindeki
+  her satırın Block anahtarı **kapalı** olmalı. `AI Crawler` (GPTBot, CCBot,
+  Bytespider) kapalı kalabilir; `AI Search` (Claude-SearchBot, OAI-SearchBot,
+  PerplexityBot) trafik getirir, açmak mantıklı.
+- **Security › Settings › Bot fight mode** — kapalı. Ücretsiz planda
+  doğrulanmış botları da vurabiliyor.
+- Kalıcı koruma: `Security rules` altında en üst öncelikli bir custom rule,
+  ifade `(cf.client.bot)`, aksiyon **Skip** → kalan custom rules + Bot Fight Mode.
+- **AI Crawl Control › Signals** — Cloudflare "managed robots.txt" içeriğini
+  bizim `robots.txt`'imizin ÜSTÜNE ekliyor ve iki ayrı `User-agent: *` grubu
+  oluşuyor. Kapatıp tek kaynağı `SitemapController::robots()` bırakmak daha temiz.
+
+Hızlı doğrulama (sunucudan bağımsız):
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' \
+  -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" \
+  https://nevaqr.com/sitemap.xml
+```
+
+200 beklenir. Kesin cevap için Search Console › URL denetimi › **Canlı URL'yi
+test et** — Site Haritaları ekranındaki satır eski okumayı gösterir, ayar
+değişikliğinden saatler sonra güncellenir.
+
 ---
 
 ## 3. İçerik: sıradaki adım
@@ -133,12 +176,49 @@ Eklenecek en değerli sayfalar (etki sırasıyla):
 2. `qr menü fiyatları` — karşılaştırmalı, dürüst bir fiyat yazısı
 3. `restoran menü tasarımı nasıl olmalı` — şablon sayfalarına iç link deposu
 4. `dijital menü vs basılı menü` — maliyet karşılaştırması
-5. Şehir bazlı sayfalar (`istanbul qr menü`) — **yalnızca** gerçekten o şehirde
-   müşteriniz varsa; içi boş şehir sayfaları zarar verir
+
+Şehir bazlı sayfalar **yapıldı** — bkz. §3.1.
 
 Bu sayfalar bir blog altyapısı gerektirir (şu an yok). Basit bir başlangıç:
 `resources/views/marketing/rehber/` altında Blade sayfaları + `routes/web.php`'de
 sabit rotalar. Veritabanı gerektirmez, 5 yazıya kadar bu yeterlidir.
+
+### 3.1 Şehir sayfaları
+
+`/samsun-qr-menu` biçiminde, içeriği `config/neva.php › cities` içinde şehir
+başına elle yazılır. Şu an 8 şehir: Samsun (merkez), Trabzon, Ordu, Giresun,
+Rize, Amasya, Tokat, Çorum.
+
+Neden ayrı sayfa: "qr menü" ulusal ve doymuş. "samsun qr menü" arayan kişi hem
+çok daha az rekabetle karşılaşır hem de niyeti nettir — menüsünü dijitalleştirmek
+isteyen, o şehirdeki bir işletme sahibi.
+
+**Tek gerçek risk doorway page.** Aynı metnin şehir adı değiştirilmiş kopyaları
+Google tarafından indekslenmez, kötü ihtimalle site geneline güven kaybettirir.
+Bu yüzden her şehir kendi `lead`, `scene`, `districts`, `template_why` ve `faq`
+metnini taşır; kod yalnızca iskeleti kurar. `CityPageTest` bu alanların
+şehirden şehre tekrar etmediğini doğrular, `neva:onkontrol --seo` eksik/tekrarlı
+şehri satır satır söyler.
+
+Yeni şehir eklemek:
+
+1. `config/neva.php › cities` içine bir blok yazın — metinleri GERÇEKTEN o şehir
+   için yazın, kopyalamayın.
+2. `onsite` alanını sahadaki gerçeğe göre seçin (`hub` / `route` / `remote`).
+   Verilmeyen bir yerinde-kurulum sözü yerel SEO'da en pahalı hatadır.
+3. `templates` anahtarlarının `config/neva.php › templates` içinde var olduğundan
+   emin olun (test zaten kontrol eder).
+
+Sitemap kaydı, footer iç linkleri, diğer şehirlere çapraz linkler ve JSON-LD
+kendiliğinden oluşur.
+
+**İşaretleme ayrımı:** şubesi olmayan bir ilin sayfasında `LocalBusiness`
+KULLANILMAZ — orada `Service` + `areaServed` vardır. `ProfessionalService`
+(LocalBusiness alt tipi) yalnızca merkezin bulunduğu şehirde, ana sayfada ve
+iletişim sayfasında basılır; adres girilmemişse hiç basılmaz.
+
+Asıl yerel kaldıraç bu sayfalar değil **Google Business Profile** kaydıdır;
+şehir sayfaları onu destekler, yerini almaz.
 
 ---
 

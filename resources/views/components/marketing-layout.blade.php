@@ -125,6 +125,21 @@
                 </div>
             @endif
 
+            {{-- Şehir sayfaları: her sayfadan tek tıkla erişilebilsin. Yerel
+                 sayfalar iç link almazsa tarama sırasında en sona düşer —
+                 tam da en çok dönüşen sayfalar oldukları halde. --}}
+            @php $footerCities = (array) config('neva.cities'); @endphp
+            @if ($footerCities)
+                <div class="mt-8 border-t border-ink-100 pt-6">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Şehirlere göre QR menü</p>
+                    <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-ink-500">
+                        @foreach ($footerCities as $citySlug => $city)
+                            <li><a href="{{ route('city', $citySlug) }}" class="hover:text-ink-900">{{ $city['name'] }} QR menü</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-ink-100 pt-6 text-xs text-ink-400 sm:flex-row">
                 <p>&copy; {{ date('Y') }} {{ config('neva.brand.name') }}. Tüm hakları saklıdır.</p>
                 <p>Türkiye'de tasarlandı</p>

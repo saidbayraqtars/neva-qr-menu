@@ -243,6 +243,222 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Şehir sayfaları — yerel arama yüzeyi
+    |--------------------------------------------------------------------------
+    | "qr menü" ulusal ve doymuş bir terim; yeni bir alan adı orada sıralanmaz.
+    | "samsun qr menü" ise aylık birkaç yüz arama ve neredeyse sıfır rekabet —
+    | ve arayan kişi zaten satın almaya hazır bir işletme sahibi.
+    |
+    | KRİTİK: Bu sayfalar birbirinin şehir adı değiştirilmiş kopyası OLAMAZ.
+    | Google bunu doorway page sayar; en iyi ihtimalle indekslemez, kötüsünde
+    | tüm siteye güven kaybettirir. Bu yüzden her şehir kendi `lead`, `scene`,
+    | `districts` ve `faq` metnini taşır — ortak olan yalnızca sayfa iskeleti.
+    | Yeni şehir eklerken bu alanları GERÇEKTEN o şehir için yazın; boş
+    | bırakılan şehir sayfası hiç açılmasın (`neva:onkontrol` uyarır).
+    |
+    | `onsite`:
+    |   hub    → şirket merkezi burada, yerinde kurulum aynı gün
+    |   route  → karayoluyla gidiliyor, randevulu yerinde kurulum
+    |   remote → yalnızca uzaktan kurulum + kargo
+    | Fiziksel paketin kapsamı budur; abartmayın, sahada karşılığı olmalı.
+    */
+    'cities' => [
+
+        'samsun' => [
+            'name' => 'Samsun',
+            'in' => 'Samsun’da',
+            'plate' => '55',
+            'region' => 'Karadeniz',
+            'onsite' => 'hub',
+            'distance_km' => 0,
+            'lead' => 'Neva-QR Menü Samsun merkezlidir. Menüsünü dijitalleştirmek isteyen Samsunlu bir kafe ya da restoran için bu, kurulumun aynı gün yerinde yapılabildiği, masa standlarının elden teslim edildiği ve bir sorun çıktığında karşınızda telefonla ulaşabileceğiniz birinin olduğu anlamına gelir.',
+            'scene' => 'Atakum sahil şeridi son yıllarda şehrin kafe hattına dönüştü; Çiftlik Caddesi ve İlkadım merkezde ise esnaf lokantasından üçüncü nesil kahveciye kadar çok farklı işletme yan yana duruyor. Ortak sorun aynı: yaz sezonunda fiyat değişiyor, basılı menü bir haftada eskiyor. Bafra ve Çarşamba tarafındaki pide salonlarında da menü çoğu zaman duvarda asılı tek bir tabela oluyor.',
+            'districts' => ['İlkadım', 'Atakum', 'Canik', 'Tekkeköy', 'Bafra', 'Çarşamba'],
+            'templates' => ['coastal-breeze', 'minimalist-kaffe', 'dark-prestige'],
+            'template_why' => 'Sahil kafeleri için açık ve ferah bir düzen, merkezdeki kahveciler için sade dikey liste, akşam işletmeleri için koyu ve görselli bir vitrin.',
+            'faq' => [
+                [
+                    'q' => 'Samsun’da yerinde kurulum yapıyor musunuz?',
+                    'a' => 'Evet. Fiziksel QR Basım & Kurulum Paketi’nde masa standlarını biz basıyor ve işletmeye gelip kendimiz yerleştiriyoruz. Samsun içi randevular genellikle aynı hafta veriliyor; İlkadım, Atakum, Canik ve Tekkeköy için ek yol ücreti yoktur.',
+                ],
+                [
+                    'q' => 'Bafra ve Çarşamba da kapsamda mı?',
+                    'a' => 'Evet, ilçeler de yerinde kurulum kapsamındadır; yalnızca randevu günü merkeze göre daha seyrek planlanır. Menü hazırlığı ve alt domain açılışı zaten uzaktan yapıldığı için, siz yayına ilçede de aynı gün geçersiniz.',
+                ],
+            ],
+        ],
+
+        'trabzon' => [
+            'name' => 'Trabzon',
+            'in' => 'Trabzon’da',
+            'plate' => '61',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 330,
+            'lead' => 'Trabzon, Karadeniz’in en yoğun misafir trafiğine sahip şehri. Meydan çevresindeki işletmeler yıl boyu, Uzungöl ve yayla hattındakiler ise sezonda kapasitesinin üstünde çalışıyor. Menünün masada beklemeden açılması burada konfor değil, servis hızı meselesi.',
+            'scene' => 'Ortahisar’da Meydan Parkı çevresi ve Uzun Sokak hattı şehrin kafe yoğunluğunu taşıyor; Boztepe’de manzaralı çay bahçeleri, Akçaabat’ta köfteciler kendi müşteri akışını kuruyor. Uzungöl tarafındaki işletmelerde sezonluk menü ve fiyat değişimi çok sık — basılı menü bu tempoda ekonomik değil. QR menüde fiyatı panelden değiştirmek yeterli, masadaki etiket aynı kalıyor.',
+            'districts' => ['Ortahisar', 'Akçaabat', 'Yomra', 'Arsin', 'Çaykara (Uzungöl)'],
+            'templates' => ['dark-prestige', 'prime-steakhouse', 'heritage-press'],
+            'template_why' => 'Akşam restoranları ve balık işletmeleri için koyu, görselli bir düzen; köfte ve et salonları için ürünü öne çıkaran vitrin; tarihi dokudaki mekanlar için klasik bir dergi tipografisi.',
+            'faq' => [
+                [
+                    'q' => 'Trabzon’a yerinde kurulum için geliyor musunuz?',
+                    'a' => 'Evet, randevulu olarak. Samsun’dan karayoluyla gelindiği için Trabzon kurulumları belirli günlerde toplu planlanıyor; tarih netleştikten sonra masa standları basılıp birlikte getiriliyor. Menü hazırlığı ve yayın bu tarihi beklemez, uzaktan tamamlanır.',
+                ],
+                [
+                    'q' => 'Sezonda menü ve fiyat çok değişiyor, sorun olur mu?',
+                    'a' => 'Tam tersine, QR menünün en çok işe yaradığı durum bu. Fiyatı ya da ürünü panelden değiştirdiğiniz anda masadaki karekod yeni menüyü gösterir. Yeniden baskı, yeniden etiketleme ya da bizden onay beklemek gerekmez.',
+                ],
+            ],
+        ],
+
+        'ordu' => [
+            'name' => 'Ordu',
+            'in' => 'Ordu’da',
+            'plate' => '52',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 160,
+            'lead' => 'Ordu’da kafe işletmeciliği büyük ölçüde manzara üzerine kurulu: Boztepe’de teleferikle çıkılan tepe, sahil yolu boyunca uzanan işletmeler, Perşembe ve Ünye’de yazlık yoğunluk. Manzarası olan bir mekanın menüsünün de aynı özenle görünmesi gerekiyor.',
+            'scene' => 'Altınordu merkezde sahil bandı ve Boztepe hattı şehrin en yoğun kafe yüzeyi; Ünye ve Fatsa kendi merkezleriyle neredeyse ayrı birer pazar. Fındık sezonunda ve yaz aylarında misafir profili tamamen değişiyor, menü de buna göre daralıp genişliyor. Basılı menüyle yılda birkaç kez baskı yapmak yerine, panelden ürün gizleyip açmak bu döngüye çok daha uygun.',
+            'districts' => ['Altınordu', 'Ünye', 'Fatsa', 'Perşembe', 'Gülyalı'],
+            'templates' => ['coastal-breeze', 'botanical-green', 'minimalist-kaffe'],
+            'template_why' => 'Deniz manzaralı mekanlar için açık ve hafif bir palet, yeşil dokulu bahçe kafeleri için doğal bir düzen, merkezdeki kahveciler için sade liste.',
+            'faq' => [
+                [
+                    'q' => 'Ordu’da yerinde kurulum var mı?',
+                    'a' => 'Evet, randevulu. Samsun’a karayoluyla yaklaşık iki saat olduğu için Ordu kurulumları düzenli olarak planlanabiliyor; Ünye ve Fatsa da aynı kapsamda. Masa standları baskıya hazır olduğunda tarih veriliyor.',
+                ],
+                [
+                    'q' => 'Sezon dışında ürünleri menüden kaldırabilir miyim?',
+                    'a' => 'Evet. Ürünü silmenize gerek yok, panelden pasif hale getiriyorsunuz; menüde görünmez ama kaydı durur. Sezon açılınca tek tıkla geri getirirsiniz, fiyatı ve görseli olduğu gibi kalır.',
+                ],
+            ],
+        ],
+
+        'giresun' => [
+            'name' => 'Giresun',
+            'in' => 'Giresun’da',
+            'plate' => '28',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 215,
+            'lead' => 'Giresun küçük ama merkezi yoğun bir şehir; kale eteğinden sahile inen hatta işletmeler birbirine çok yakın. Böyle bir merkezde menünüzün yan masadakinden farklı görünmesi doğrudan tercih sebebi oluyor.',
+            'scene' => 'Şehir merkezinde sahil bandı ve kale çevresi kafelerin yoğunlaştığı iki hat; Bulancak ve Espiye kendi merkezlerinde daha çok esnaf lokantası ve aile işletmesi barındırıyor. Fındık sezonunda şehre gelen mevsimlik nüfus işletmelerin yoğunluğunu belirgin biçimde değiştiriyor. Menüyü hızlıca sadeleştirip yoğun günlerde servis hızını korumak burada gerçek bir ihtiyaç.',
+            'districts' => ['Merkez', 'Bulancak', 'Espiye', 'Görele', 'Tirebolu'],
+            'templates' => ['coastal-breeze', 'linen-note', 'classic-bistro'],
+            'template_why' => 'Sahil işletmeleri için ferah bir düzen, butik kafeler için kağıt dokulu sade bir tipografi, lokantalar için okunaklı klasik bir liste.',
+            'faq' => [
+                [
+                    'q' => 'Giresun’a geliyor musunuz?',
+                    'a' => 'Fiziksel paket için evet, randevulu olarak. Diğer iki pakette kuruluma gerek yok: menü hazırlığı, alt domain ve QR üretimi tamamen uzaktan yapılır, karekodu siz istediğiniz yere bastırırsınız.',
+                ],
+                [
+                    'q' => 'Küçük bir kafeyim, hangi paket bana uygun?',
+                    'a' => 'Masa takibi ve anlık güncelleme istiyorsanız Hosting Dahil Paket yeterlidir; menünüz kendi alt domaininizde yayınlanır ve her değişiklik anında canlıya geçer. Masa standlarını kendiniz bastırmak istiyorsanız Hosting Hariç Paket daha ekonomik olur.',
+                ],
+            ],
+        ],
+
+        'rize' => [
+            'name' => 'Rize',
+            'in' => 'Rize’de',
+            'plate' => '53',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 410,
+            'lead' => 'Rize’de işletmeciliğin ritmini yayla turizmi belirliyor. Ayder ve Çamlıhemşin hattındaki pansiyon restoranları sezonda dolu, kışın büyük ölçüde kapalı; şehir merkezindeki çay bahçeleri ise yıl boyu çalışıyor. İki farklı tempo, aynı menü altyapısıyla yönetilebiliyor.',
+            'scene' => 'Merkezde çay bahçesi kültürü baskın: menü kısa, sirkülasyon hızlı, misafir masada uzun oturuyor. Ayder ve Çamlıhemşin tarafında ise pansiyon restoranları kahvaltıdan akşam yemeğine kadar tek menüyle çalışıyor ve sezon boyunca fiyat güncelliyor. Bir de yaylada baskı işi almanın zorluğu var — masa standını Samsun’da basıp getirmek çoğu işletme için tek pratik yol.',
+            'districts' => ['Merkez', 'Çayeli', 'Ardeşen', 'Çamlıhemşin (Ayder)', 'Pazar'],
+            'templates' => ['botanical-green', 'alpine-clean', 'linen-note'],
+            'template_why' => 'Yeşil dokulu bir palet yayla işletmelerine doğal duruyor, dağ pansiyonları için temiz ve yüksek okunurluklu bir düzen, çay bahçeleri için sade bir liste.',
+            'faq' => [
+                [
+                    'q' => 'Ayder gibi yayla işletmeleri için de uygun mu?',
+                    'a' => 'Uygun, ancak bir noktayı bilerek söylüyoruz: QR menü misafirin telefonunda tarayıcıda açılır, yani internet bağlantısı gerekir. Bağlantının zayıf olduğu yaylalarda misafir Wi-Fi’si sunmanızı ve yedek olarak menünün PDF çıktısını bulundurmanızı öneririz — PDF üretimi panelde hazır.',
+                ],
+                [
+                    'q' => 'Sezonluk çalışıyorum, paket yıllık mı?',
+                    'a' => 'Hayır, aylık ya da yıllık abonelik yoktur. Paketler tek seferliktir; sezon kapandığında ödeyeceğiniz bir şey olmaz, menünüz yerinde durur ve sezon açılınca aynı karekodla devam edersiniz.',
+                ],
+            ],
+        ],
+
+        'amasya' => [
+            'name' => 'Amasya',
+            'in' => 'Amasya’da',
+            'plate' => '05',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 130,
+            'lead' => 'Amasya’da işletmelerin çoğu tarihi bir dokunun içinde çalışıyor: Yeşilırmak kıyısındaki Yalıboyu evleri, restore edilmiş konak restoranları, kaya mezarlarına bakan teraslar. Bu mekanların menüsünün de aynı ciddiyette görünmesi gerekiyor — sıradan bir QR sayfası burada dokuyu bozuyor.',
+            'scene' => 'Merkezdeki turizm hattı, misafirin çoğunlukla şehri ilk kez gören biri olduğu anlamına geliyor: menü hem yemeği tanıtmalı hem de görsel olarak mekanın hikayesini taşımalı. Merzifon ve Suluova tarafında ise durum tamamen farklı, esnaf lokantası ve aile işletmesi ağırlıklı, orada öncelik hız ve okunaklılık. İki ihtiyacı aynı platformda farklı şablonlarla karşılamak mümkün.',
+            'districts' => ['Merkez (Yalıboyu)', 'Merzifon', 'Suluova', 'Taşova'],
+            'templates' => ['heritage-press', 'atelier-soft', 'classic-bistro'],
+            'template_why' => 'Tarihi konak restoranları için klasik matbaa tipografisi, butik kafeler için yumuşak ve zarif bir düzen, lokantalar için hızlı taranan bir liste.',
+            'faq' => [
+                [
+                    'q' => 'Menüde ürün açıklaması ve görsel kullanabilir miyim?',
+                    'a' => 'Evet, her ürüne açıklama ve görsel ekleyebilirsiniz. Şehri ilk kez gören misafirin yerel bir yemeği tanıması gereken Amasya gibi yerlerde bu fark yaratıyor; bazı şablonlar açıklamayı gizler, panelde şablon seçerken bunu görürsünüz.',
+                ],
+                [
+                    'q' => 'Amasya’ya yerinde kurulum için geliyor musunuz?',
+                    'a' => 'Evet, randevulu. Samsun’a yakınlığı sayesinde Amasya kurulumları esnek planlanabiliyor, Merzifon ve Suluova da kapsamda.',
+                ],
+            ],
+        ],
+
+        'tokat' => [
+            'name' => 'Tokat',
+            'in' => 'Tokat’ta',
+            'plate' => '60',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 230,
+            'lead' => 'Tokat mutfağı şehrin en güçlü kartı; Tokat kebabından bağ evi sofralarına kadar menü zaten anlatacak çok şeye sahip. Sorun genelde menünün kendisinde değil, misafire nasıl gösterildiğinde: laminatlı tek sayfa ya da duvardaki tabela bu mutfağı hak ettiği gibi sunmuyor.',
+            'scene' => 'Merkezde esnaf lokantası ve kebap salonu yoğunluğu var; Turhal, Erbaa ve Niksar kendi merkezlerinde benzer bir yapıyla çalışıyor. Bu işletmelerde menü çok sık değişmiyor ama fiyat değişiyor — ve her fiyat değişiminde yeniden baskı yapmak en gereksiz masraf kalemi. QR menüde fiyat güncellemesi panelden saniyeler sürüyor.',
+            'districts' => ['Merkez', 'Turhal', 'Erbaa', 'Niksar', 'Zile'],
+            'templates' => ['saffron-table', 'classic-bistro', 'compact-fast'],
+            'template_why' => 'Yerel mutfağı sıcak bir paletle sunan bir düzen, klasik lokanta listesi ve yoğun servis için ürünü hızlı taratan kompakt bir görünüm.',
+            'faq' => [
+                [
+                    'q' => 'Menüm çok kalabalık, hepsi tek sayfaya sığar mı?',
+                    'a' => 'Menü kategorilere ayrılır, misafir kategoriye dokunup o bölüme iner; kaç ürün olduğunun bir sınırı yok. Kalabalık menülerde Compact Fast gibi kompakt şablonlar taramayı belirgin biçimde hızlandırıyor.',
+                ],
+                [
+                    'q' => 'Sadece fiyat güncellemek için sizinle iletişime geçmem gerekir mi?',
+                    'a' => 'Hayır. Fiyat, ürün, kategori ve görsel değişikliklerini kendi panelinizden yaparsınız ve anında canlıya geçer. Bizden onay beklemeniz gereken tek şey alt domain adıdır, o da yalnızca ilk kurulumda bir kez.',
+                ],
+            ],
+        ],
+
+        'corum' => [
+            'name' => 'Çorum',
+            'in' => 'Çorum’da',
+            'plate' => '19',
+            'region' => 'Karadeniz',
+            'onsite' => 'route',
+            'distance_km' => 170,
+            'lead' => 'Çorum’da işletmelerin müşterisi ikiye ayrılıyor: şehrin kendi düzenli müşterisi ve Hattuşa üzerinden gelen gezgin. Birincisi menüyü zaten biliyor, ikincisi ilk kez bakıyor. İyi bir dijital menü ikisine de aynı anda hitap edebiliyor.',
+            'scene' => 'Merkezde esnaf lokantaları ve kafeler yan yana; leblebi üzerine kurulu güçlü bir yerel ürün kimliği var ve bunu menüde anlatan işletme sayısı az. Sungurlu tarafında Hattuşa turizmi mevsimlik bir hareket yaratıyor. Menüyü sezona göre daraltıp genişletmek, görselle desteklemek bu ikili yapıda doğrudan işe yarıyor.',
+            'districts' => ['Merkez', 'Sungurlu', 'Osmancık', 'İskilip', 'Alaca'],
+            'templates' => ['compact-fast', 'minimal-mono', 'classic-bistro'],
+            'template_why' => 'Yoğun öğle servisi için hızlı taranan kompakt bir düzen, sade ve modern bir tipografi, klasik lokanta listesi.',
+            'faq' => [
+                [
+                    'q' => 'Masa başına ayrı QR verebiliyor muyum?',
+                    'a' => 'Evet, Hosting Dahil ve Fiziksel paketlerde her masa kendi karekodunu alır. Böylece hangi masanın menüyü kaç kez açtığını da görürsünüz — hangi bölümün gerçekten dolduğunu ölçmenin basit bir yolu.',
+                ],
+                [
+                    'q' => 'Çorum’a yerinde kurulum için geliyor musunuz?',
+                    'a' => 'Evet, randevulu. Samsun’a karayoluyla yaklaşık iki buçuk saat; Sungurlu ve Osmancık da aynı kapsamda değerlendiriliyor.',
+                ],
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Hukuki metinler / KVKK
     |--------------------------------------------------------------------------
     | Aydınlatma metni, gizlilik ve çerez politikası bu bilgilerden üretilir.
@@ -253,6 +469,12 @@ return [
         'company' => [
             'title' => env('NEVA_LEGAL_TITLE', 'Neva Yazılım'),          // ticaret unvanı
             'address' => env('NEVA_LEGAL_ADDRESS', ''),                   // açık adres
+            // Şehir ve il ayrı tutulur: LocalBusiness işaretlemesi tek parça
+            // adres metnini okuyamaz, `addressLocality` alanını ayrıca ister.
+            // Google Business Profile eşleşmesi de bu alan üzerinden kurulur.
+            'city' => env('NEVA_LEGAL_CITY', 'İlkadım'),                   // ilçe
+            'region' => env('NEVA_LEGAL_REGION', 'Samsun'),                // il
+            'postal_code' => env('NEVA_LEGAL_POSTAL', ''),
             'tax_office' => env('NEVA_LEGAL_TAX_OFFICE', ''),             // vergi dairesi
             'tax_no' => env('NEVA_LEGAL_TAX_NO', ''),                     // VKN / TCKN
             'mersis' => env('NEVA_LEGAL_MERSIS', ''),                     // MERSİS no

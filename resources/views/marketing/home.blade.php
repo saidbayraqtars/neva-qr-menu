@@ -3,9 +3,13 @@
 
     // Ana sayfa varlık grafiğin kökü: Organization + WebSite + ürünün kendisi
     // aynı blokta, `@id` ile bağlı. Diğer sayfalar bu düğümlere referans verir.
+    // LocalBusiness ayrıca basılır: Organization markayı, o düğüm işletmenin
+    // NEREDE olduğunu anlatır ve Google Business Profile kaydıyla eşleşerek
+    // yerel sonuçları besler. Adres girilmemişse kendisi null döner.
     $homeJsonLd = MenuSchema::graph(
         MenuSchema::organization(),
         MenuSchema::website(),
+        MenuSchema::localBusiness(),
         MenuSchema::softwareApplication($plans),
         MenuSchema::faq(array_slice((array) config('neva.seo.faq', []), 0, 4)),
     );

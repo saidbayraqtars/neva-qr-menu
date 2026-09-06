@@ -29,6 +29,15 @@ class SitemapController extends Controller
                 ['loc' => route('legal.terms'), 'priority' => '0.3', 'freq' => 'yearly'],
             ];
 
+            // Şehir sayfaları — dönüşümü en yüksek yüzey, şablonlardan da önce.
+            foreach (array_keys((array) config('neva.cities')) as $slug) {
+                $urls[] = [
+                    'loc' => route('city', $slug),
+                    'priority' => '0.9',
+                    'freq' => 'monthly',
+                ];
+            }
+
             // 40 şablon vitrin sayfası. Kiracı adreslerinden ÖNCE gelirler:
             // sitemap sırası tarama önceliğini doğrudan belirlemese de,
             // ilk kesilen (50.000 URL) uçta bunların kalması istenir.

@@ -110,7 +110,7 @@ Tam kurulum, üretim ayarları ve sürüm yükseltme adımları: **[KURULUM.md](
 
 | Alan | Yol |
 |------|-----|
-| Pazarlama | `/` · `/qr-menu-sablonlari` · `/qr-menu-sablonlari/{şablon}` · `/fiyatlandirma` · `/sikca-sorulan-sorular` · `/hakkimizda` · `/iletisim` |
+| Pazarlama | `/` · `/qr-menu-sablonlari` · `/qr-menu-sablonlari/{şablon}` · `/{şehir}-qr-menu` · `/fiyatlandirma` · `/sikca-sorulan-sorular` · `/hakkimizda` · `/iletisim` |
 | Kimlik | `/login` · `/register` · `/forgot-password` |
 | Sahip paneli | `/panel` · `/panel/isletme` · `/panel/tasarim` · `/panel/kategoriler` · `/panel/urunler` · `/panel/istatistik` · `/panel/qr` · `/panel/mesajlar` |
 | Admin | `/admin` · `/admin/talepler` · `/admin/uyelik-talepleri` · `/admin/mesajlar` |
@@ -242,7 +242,10 @@ Bir şablon sınıflandırmada eksik veya çift kayıtlıysa `DesignController` 
 - [x] **SEO altyapısı** — 40 şablon vitrin sayfası, FAQ + FAQPage schema, bağlı JSON-LD
       varlık grafiği (`Organization`/`WebSite`/`SoftwareApplication`), sitemap, `neva:onkontrol --seo`
 - [x] **Markalı hata sayfaları** — 404/403/419/429/500/503, Türkçe ve dış bağımlılıksız
-- [ ] **SEO içerik** — blog/rehber modülü, şehir + mutfak bazlı landing sayfaları
+- [x] **Yerel SEO** — 8 şehir sayfası (`/{şehir}-qr-menu`), şehir başına elle yazılmış
+      içerik + `Service`/`areaServed` ve `LocalBusiness` işaretlemesi, pazarlama
+      sayfalarını kök alan adına sabitleyen `ForceRootDomain` (bkz. [docs/SEO.md](docs/SEO.md) §3.1)
+- [ ] **SEO içerik** — blog/rehber modülü, mutfak bazlı landing sayfaları
       (bkz. [docs/SEO.md](docs/SEO.md) §3)
 - [x] **Dağıtım altyapısı** — Ubuntu 24.04 kurulum + dağıtım betikleri, wildcard nginx bloğu
 - [x] **Yedekleme** — `neva:yedek` (DB + görseller + `.env`), günlük, 14 gün saklama
