@@ -118,11 +118,12 @@
     --t-elev: var(--t-shadow, 0 18px 40px -20px rgba(20,20,30,.2));
     --t-elev-sm: var(--t-shadow-sm, 0 8px 20px -12px rgba(20,20,30,.16)); }
 .tpl [hidden] { display: none !important; }
-.tpl-wrap { max-width: 480px; width: 100%; margin: 0 auto; flex: 1 1 auto; background: var(--t-bg); overflow-x: hidden; }
+/* Zemin ve desen kök öğede (#tpl-root) — sarmalayıcı saydam kalmalı, yoksa desen sütunun altında kesilir. */
+.tpl-wrap { max-width: 480px; width: 100%; margin: 0 auto; flex: 1 1 auto; overflow-x: hidden; }
 /* Geniş ekranda sütun büyüsün ama satır uzunluğu okunur kalsın. */
 .tpl[data-view="desktop"] .tpl-wrap { max-width: min(1360px, 94vw); }
 /* Varsayılan hafif zemin derinliği — bg_pattern seçilirse o ezer. */
-.tpl[data-bg="solid"] .tpl-wrap { background-image: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--t-accent) 6%, transparent), transparent 60%); background-repeat: no-repeat; }
+.tpl[data-bg="solid"] { background-image: radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--t-accent) 6%, transparent), transparent 60%); background-repeat: no-repeat; }
 
 .tpl img { max-width: 100%; }
 .tpl-h { font-family: var(--t-font-display); color: var(--t-heading); }
@@ -1126,54 +1127,54 @@
    ============================================================================ */
 
 /* ---- 1 · Arka plan dokusu (data-bg) ---- */
-.tpl[data-bg="dots"] .tpl-wrap {
+.tpl[data-bg="dots"] {
     background-color: var(--t-bg);
     background-image: radial-gradient(color-mix(in srgb, var(--t-ink) 13%, transparent) 1px, transparent 1.6px);
     background-size: 18px 18px;
     background-position: -1px -1px;
 }
-.tpl[data-bg="stripes"] .tpl-wrap {
+.tpl[data-bg="stripes"] {
     background-color: var(--t-bg);
     background-image: repeating-linear-gradient(45deg,
         color-mix(in srgb, var(--t-ink) 6%, transparent) 0 1px,
         transparent 1px 11px);
 }
-.tpl[data-bg="noise"] .tpl-wrap {
+.tpl[data-bg="noise"] {
     background-color: var(--t-bg);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
-.tpl[data-mood="dark"][data-bg="noise"] .tpl-wrap { background-blend-mode: overlay; }
-.tpl[data-bg="glow"] .tpl-wrap {
+.tpl[data-mood="dark"][data-bg="noise"] { background-blend-mode: overlay; }
+.tpl[data-bg="glow"] {
     background-color: var(--t-bg);
     background-image: radial-gradient(62% 36% at 50% 0%, color-mix(in srgb, var(--t-accent) 24%, transparent), transparent 72%);
     background-repeat: no-repeat;
 }
 /* ---- Ek dokular (2026-08): hepsi token bazlı, açık/koyu temaya uyumlu ---- */
-.tpl[data-bg="grid"] .tpl-wrap {
+.tpl[data-bg="grid"] {
     background-color: var(--t-bg);
     background-image:
         linear-gradient(color-mix(in srgb, var(--t-ink) 7%, transparent) 1px, transparent 1px),
         linear-gradient(90deg, color-mix(in srgb, var(--t-ink) 7%, transparent) 1px, transparent 1px);
     background-size: 22px 22px;
 }
-.tpl[data-bg="diagonal"] .tpl-wrap {
+.tpl[data-bg="diagonal"] {
     background-color: var(--t-bg);
     background-image: repeating-linear-gradient(45deg,
         color-mix(in srgb, var(--t-ink) 8%, transparent) 0 2px,
         transparent 2px 16px);
 }
-.tpl[data-bg="crosshatch"] .tpl-wrap {
+.tpl[data-bg="crosshatch"] {
     background-color: var(--t-bg);
     background-image:
         repeating-linear-gradient(45deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 0 1px, transparent 1px 10px),
         repeating-linear-gradient(-45deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 0 1px, transparent 1px 10px);
 }
-.tpl[data-bg="waves"] .tpl-wrap {
+.tpl[data-bg="waves"] {
     background-color: var(--t-bg);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'%3E%3Cpath d='M0 10 Q10 0 20 10 T40 10' fill='none' stroke='%23808080' stroke-width='1.4' opacity='0.22'/%3E%3C/svg%3E");
     background-size: 40px 20px;
 }
-.tpl[data-bg="zigzag"] .tpl-wrap {
+.tpl[data-bg="zigzag"] {
     background-color: var(--t-bg);
     background-image:
         linear-gradient(135deg, color-mix(in srgb, var(--t-ink) 7%, transparent) 25%, transparent 25%),
@@ -1183,36 +1184,36 @@
     background-position: 12px 0, 12px 0, 0 0, 0 0;
     background-size: 24px 24px;
 }
-.tpl[data-bg="chevron"] .tpl-wrap {
+.tpl[data-bg="chevron"] {
     background-color: var(--t-bg);
     background-image:
         linear-gradient(135deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 25%, transparent 25%),
         linear-gradient(225deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 25%, transparent 25%);
     background-size: 26px 26px;
 }
-.tpl[data-bg="mesh"] .tpl-wrap {
+.tpl[data-bg="mesh"] {
     background-color: var(--t-bg);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='%23808080' stroke-width='1' opacity='0.18'%3E%3Cpath d='M0 30 L30 0 L60 30 L30 60 Z'/%3E%3Cpath d='M30 0 L30 60 M0 30 L60 30'/%3E%3C/g%3E%3C/svg%3E");
     background-size: 60px 60px;
 }
-.tpl[data-bg="triangles"] .tpl-wrap {
+.tpl[data-bg="triangles"] {
     background-color: var(--t-bg);
     background-image:
         linear-gradient(60deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 25%, transparent 25.5%, transparent 75%, color-mix(in srgb, var(--t-ink) 6%, transparent) 75%),
         linear-gradient(-60deg, color-mix(in srgb, var(--t-ink) 6%, transparent) 25%, transparent 25.5%, transparent 75%, color-mix(in srgb, var(--t-ink) 6%, transparent) 75%);
     background-size: 28px 48px;
 }
-.tpl[data-bg="plus"] .tpl-wrap {
+.tpl[data-bg="plus"] {
     background-color: var(--t-bg);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M11 6h2v4h4v2h-4v4h-2v-4H7v-2h4z' fill='%23808080' opacity='0.2'/%3E%3C/svg%3E");
     background-size: 24px 24px;
 }
-.tpl[data-bg="scales"] .tpl-wrap {
+.tpl[data-bg="scales"] {
     background-color: var(--t-bg);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='18'%3E%3Cpath d='M0 18 A18 18 0 0 1 36 18 M-18 18 A18 18 0 0 1 18 18 M18 18 A18 18 0 0 1 54 18' fill='none' stroke='%23808080' stroke-width='1.3' opacity='0.2'/%3E%3C/svg%3E");
     background-size: 36px 18px;
 }
-.tpl[data-bg="carbon"] .tpl-wrap {
+.tpl[data-bg="carbon"] {
     background-color: var(--t-bg);
     background-image:
         linear-gradient(27deg, color-mix(in srgb, var(--t-ink) 8%, transparent) 5px, transparent 5px),
@@ -1222,7 +1223,7 @@
     background-size: 20px 20px;
     background-position: 0 0, 10px 10px, 10px 0, 0 10px;
 }
-.tpl[data-bg="radial-fade"] .tpl-wrap {
+.tpl[data-bg="radial-fade"] {
     background-color: var(--t-bg);
     background-image: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--t-accent) 14%, transparent), transparent 55%),
         radial-gradient(90% 60% at 50% 100%, color-mix(in srgb, var(--t-ink) 8%, transparent), transparent 60%);
