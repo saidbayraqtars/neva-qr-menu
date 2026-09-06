@@ -93,32 +93,40 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 - [x] cyber-dark (cy) — 2026-09-06. Izgara 3→4 sütun, kapak 320px, başlık 38px.
 - [x] dark-prestige (dp) — 2026-09-06. Kapaklı başlık 380px, başlık 40px,
       kart listesi 2→3 sütun (410px).
-- [ ] floating-image (fli)
-- [ ] glass-hero (ghr)
+- [x] floating-image (fli) — 2026-09-06. Izgara 3→4 sütun; yuvarlak görsel kartı
+      taştığı için satır arası boşluk 52px ve kart üst dolgusu 72px yapıldı.
+- [x] glass-hero (ghr) — 2026-09-06. Izgara 3→4 sütun, cam başlık bloğu 42px
+      dolgu, başlık 34px.
 - [x] glassmorphism-luxury (gl) — 2026-09-06. Izgara 3→4 sütun, cam başlık
       bloğu 44px dolgu, logo 72px, başlık 36px.
 - [ ] golden-hour (gh)
-- [ ] gourmet-masonry (gmm)
+- [x] gourmet-masonry (gmm) — 2026-09-06. Masonry 4 sütun, boşluklar 18px,
+      başlık 34px, kart tipografisi bir kademe büyük.
 - [x] grid-showcase (gsh) — 2026-09-06. Izgara 3→4 sütun, kapaklı başlık
       320px, başlık 34px.
-- [ ] magazine-grid (mag)
+- [x] magazine-grid (mag) — 2026-09-06. Masonry 3→4 sütun, başlık 46px; manşet
+      kartın görseli %46→%34 (tüm sütunları kapladığı için metne yer açıldı).
 - [x] modern-grid (mg) — 2026-09-06. Izgara 3→4 sütun, kapak 200→320px,
       kart yazıları bir kademe büyük.
 - [ ] neo-brutalism (nb)
 - [x] onyx-lux (ox) — 2026-09-06. Fotoğraf bantları 2→3 sütun (450px), bant
       yüksekliği 260px, başlık 46px, açıklama genişliği %80 sınırı kaldırıldı.
-- [ ] polaroid-vibe (pol)
+- [x] polaroid-vibe (pol) — 2026-09-06. Masonry 4 sütun, kart dolgusu ve
+      aralıkları büyütüldü, ürün adı 22px.
 - [x] prime-steakhouse (ps) — 2026-09-06. Liste 2 sütun (639px), medya 132px,
       başlık 52px.
 - [ ] retro-diner (rd)
 - [ ] riso-pop (rp)
 - [x] saffron-table (sf) — 2026-09-06. Kart listesi 2→3 sütun (420px), yuvarlak
       thumb 74px, başlık 36px.
-- [ ] split-card (spl)
-- [ ] stories-style (sty)
+- [x] split-card (spl) — 2026-09-06. İki sütun (640px), kart yüksekliği 160px,
+      medya oranı %42→%38, başlık 32px.
+- [x] stories-style (sty) — 2026-09-06. Kart ızgarası 3→4 sütun, kapaklı başlık
+      320px, dolgular 28px.
 - [x] sunset-orange (so) — 2026-09-06. Hero 320px, başlık 42px, thumb 132px,
       liste 2 sütun (640px).
-- [ ] sunset-vibes (sv)
+- [x] sunset-vibes (sv) — 2026-09-06. Masonry 4 sütun kalıyor; boşluklar 18px,
+      başlık 34px, kart yazıları büyütüldü.
 - [x] velvet-noir (vn) — 2026-09-06. İki sütun arası 64px, fiyat sütunu 82px,
       başlık 38px, dolgu 44px.
 
@@ -146,6 +154,10 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
 - 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 3 · 3. grup (masonry ve kart düzenleri: sv, mag, sty,
+  pol, fli, spl, ghr, gmm) tamamlandı ve dağıtıldı. Masonry'de sütun sayısını
+  artırırken `column-gap` ve kart `margin-bottom` de artmalı, yoksa kartlar
+  birbirine yapışıyor.
 - 2026-09-06: Öncelik 3 · 2. grup (liste/satır düzenleri: so, dp, ox, sf, ps,
   vn) tamamlandı ve dağıtıldı. Satır düzenlerinde sütun sayısını artırmadan
   önce satır içeriğine bak: yatay kart (fotoğraf + metin) 2 sütundan fazlasını

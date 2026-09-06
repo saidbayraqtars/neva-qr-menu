@@ -658,6 +658,17 @@
 .sv-desc { font-size: 11.5px; color: rgba(255,255,255,.8); margin: 5px 0 0; line-height: 1.5; }
 .sv-price { display: inline-block; margin-top: 10px; font-size: 14px; font-weight: 700; color: #fff; background: rgba(255,255,255,.16); padding: 3px 10px; border-radius: 999px; }
 .tpl[data-view="desktop"] .sv-masonry { columns: 4; }
+.tpl[data-view="desktop"] .sv { padding: 0 32px; }
+.tpl[data-view="desktop"] .sv-head { padding: 62px 0 32px; }
+.tpl[data-view="desktop"] .sv-logo { height: calc(66px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .sv-title { font-size: 34px; }
+.tpl[data-view="desktop"] .sv-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .sv-cat { margin-bottom: 40px; }
+.tpl[data-view="desktop"] .sv-cat-name { font-size: 23px; margin-bottom: 20px; }
+.tpl[data-view="desktop"] .sv-masonry { column-gap: 18px; }
+.tpl[data-view="desktop"] .sv-card { margin-bottom: 18px; }
+.tpl[data-view="desktop"] .sv-name { font-size: 15.5px; }
+.tpl[data-view="desktop"] .sv-desc { font-size: 12.5px; }
 
 /* ------------------------------------------------------------------ 19 · URBAN CHIC */
 .uc { padding: 0; }
@@ -797,6 +808,18 @@
 .mag-desc { font-size: 12px; color: var(--t-ink-soft); margin: 5px 0 0; line-height: 1.5; font-style: italic; }
 .mag-price { display: inline-block; margin-top: 8px; font-size: 14px; font-weight: 700; }
 .tpl[data-view="desktop"] .mag-masonry { columns: 3; }
+.tpl[data-view="desktop"] .mag-logo { height: calc(56px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .mag-title { font-size: 46px; }
+.tpl[data-view="desktop"] .mag-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .mag-cat { margin: 30px 0 42px; }
+.tpl[data-view="desktop"] .mag-cat-name { font-size: 14.5px; margin-bottom: 20px; }
+.tpl[data-view="desktop"] .mag-masonry { columns: 4; column-gap: 18px; }
+.tpl[data-view="desktop"] .mag-card { margin-bottom: 18px; }
+/* Manşet kart tüm sütunları kaplar; geniş ekranda görseli daralt, metne yer bırak. */
+.tpl[data-view="desktop"] .mag-card.is-lead .mag-img { width: 34%; flex-basis: 34%; }
+.tpl[data-view="desktop"] .mag-card.is-lead .mag-name { font-size: 28px; }
+.tpl[data-view="desktop"] .mag-name { font-size: 16px; }
+.tpl[data-view="desktop"] .mag-desc { font-size: 12.5px; }
 
 /* --------------------------------------------- 24 · STORIES STYLE */
 .sty { padding: 0; }
@@ -822,6 +845,14 @@
 .sty-foot { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
 .sty-price { font-size: 16px; font-weight: 700; color: #fff; background: var(--t-accent); padding: 3px 12px; border-radius: 999px; }
 .tpl[data-view="desktop"] .sty-list { display: grid; grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .sty-head { padding: 52px 18px 26px; }
+.tpl[data-view="desktop"] .sty-head[data-has-cover="1"] { min-height: 320px; }
+.tpl[data-view="desktop"] .sty-logo { height: calc(60px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .sty-title { font-size: 32px; }
+.tpl[data-view="desktop"] .sty-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .sty-cat-bar { padding: 20px 28px 12px; }
+.tpl[data-view="desktop"] .sty-cat-name { font-size: 15px; }
+.tpl[data-view="desktop"] .sty-list { grid-template-columns: repeat(4, 1fr); gap: 18px; padding: 0 28px; }
 
 /* --------------------------------------------- 25 · POLAROID VIBE */
 .pol { padding: 24px 18px 0; }
@@ -845,6 +876,15 @@
 .pol-desc { font-size: 12px; color: var(--t-ink-soft); margin: 3px 0 0; font-family: var(--t-font-body); }
 .pol-price { display: inline-block; margin-top: 6px; font-size: 16px; font-family: var(--t-font-body); font-weight: 700; }
 .tpl[data-view="desktop"] .pol-masonry { columns: 4; }
+.tpl[data-view="desktop"] .pol { padding: 44px 32px 0; }
+.tpl[data-view="desktop"] .pol-head { margin-bottom: 34px; }
+.tpl[data-view="desktop"] .pol-logo { height: calc(62px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .pol-cat { margin-bottom: 38px; }
+.tpl[data-view="desktop"] .pol-cat-name { font-size: 30px; margin-bottom: 22px; }
+.tpl[data-view="desktop"] .pol-masonry { column-gap: 22px; }
+.tpl[data-view="desktop"] .pol-card { margin-bottom: 26px; padding: 14px 14px 8px; }
+.tpl[data-view="desktop"] .pol-name { font-size: 22px; }
+.tpl[data-view="desktop"] .pol-desc { font-size: 13px; }
 
 /* --------------------------------------------- 26 · FLOATING IMAGE */
 .fli { padding: 30px 16px 0; }
@@ -866,6 +906,18 @@
 .fli-desc { font-size: 11.5px; color: var(--t-ink-soft); margin: 4px 0 0; line-height: 1.5; }
 .fli-price { display: inline-block; margin-top: 8px; font-size: 14px; background: var(--t-surface-2); padding: 3px 12px; border-radius: 999px; }
 .tpl[data-view="desktop"] .fli-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .fli { padding: 48px 32px 0; }
+.tpl[data-view="desktop"] .fli-head { margin-bottom: 40px; }
+.tpl[data-view="desktop"] .fli-logo { height: calc(62px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .fli-title { font-size: 34px; }
+.tpl[data-view="desktop"] .fli-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .fli-cat-name { font-size: 22px; margin: 34px 0 44px; }
+/* Yuvarlak görsel kartı aşıyor; sütun sayısı artarken dikey boşluk da artmalı. */
+.tpl[data-view="desktop"] .fli-grid { grid-template-columns: repeat(4, 1fr); gap: 52px 18px; }
+.tpl[data-view="desktop"] .fli-card { padding: 18px; }
+.tpl[data-view="desktop"] .fli-body.has-float { padding-top: 72px; }
+.tpl[data-view="desktop"] .fli-name { font-size: 16px; }
+.tpl[data-view="desktop"] .fli-desc { font-size: 12.5px; }
 
 /* --------------------------------------------- 27 · SPLIT CARD */
 .spl { padding: 0 16px; }
@@ -889,6 +941,18 @@
 .spl-desc { font-size: 12px; color: var(--t-ink-soft); margin: 6px 0; line-height: 1.5; }
 .spl-price { font-size: 17px; font-weight: 700; margin-top: auto; }
 .tpl[data-view="desktop"] .spl-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tpl[data-view="desktop"] .spl { padding: 0 32px; }
+.tpl[data-view="desktop"] .spl-head { padding: 52px 0 30px; }
+.tpl[data-view="desktop"] .spl-head[data-has-cover="1"] { min-height: 320px; margin: 0 -32px 14px; }
+.tpl[data-view="desktop"] .spl-logo { height: calc(60px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .spl-title { font-size: 32px; }
+.tpl[data-view="desktop"] .spl-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .spl-cat-name { font-size: 17px; margin: 30px 0 18px; }
+.tpl[data-view="desktop"] .spl-card { min-height: 160px; }
+.tpl[data-view="desktop"] .spl-media { width: 38%; flex-basis: 38%; }
+.tpl[data-view="desktop"] .spl-body { padding: 18px 22px; }
+.tpl[data-view="desktop"] .spl-name { font-size: 18px; }
+.tpl[data-view="desktop"] .spl-desc { font-size: 12.5px; }
 
 /* --------------------------------------------- 28 · GLASS HERO */
 .ghr { position: relative; padding: 0 16px; overflow: hidden; }
@@ -916,6 +980,17 @@
 .ghr-desc { font-size: 11.5px; color: var(--t-ink-soft); margin: 4px 0 0; line-height: 1.5; }
 .ghr-price { display: inline-block; margin-top: 8px; font-size: 14px; font-weight: 700; }
 .tpl[data-view="desktop"] .ghr-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .ghr { padding: 0 32px; }
+.tpl[data-view="desktop"] .ghr-head { margin: 24px -32px 12px; padding: 24px 32px; }
+.tpl[data-view="desktop"] .ghr-head-inner { padding: 42px 26px; }
+.tpl[data-view="desktop"] .ghr-logo { height: calc(66px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .ghr-title { font-size: 34px; }
+.tpl[data-view="desktop"] .ghr-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .ghr-cat-name { font-size: 16.5px; margin: 30px 0 20px; }
+.tpl[data-view="desktop"] .ghr-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.tpl[data-view="desktop"] .ghr-panel { padding: 15px 16px 17px; }
+.tpl[data-view="desktop"] .ghr-name { font-size: 15.5px; }
+.tpl[data-view="desktop"] .ghr-desc { font-size: 12.5px; }
 
 /* --------------------------------------------- 29 · GRID SHOWCASE */
 .gsh { padding: 0; }
@@ -965,6 +1040,18 @@
 .gmm-desc { font-size: 11.5px; color: var(--t-ink-soft); margin: 4px 0 0; line-height: 1.5; }
 .gmm-price { display: inline-block; margin-top: 7px; font-size: 13.5px; font-weight: 700; }
 .tpl[data-view="desktop"] .gmm-masonry { columns: 4; }
+.tpl[data-view="desktop"] .gmm-head { margin-bottom: 32px; }
+.tpl[data-view="desktop"] .gmm-logo { height: calc(62px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .gmm-title { font-size: 34px; }
+.tpl[data-view="desktop"] .gmm-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .gmm-cat { margin-bottom: 34px; }
+.tpl[data-view="desktop"] .gmm-cat-name { font-size: 24px; margin: 26px 0 18px; }
+.tpl[data-view="desktop"] .gmm-masonry { column-gap: 18px; }
+.tpl[data-view="desktop"] .gmm-card { margin-bottom: 18px; }
+.tpl[data-view="desktop"] .gmm-body { padding: 14px 15px 16px; }
+.tpl[data-view="desktop"] .gmm-name { font-size: 15.5px; }
+.tpl[data-view="desktop"] .gmm-desc { font-size: 12.5px; }
+.tpl[data-view="desktop"] .gmm-price { font-size: 15px; }
 
 /* ============================================================================
    NEVA — YENİ ŞABLONLAR (batch 1): heritage-press · coastal-breeze · carbon-mono
