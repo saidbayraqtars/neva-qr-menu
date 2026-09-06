@@ -114,10 +114,11 @@
    ============================================================================ */
 
 .tpl { background: var(--t-bg); color: var(--t-text, var(--t-ink)); font-family: var(--t-font-body); min-height: 100%;
+    display: flex; flex-direction: column;
     --t-elev: var(--t-shadow, 0 18px 40px -20px rgba(20,20,30,.2));
     --t-elev-sm: var(--t-shadow-sm, 0 8px 20px -12px rgba(20,20,30,.16)); }
 .tpl [hidden] { display: none !important; }
-.tpl-wrap { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--t-bg); overflow-x: hidden; }
+.tpl-wrap { max-width: 480px; width: 100%; margin: 0 auto; flex: 1 1 auto; background: var(--t-bg); overflow-x: hidden; }
 /* Geniş ekranda sütun büyüsün ama satır uzunluğu okunur kalsın. */
 .tpl[data-view="desktop"] .tpl-wrap { max-width: min(1360px, 94vw); }
 /* Varsayılan hafif zemin derinliği — bg_pattern seçilirse o ezer. */
@@ -1677,7 +1678,8 @@
    ile kağıda uygun hale gelir. Ayrı bir PDF şablonu YOK.
    ============================================================================ */
 .tpl-print { background: var(--t-bg); }
-.tpl-print .tpl-wrap { max-width: 540px; box-shadow: none; min-height: 0; }
+.tpl-print .tpl { display: block; }
+.tpl-print .tpl-wrap { max-width: 540px; box-shadow: none; }
 /* Sabit/dekoratif katmanlar sayfalı ortamda her sayfada tekrar eder → kaldır. */
 .tpl-print :is(.gl-orbs, .ghr-orbs, .sv-glow) { display: none !important; }
 .tpl-print .sv, .tpl-print .gl, .tpl-print .ghr { background-attachment: scroll !important; }
@@ -1746,10 +1748,10 @@
     from { opacity: 0; transform: translateY(-8px) scale(.9); }
     to   { opacity: 1; transform: none; }
 }
-/* Geniş ekranda menü ortalanır (max 480/960px) — rozeti sütuna yaklaştır. */
+/* Geniş ekranda menü ortalanır — rozeti menü sütununun sağ kenarına yaklaştır. */
 @media (min-width: 1000px) {
     .table-badge { right: max(12px, calc(50% - 240px + 12px)); }
-    .tpl[data-view="desktop"] .table-badge { right: max(12px, calc(50% - 480px + 12px)); }
+    .tpl[data-view="desktop"] .table-badge { right: max(12px, calc(50% - min(680px, 47vw) + 12px)); }
 }
 /* PDF / yazdırma çıktısında masa rozeti olmaz. */
 .tpl-print .table-badge { display: none !important; }
