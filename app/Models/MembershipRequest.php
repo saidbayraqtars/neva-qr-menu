@@ -22,6 +22,7 @@ class MembershipRequest extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'table_count' => 'integer',
+        'paid_at' => 'datetime',
         'reviewed_at' => 'datetime',
     ];
 
