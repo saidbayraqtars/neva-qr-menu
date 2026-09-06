@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -11,7 +12,7 @@ use Illuminate\Notifications\Notification;
  * Hesap açıldı — kullanıcı şifresini KENDİSİ belirler.
  * Link tek kullanımlıktır ve 72 saat geçerlidir.
  */
-class AccountReady extends Notification
+class AccountReady extends Notification implements ShouldQueue
 {
     use Queueable;
 

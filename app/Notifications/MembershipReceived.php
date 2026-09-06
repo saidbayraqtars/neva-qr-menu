@@ -4,16 +4,18 @@ namespace App\Notifications;
 
 use App\Models\MembershipRequest;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Başvuru alındı — havale/EFT talimatı ve referans kodu.
  * Ödeme geldiğinde admin onaylar, hesap açılır.
  */
-class MembershipReceived extends Notification
+class MembershipReceived extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public function __construct(public MembershipRequest $membershipRequest) {}
 

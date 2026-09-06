@@ -5,8 +5,10 @@ namespace App\Notifications;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 
 /**
@@ -18,9 +20,9 @@ use Illuminate\Support\Str;
  * müşteriyi bulmak zorunda kalıyor; numara e-postada olunca telefondan tek
  * dokunuşla aranabiliyor. Müşteriye giden sürümde bu bilgiler YOKTUR.
  */
-class SupportMessagePosted extends Notification
+class SupportMessagePosted extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public function __construct(
         public Conversation $conversation,

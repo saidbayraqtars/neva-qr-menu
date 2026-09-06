@@ -4,13 +4,15 @@ namespace App\Notifications;
 
 use App\Models\Restaurant;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 
 /** Alt domain talebi onaylandı ya da reddedildi. */
-class SubdomainDecision extends Notification
+class SubdomainDecision extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public function __construct(
         public Restaurant $restaurant,

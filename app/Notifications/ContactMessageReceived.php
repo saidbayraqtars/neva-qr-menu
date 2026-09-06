@@ -4,14 +4,16 @@ namespace App\Notifications;
 
 use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 
 /** Ziyaretçi iletişim formu → destek ekibine bildirim. */
-class ContactMessageReceived extends Notification
+class ContactMessageReceived extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public function __construct(public ContactMessage $contactMessage) {}
 
