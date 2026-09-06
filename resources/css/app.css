@@ -251,6 +251,16 @@
 .bgn-foot { margin-top: 10px; }
 .bgn-price { font-size: 15px; background: var(--t-surface-2); padding: 4px 12px; border-radius: 999px; }
 .tpl[data-view="desktop"] .bgn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.tpl[data-view="desktop"] .bgn-head { padding: 60px 24px 24px; }
+.tpl[data-view="desktop"] .bgn-logo { height: calc(68px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .bgn-title { font-size: 34px; }
+.tpl[data-view="desktop"] .bgn-tag { font-size: 14.5px; }
+.tpl[data-view="desktop"] .bgn-tabs { padding: 14px 32px; justify-content: center; flex-wrap: wrap; }
+.tpl[data-view="desktop"] .bgn-tab { font-size: 14px; padding: 10px 20px; }
+.tpl[data-view="desktop"] .bgn-cat { padding: 28px 32px 10px; scroll-margin-top: 78px; }
+.tpl[data-view="desktop"] .bgn-cat-name { font-size: 26px; }
+.tpl[data-view="desktop"] .bgn-cat-desc { font-size: 13.5px; margin-bottom: 20px; }
+.tpl[data-view="desktop"] .bgn-grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
 
 /* ------------------------------------------------------------------ 5 · CLASSIC BISTRO */
 .cb { padding: 34px 18px 0; }
@@ -304,6 +314,17 @@
 .mg-price { font-size: 12.5px; }
 .mg-desc { font-size: 11px; color: var(--t-ink-soft); padding: 0 8px 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tpl[data-view="desktop"] .mg-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .mg-cover { height: 320px; }
+.tpl[data-view="desktop"] .mg-head { padding: 24px 32px; gap: 16px; }
+.tpl[data-view="desktop"] .mg-logo { height: calc(52px * var(--t-logo-scale)); width: calc(52px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .mg-title { font-size: 24px; }
+.tpl[data-view="desktop"] .mg-tag { font-size: 13px; }
+.tpl[data-view="desktop"] .mg-cat { padding: 30px 28px 6px; }
+.tpl[data-view="desktop"] .mg-cat-name { font-size: 21px; padding-bottom: 14px; }
+.tpl[data-view="desktop"] .mg-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.tpl[data-view="desktop"] .mg-cap { padding: 11px 12px 3px; }
+.tpl[data-view="desktop"] .mg-name, .tpl[data-view="desktop"] .mg-price { font-size: 14.5px; }
+.tpl[data-view="desktop"] .mg-desc { font-size: 12.5px; padding: 0 12px 13px; }
 
 /* ------------------------------------------------------------------ 7 · SUNSET ORANGE */
 .so { }
@@ -437,6 +458,18 @@
 .gl-price-row { margin-top: 10px; }
 .gl-price { font-size: 15px; }
 .tpl[data-view="desktop"] .gl-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .gl { padding: 0 40px; }
+.tpl[data-view="desktop"] .gl-head { margin: 26px -40px 10px; padding: 26px 40px; }
+.tpl[data-view="desktop"] .gl-head-inner { padding: 44px 28px; }
+.tpl[data-view="desktop"] .gl-logo { height: calc(72px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .gl-title { font-size: 36px; }
+.tpl[data-view="desktop"] .gl-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .gl-cat { margin-bottom: 42px; }
+.tpl[data-view="desktop"] .gl-cat-name { font-size: 17px; margin: 30px 0 20px; }
+.tpl[data-view="desktop"] .gl-grid { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.tpl[data-view="desktop"] .gl-card { padding: 16px; }
+.tpl[data-view="desktop"] .gl-name { font-size: 15.5px; }
+.tpl[data-view="desktop"] .gl-price { font-size: 16.5px; }
 
 /* ------------------------------------------------------------------ 12 · NEO BRUTALISM */
 .nb { padding: 22px 16px 0; }
@@ -507,6 +540,15 @@
 .cy-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; margin: 8px 0; border: 1px solid var(--t-border); filter: saturate(1.1) contrast(1.05); }
 .cy-desc { font-size: 11px; color: var(--t-ink-soft); margin: 4px 0 0; }
 .tpl[data-view="desktop"] .cy-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .cy { padding: 0 32px; }
+.tpl[data-view="desktop"] .cy-head { padding: 48px 0 26px; }
+.tpl[data-view="desktop"] .cy-head[data-has-cover="1"] { min-height: 320px; margin: 0 -32px 10px; }
+.tpl[data-view="desktop"] .cy-logo { height: calc(50px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .cy-title { font-size: 38px; }
+.tpl[data-view="desktop"] .cy-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .cy-cat { margin-bottom: 40px; }
+.tpl[data-view="desktop"] .cy-cat-name { font-size: 16px; margin-bottom: 18px; }
+.tpl[data-view="desktop"] .cy-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
 /* ------------------------------------------------------------------ 15 · GOLDEN HOUR */
 .gh { padding: 0 20px; }
@@ -865,6 +907,14 @@
 .gsh-price { font-size: 13.5px; font-weight: 700; }
 .gsh-desc { font-size: 11px; color: var(--t-ink-soft); margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tpl[data-view="desktop"] .gsh-grid { grid-template-columns: repeat(3, 1fr); }
+.tpl[data-view="desktop"] .gsh-head { padding: 52px 24px 30px; }
+.tpl[data-view="desktop"] .gsh-head[data-has-cover="1"] { min-height: 320px; }
+.tpl[data-view="desktop"] .gsh-logo { height: calc(60px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .gsh-title { font-size: 34px; }
+.tpl[data-view="desktop"] .gsh-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .gsh-cat { padding: 26px 26px 6px; }
+.tpl[data-view="desktop"] .gsh-cat-name { font-size: 22px; padding-bottom: 16px; }
+.tpl[data-view="desktop"] .gsh-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
 /* --------------------------------------------- 30 · GOURMET MASONRY */
 .gmm { padding: 26px 14px 0; }

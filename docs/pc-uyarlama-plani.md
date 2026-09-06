@@ -86,19 +86,23 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 
 - [ ] artisan-crafted (ac)
 - [ ] atelier-soft (at)
-- [ ] botanical-green (bgn)
+- [x] botanical-green (bgn) — 2026-09-06. Kart ızgarası tek sütundan üçe;
+      sekmeler geniş ekranda ortalanıp sarıyor, başlık 34px, dolgular 32px.
 - [ ] cinematic-dark (cnd)
 - [ ] culinary-bento (cbn)
-- [ ] cyber-dark (cy)
+- [x] cyber-dark (cy) — 2026-09-06. Izgara 3→4 sütun, kapak 320px, başlık 38px.
 - [ ] dark-prestige (dp)
 - [ ] floating-image (fli)
 - [ ] glass-hero (ghr)
-- [ ] glassmorphism-luxury (gl)
+- [x] glassmorphism-luxury (gl) — 2026-09-06. Izgara 3→4 sütun, cam başlık
+      bloğu 44px dolgu, logo 72px, başlık 36px.
 - [ ] golden-hour (gh)
 - [ ] gourmet-masonry (gmm)
-- [ ] grid-showcase (gsh)
+- [x] grid-showcase (gsh) — 2026-09-06. Izgara 3→4 sütun, kapaklı başlık
+      320px, başlık 34px.
 - [ ] magazine-grid (mag)
-- [ ] modern-grid (mg)
+- [x] modern-grid (mg) — 2026-09-06. Izgara 3→4 sütun, kapak 200→320px,
+      kart yazıları bir kademe büyük.
 - [ ] neo-brutalism (nb)
 - [ ] onyx-lux (ox)
 - [ ] polaroid-vibe (pol)
@@ -136,6 +140,10 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
 - 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 3 · 1. grup (fotoğraflı ızgaralar: mg, gsh, gl, cy, bgn)
+  tamamlandı ve dağıtıldı. Fotoğraflı ızgaralarda 1360px'te 4 sütun iyi
+  duruyor; kart içi tipografi de bir kademe büyütülmeli, yoksa kartlar
+  büyüyüp yazılar minicik kalıyor.
 - Dikkat: `resources/css/app.css` sonundaki "stil paketi" bölümü
   (`.tpl[data-tpl="..."]` seçicileri) şablon bazında daha özgül olduğu için
   ana bölümdeki kuralları ezebiliyor. Bir değişiklik uygulanmıyorsa orayı ara.
