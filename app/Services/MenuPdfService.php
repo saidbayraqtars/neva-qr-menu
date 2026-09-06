@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -185,17 +186,33 @@ class MenuPdfService
             $fileUrl,
         ]);
         $process->setTimeout(70);
-        // Temiz ortam: TEMP/HOME değişkenleri eksikse crashpad patlıyor.
+        // Chrome açılışta HOME altına yazmaya çalışır (~/.local, ~/.config, ~/.cache).
+        // php-fpm altında HOME=/var/www ve www-data oraya yazamaz → crashpad handler
+        // "--database is required" deyip ölüyor, ana süreç SIGTRAP (signal 5) alıyor.
+        // Bu yüzden HOME'u da profil dizinine sabitliyoruz.
+        $home = $profile.'/home';
+        @mkdir($home, 0775, true);
         $process->setEnv([
             'TEMP' => sys_get_temp_dir(),
             'TMP' => sys_get_temp_dir(),
+            'HOME' => $home,
+            'XDG_CONFIG_HOME' => $home.'/.config',
+            'XDG_CACHE_HOME' => $home.'/.cache',
+            'XDG_DATA_HOME' => $home.'/.local/share',
         ]);
-        $process->run();
 
-        $this->rrmdir($profile);
+        try {
+            $process->run();
+            $stderr = $process->getErrorOutput();
+        } catch (ProcessSignaledException $e) {
+            // Süreç sinyalle öldü; çıktı okunamayabilir, mesajı sinyalden üret.
+            $stderr = $e->getMessage();
+        } finally {
+            $this->rrmdir($profile);
+        }
 
         if (! is_file($pdfFile)) {
-            throw new RuntimeException('Headless tarayıcı PDF üretemedi: '.trim($process->getErrorOutput() ?: $process->getOutput()));
+            throw new RuntimeException('Headless tarayıcı PDF üretemedi: '.trim($stderr));
         }
     }
 
