@@ -160,6 +160,18 @@
 .mk-name { font-weight: 600; font-size: 14.5px; display: block; }
 .mk-desc { font-size: 12px; color: var(--t-ink-soft); display: block; margin-top: 2px; }
 .mk-price { font-size: 14.5px; }
+.tpl[data-view="desktop"] .mk { padding: 56px 40px 0; }
+.tpl[data-view="desktop"] .mk-head { gap: 16px; margin-bottom: 40px; }
+.tpl[data-view="desktop"] .mk-logo { height: calc(58px * var(--t-logo-scale)); width: calc(58px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .mk-title { font-size: 28px; }
+.tpl[data-view="desktop"] .mk-tag { font-size: 13.5px; }
+.tpl[data-view="desktop"] .mk-cat { margin-bottom: 46px; }
+.tpl[data-view="desktop"] .mk-cat-name { font-size: 13.5px; padding-bottom: 10px; }
+/* Kartsız düz liste geniş ekranda tek sütunda incecik kalıyor; iki sütuna böl. */
+.tpl[data-view="desktop"] .mk-list { columns: 2; column-gap: 56px; }
+.tpl[data-view="desktop"] .mk-row { break-inside: avoid; padding: 13px 0; }
+.tpl[data-view="desktop"] .mk-name, .tpl[data-view="desktop"] .mk-price { font-size: 16px; }
+.tpl[data-view="desktop"] .mk-desc { font-size: 13px; }
 
 /* ------------------------------------------------------------------ 2 · DARK PRESTIGE */
 .dp { padding: 0 20px; }
@@ -329,11 +341,21 @@
 .rb-name { font-size: 15px; }
 .rb-price { font-size: 15px; }
 .rb-desc { font-size: 12px; color: var(--t-ink-soft); margin: 5px 0 0; }
-.tpl[data-view="desktop"] .rb-layout { flex-direction: row; align-items: flex-start; }
-.tpl[data-view="desktop"] .rb-nav { flex-direction: column; width: 210px; flex: 0 0 210px; border-bottom: 0; border-right: 1px solid var(--t-border); align-self: stretch; }
-.tpl[data-view="desktop"] .rb-nav-item { justify-content: space-between; }
-.tpl[data-view="desktop"] .rb-content { flex: 1; }
-.tpl[data-view="desktop"] .rb-cards { display: grid; grid-template-columns: 1fr 1fr; }
+.tpl[data-view="desktop"] .rb-hero { min-height: 300px; padding: 34px 40px; }
+.tpl[data-view="desktop"] .rb-logo { height: calc(56px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .rb-title { font-size: 38px; }
+.tpl[data-view="desktop"] .rb-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .rb-layout { flex-direction: row; align-items: stretch; }
+.tpl[data-view="desktop"] .rb-nav { flex-direction: column; width: 244px; flex: 0 0 244px; gap: 6px; padding: 22px 18px; border-bottom: 0; border-right: 1px solid var(--t-border); align-self: stretch; }
+.tpl[data-view="desktop"] .rb-nav-item { justify-content: space-between; padding: 11px 14px; font-size: 14px; }
+.tpl[data-view="desktop"] .rb-content { flex: 1; min-width: 0; padding: 28px 36px 16px; }
+.tpl[data-view="desktop"] .rb-cat-name { font-size: 26px; }
+.tpl[data-view="desktop"] .rb-cat-desc { font-size: 13.5px; margin-bottom: 20px; }
+/* Sabit iki sütun 1360px'te kartları aşırı genişletiyordu; sütun sayısı genişliğe göre artsin. */
+.tpl[data-view="desktop"] .rb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 16px; }
+.tpl[data-view="desktop"] .rb-img { width: 128px; }
+.tpl[data-view="desktop"] .rb-name, .tpl[data-view="desktop"] .rb-price { font-size: 16.5px; }
+.tpl[data-view="desktop"] .rb-desc { font-size: 13px; }
 
 /* ------------------------------------------------------------------ 9 · COMPACT FAST */
 .cf { padding-bottom: 8px; }
