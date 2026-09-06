@@ -199,6 +199,15 @@
 .dp-price { display: inline-block; margin-top: 12px; font-size: 16px; letter-spacing: .04em; }
 .dp .tpl-badges { justify-content: center; }
 .tpl[data-view="desktop"] .dp-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tpl[data-view="desktop"] .dp { padding: 0 40px; }
+.tpl[data-view="desktop"] .dp-head { padding: 64px 0 40px; }
+.tpl[data-view="desktop"] .dp-head[data-has-cover="1"] { min-height: 380px; margin: 0 -40px; }
+.tpl[data-view="desktop"] .dp-logo { height: calc(82px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .dp-title { font-size: 40px; }
+.tpl[data-view="desktop"] .dp-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .dp-cat { margin-bottom: 56px; }
+.tpl[data-view="desktop"] .dp-cat-name { font-size: 17px; margin-bottom: 30px; }
+.tpl[data-view="desktop"] .dp-list { grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
 /* ------------------------------------------------------------------ 3 · NEON STREET */
 .ns { padding: 0 18px; }
@@ -346,6 +355,18 @@
 .so-price { font-size: 16px; }
 .so-thumb { width: 104px; object-fit: cover; flex: 0 0 auto; }
 .tpl[data-view="desktop"] .so-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.tpl[data-view="desktop"] .so-hero { min-height: 320px; padding: 34px 40px; }
+.tpl[data-view="desktop"] .so-logo { height: calc(60px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .so-title { font-size: 42px; }
+.tpl[data-view="desktop"] .so-tag { font-size: 15px; }
+.tpl[data-view="desktop"] .so-cat { padding: 30px 32px 6px; }
+.tpl[data-view="desktop"] .so-cat-name { font-size: 26px; margin-bottom: 18px; }
+.tpl[data-view="desktop"] .so-list { gap: 16px; }
+.tpl[data-view="desktop"] .so-thumb { width: 132px; }
+.tpl[data-view="desktop"] .so-info { padding: 16px 18px; }
+.tpl[data-view="desktop"] .so-name { font-size: 17px; }
+.tpl[data-view="desktop"] .so-desc { font-size: 13px; }
+.tpl[data-view="desktop"] .so-price { font-size: 17.5px; }
 
 /* ------------------------------------------------------------------ 8 · ROYAL BLUE */
 .rb { }
@@ -688,6 +709,17 @@
 .vn-name { font-size: 15px; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; }
 .vn-desc { font-size: 12px; color: var(--t-ink-soft); font-style: italic; margin: 5px 0 0; line-height: 1.6; }
 .tpl[data-view="desktop"] .vn-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.tpl[data-view="desktop"] .vn { padding: 0 44px; }
+.tpl[data-view="desktop"] .vn-head { padding: 68px 0 44px; }
+.tpl[data-view="desktop"] .vn-logo { height: calc(70px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .vn-title { font-size: 38px; }
+.tpl[data-view="desktop"] .vn-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .vn-cat { margin-bottom: 52px; }
+.tpl[data-view="desktop"] .vn-cat-name { font-size: 15px; margin-bottom: 28px; }
+.tpl[data-view="desktop"] .vn-list { gap: 0 64px; }
+.tpl[data-view="desktop"] .vn-row { padding: 19px 0; }
+.tpl[data-view="desktop"] .vn-price-col { flex-basis: 82px; }
+.tpl[data-view="desktop"] .vn-price { font-size: 16.5px; }
 
 /* ================= GÖRSEL ODAKLI ŞABLONLAR (21–30) ================= */
 
@@ -1035,6 +1067,19 @@
 .ox-item:not(.has-media) .ox-desc { color: var(--t-ink-soft); }
 .ox-item[data-feat].has-media { outline: 1px solid color-mix(in srgb, var(--t-accent) 60%, transparent); outline-offset: -6px; min-height: 230px; }
 .tpl[data-view="desktop"] .ox-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.tpl[data-view="desktop"] .ox-head { padding: 78px 26px 58px; }
+.tpl[data-view="desktop"] .ox-logo { height: calc(54px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .ox-title { font-size: 46px; }
+.tpl[data-view="desktop"] .ox-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .ox-cat { padding: 40px 0 6px; }
+.tpl[data-view="desktop"] .ox-cat-name { font-size: 13.5px; margin-bottom: 20px; }
+/* Tam genişlikte fotoğraf bantları; geniş ekranda 3 sütun, bant yükseği 260px. */
+.tpl[data-view="desktop"] .ox-list { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tpl[data-view="desktop"] .ox-item.has-media { min-height: 260px; }
+.tpl[data-view="desktop"] .ox-body { padding: 20px 24px 22px; }
+.tpl[data-view="desktop"] .ox-name { font-size: 19px; }
+.tpl[data-view="desktop"] .ox-price { font-size: 16.5px; }
+.tpl[data-view="desktop"] .ox-desc { font-size: 12.5px; max-width: 100%; }
 
 /* ---- Saffron Table (sf) — sıcak baharat, yuvarlak thumb + metin, görselli ---- */
 .sf { padding: 34px 22px 0; }
@@ -1057,6 +1102,16 @@
 .sf-price { flex-shrink: 0; align-self: start; font-size: 14px; font-weight: 700; color: var(--t-accent); font-variant-numeric: tabular-nums; }
 .sf-card[data-feat] { border-color: var(--t-accent); background: color-mix(in srgb, var(--t-accent) 8%, var(--t-surface)); }
 .tpl[data-view="desktop"] .sf-list { display: grid; grid-template-columns: 1fr 1fr; }
+.tpl[data-view="desktop"] .sf { padding: 52px 36px 0; }
+.tpl[data-view="desktop"] .sf-logo { height: calc(58px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .sf-title { font-size: 36px; }
+.tpl[data-view="desktop"] .sf-tag { font-size: 14px; }
+.tpl[data-view="desktop"] .sf-cat { margin-top: 40px; }
+.tpl[data-view="desktop"] .sf-cat-name { font-size: 16px; margin-bottom: 20px; }
+.tpl[data-view="desktop"] .sf-list { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tpl[data-view="desktop"] .sf-thumb { width: 74px; height: 74px; }
+.tpl[data-view="desktop"] .sf-name { font-size: 16px; }
+.tpl[data-view="desktop"] .sf-desc { font-size: 12.5px; }
 
 /* ---- Atelier Soft (at) — yumuşak pastel stüdyo, üstte fotoğraf, görselli ---- */
 .at { padding: 40px 22px 0; }
@@ -1145,6 +1200,18 @@
 .ps-desc { font-size: 11.5px; color: var(--t-ink-soft); margin: 5px 0 0; line-height: 1.5; }
 .ps-row[data-feat] { border-color: var(--t-accent); box-shadow: inset 3px 0 0 var(--t-accent); }
 .tpl[data-view="desktop"] .ps-list { display: grid; grid-template-columns: 1fr 1fr; }
+.tpl[data-view="desktop"] .ps-head { padding: 72px 24px 50px; }
+.tpl[data-view="desktop"] .ps-logo { height: calc(52px * var(--t-logo-scale)); }
+.tpl[data-view="desktop"] .ps-title { font-size: 52px; }
+.tpl[data-view="desktop"] .ps-tag { font-size: 12.5px; }
+.tpl[data-view="desktop"] .ps-cat { padding: 34px 34px 6px; }
+.tpl[data-view="desktop"] .ps-cat-name { font-size: 17px; margin-bottom: 18px; }
+.tpl[data-view="desktop"] .ps-list { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.tpl[data-view="desktop"] .ps-media { width: 132px; }
+.tpl[data-view="desktop"] .ps-body { padding: 16px 18px 16px 0; }
+.tpl[data-view="desktop"] .ps-name { font-size: 18px; }
+.tpl[data-view="desktop"] .ps-price { font-size: 16.5px; }
+.tpl[data-view="desktop"] .ps-desc { font-size: 12.5px; }
 
 /* ---- Kyoto Calm (ky) — Japon minimalizmi, tipografik ---- */
 .ky { padding: 66px 34px 0; }

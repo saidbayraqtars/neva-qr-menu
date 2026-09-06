@@ -91,7 +91,8 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 - [ ] cinematic-dark (cnd)
 - [ ] culinary-bento (cbn)
 - [x] cyber-dark (cy) — 2026-09-06. Izgara 3→4 sütun, kapak 320px, başlık 38px.
-- [ ] dark-prestige (dp)
+- [x] dark-prestige (dp) — 2026-09-06. Kapaklı başlık 380px, başlık 40px,
+      kart listesi 2→3 sütun (410px).
 - [ ] floating-image (fli)
 - [ ] glass-hero (ghr)
 - [x] glassmorphism-luxury (gl) — 2026-09-06. Izgara 3→4 sütun, cam başlık
@@ -104,17 +105,22 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
 - [x] modern-grid (mg) — 2026-09-06. Izgara 3→4 sütun, kapak 200→320px,
       kart yazıları bir kademe büyük.
 - [ ] neo-brutalism (nb)
-- [ ] onyx-lux (ox)
+- [x] onyx-lux (ox) — 2026-09-06. Fotoğraf bantları 2→3 sütun (450px), bant
+      yüksekliği 260px, başlık 46px, açıklama genişliği %80 sınırı kaldırıldı.
 - [ ] polaroid-vibe (pol)
-- [ ] prime-steakhouse (ps)
+- [x] prime-steakhouse (ps) — 2026-09-06. Liste 2 sütun (639px), medya 132px,
+      başlık 52px.
 - [ ] retro-diner (rd)
 - [ ] riso-pop (rp)
-- [ ] saffron-table (sf)
+- [x] saffron-table (sf) — 2026-09-06. Kart listesi 2→3 sütun (420px), yuvarlak
+      thumb 74px, başlık 36px.
 - [ ] split-card (spl)
 - [ ] stories-style (sty)
-- [ ] sunset-orange (so)
+- [x] sunset-orange (so) — 2026-09-06. Hero 320px, başlık 42px, thumb 132px,
+      liste 2 sütun (640px).
 - [ ] sunset-vibes (sv)
-- [ ] velvet-noir (vn)
+- [x] velvet-noir (vn) — 2026-09-06. İki sütun arası 64px, fiyat sütunu 82px,
+      başlık 38px, dolgu 44px.
 
 ### Öncelik 4 — iki üç kuralı olanlar (en az iş)
 
@@ -140,6 +146,10 @@ Test ederken tarayıcı eski HTML'i 2 saat tutabilir; URL'ye `?cb=1` ekle.
   `http://ocakbasi.localhost:8123/`.
 - 2026-09-06: Öncelik 1 tamamlandı ve dağıtıldı.
 - 2026-09-06: Öncelik 2 tamamlandı ve dağıtıldı.
+- 2026-09-06: Öncelik 3 · 2. grup (liste/satır düzenleri: so, dp, ox, sf, ps,
+  vn) tamamlandı ve dağıtıldı. Satır düzenlerinde sütun sayısını artırmadan
+  önce satır içeriğine bak: yatay kart (fotoğraf + metin) 2 sütundan fazlasını
+  kaldırmıyor, salt metin satırı 3 sütuna çıkabiliyor.
 - 2026-09-06: Öncelik 3 · 1. grup (fotoğraflı ızgaralar: mg, gsh, gl, cy, bgn)
   tamamlandı ve dağıtıldı. Fotoğraflı ızgaralarda 1360px'te 4 sütun iyi
   duruyor; kart içi tipografi de bir kademe büyütülmeli, yoksa kartlar
